@@ -14,8 +14,30 @@
 			box-shadow: none !important;
 		}
 
+		nav {
+			border-bottom: 1px solid lightgray;
+		}
+
 		.btn:focus {
 			box-shadow: none !important;
+		}
+
+		#nav_profile {
+		}
+	
+		#nav_back {
+		}
+		
+		.nav_visible {
+			display: inherit;
+		}
+
+		.nav_hidden {
+			display: none;
+		}
+		
+		.search_bar {
+			margin-top: 75px;
 		}
 		
 		.book_row {
@@ -39,7 +61,63 @@
 			color: darkgray;
 		}
 		
+		.books_normal {
+			transform: translateX(0px);
+			transition: transform 0.3s;
+		}
+		
+		.books_offscreen {
+			transform: translateX(-400px);
+			transition: transform 0.3s;
+		}
+		
+		#details_screen {
+			position: absolute;
+			top: 75px;
+		}
+
+		.details_offscreen {
+			transform: translateX(400px);
+			transition: transform 0.3s;
+		}
+		
+		.details_shown {
+			transform: translateX(0px);
+			transition: transform 0.3s;
+		}
+		
 	</style>
+	
+	<script>
+
+		function showBookDetails() {
+			document.getElementById("books_table").classList.add("books_offscreen");
+
+			document.getElementById("details_screen").classList.add("details_shown");
+			document.getElementById("details_screen").classList.remove("details_offscreen");
+
+			document.getElementById("nav_profile").classList.add("nav_hidden");
+			document.getElementById("nav_profile").classList.remove("nav_visible");
+
+			document.getElementById("nav_back").classList.add("nav_visible");
+			document.getElementById("nav_back").classList.remove("nav_hidden");
+		}
+	
+		function closeBookDetails() {
+			document.getElementById("books_table").classList.add("books_normal");
+			document.getElementById("books_table").classList.remove("books_offscreen");
+
+			document.getElementById("details_screen").classList.add("details_offscreen");
+			document.getElementById("details_screen").classList.remove("details_shown");
+
+			document.getElementById("nav_profile").classList.add("nav_visible");
+			document.getElementById("nav_profile").classList.remove("nav_hidden");
+			
+			document.getElementById("nav_back").classList.add("nav_hidden");
+			document.getElementById("nav_back").classList.remove("nav_visible");
+		}
+	
+	</script>
 </head>
 <body>
 
@@ -47,9 +125,15 @@
 
 	<div class="container-fluid">
 		
-		<img src="https://micro.blog/manton/avatar.jpg" width="30" height="30" style="border-radius: 15px;" />
+		<a href="#" id="nav_profile" onClick="closeBookDetails();">
+			<img src="https://micro.blog/manton/avatar.jpg" width="30" height="30" style="border-radius: 15px;" />
+		</a>
 		
-		<a href="" class="btn btn-light" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
+		<a href="#" id="nav_back" class="nav_hidden" onClick="closeBookDetails();">
+			<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 19.980469 3.9902344 A 1.0001 1.0001 0 0 0 19.292969 4.2929688 L 9.2929688 14.292969 A 1.0001 1.0001 0 0 0 9.2929688 15.707031 L 19.292969 25.707031 A 1.0001 1.0001 0 1 0 20.707031 24.292969 L 11.414062 15 L 20.707031 5.7070312 A 1.0001 1.0001 0 0 0 19.980469 3.9902344 z"/></svg>
+		</a>			
+		
+		<a href="#" class="btn btn-light" id="nav_bookshelf" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
 			<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30px" height="30px"><path d="M 7 3 C 5.343 3 4 4.343 4 6 L 4 19 A 1.0001 1.0001 0 0 0 4.2949219 19.708984 C 4.6477556 20.972969 5.6303589 22 7 22 L 9 22 L 9 20 L 7 20 C 6.4349698 20 6 19.56503 6 19 C 6 18.542696 6.2910232 18.183861 6.6992188 18.058594 L 9 18.25 L 9 10 C 9 7.791 10.791 6 13 6 L 20 6 L 20 5 C 20 3.895 19.105 3 18 3 L 7 3 z M 14 8 C 12.343 8 11 9.343 11 11 L 11 24 A 1.0001 1.0001 0 0 0 11.294922 24.708984 C 11.647756 25.972969 12.630359 27 14 27 L 26 27 A 1.0001 1.0001 0 1 0 26 25 L 14 25 C 13.43497 25 13 24.56503 13 24 C 13 23.43497 13.43497 23 14 23 L 25 23 C 26.105 23 27 22.105 27 21 L 27 10 C 27 8.895 26.105 8 25 8 L 14 8 z M 16 12 L 22 12 C 22.552 12 23 12.448 23 13 C 23 13.552 22.552 14 22 14 L 16 14 C 15.448 14 15 13.552 15 13 C 15 12.448 15.448 12 16 12 z"/></svg>
 			Want to read
 		</a>
@@ -58,13 +142,13 @@
 	
 </nav>
 	
-<div class="container">
+<div class="container" id="books_table">
 
-	<div class="mb-3" style="margin-top: 70px;">
+	<div class="mb-3 search_bar">
 		<input type="search" class="form-control rounded-pill" id="exampleFormControlInput1" placeholder="Search for books to add">
 	</div>
 	
-	<div class="book_first">
+	<div class="book_first" onClick="showBookDetails();">
 		
 		<img src="https://micro.blog/photos/300x/https://images.isbndb.com/covers/32/19/9781501173219.jpg" class="book_cover" align="left" border="0">
 		<div class="book_title">All The Light We Cannot See</div>
@@ -72,7 +156,7 @@
 	
 	</div>
 
-	<div class="book_row">
+	<div class="book_row" onClick="showBookDetails();">
 		
 		<img src="https://micro.blog/photos/300x/https://images.isbndb.com/covers/95/10/9780292759510.jpg" class="book_cover" align="left" border="0">		
 		<div class="book_title">Big Wonderful Thing: A History of Texas</div>
@@ -98,6 +182,12 @@
 			<p>Finished reading</p>
 		</div>
 	</div>
+
+</div>
+
+<div class="container details_offscreen" id="details_screen">
+
+	<p>Book details here.</p>
 
 </div>
 
