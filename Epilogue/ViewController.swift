@@ -6,14 +6,20 @@
 //
 
 import UIKit
+import WebKit
 
 class ViewController: UIViewController {
 
+	@IBOutlet var webView: WKWebView!
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		// Do any additional setup after loading the view.
+		
+		let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Web")
+		if let url = url {
+			self.webView.loadFileURL(url, allowingReadAccessTo: url)
+		}
 	}
-
 
 }
 
