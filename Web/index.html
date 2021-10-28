@@ -18,6 +18,14 @@
 			box-shadow: none !important;
 		}
 
+		.btn-light {
+			background-color: #e6e6e6;
+		}
+
+		.icon_only_button {
+			margin-bottom: 2px;
+		}
+		
 		nav {
 			border-bottom: 1px solid lightgray;
 		}
@@ -95,6 +103,7 @@
 			position: absolute;
 			top: 75px;
 			display: none;
+			text-align: center;
 		}
 
 		.details_offscreen {
@@ -105,6 +114,30 @@
 		.details_shown {
 			transform: translateX(0px);
 			transition: transform 0.3s;
+		}
+		
+		#details_cover {
+			max-height: 300px;
+			width: auto;
+		}
+		
+		#details_title {
+			font-weight: bold;
+			padding-top: 10px;
+			padding-bottom: 4px;
+		}
+		
+		#details_author {
+			color: darkgray;
+		}
+		
+		#details_options {
+			border-top: 1px solid lightgray;
+			margin-top: 12px;
+			margin-bottom: 12px;
+			margin-left: -12px;
+			margin-right: -12px;
+			padding-top: 12px;
 		}
 		
 	</style>
@@ -155,6 +188,7 @@
 				}
 			};
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
+				document.epilogueBooks = data.items;
 				document.getElementById("books_table").innerHTML = "";
 				addSearchBar();
 				
@@ -168,7 +202,7 @@
 					else {
 						row_item.setAttribute("class", "book_row");
 					}
-					row_item.setAttribute("onClick", "showBookDetails();");
+					row_item.setAttribute("onClick", "showBookDetails(" + i + ");");
 					
 					var img_item = document.createElement("img");
 					img_item.setAttribute("src", "https://micro.blog/photos/300x/" + book_item.image);
@@ -205,8 +239,13 @@
 			document.getElementById("books_table").appendChild(bar_item);
 		}
 
-		function showBookDetails() {
+		function showBookDetails(book_index) {
 			document.getElementById("details_screen").style.display = "inherit";
+			
+			var info = document.epilogueBooks[book_index];
+			document.getElementById("details_cover").setAttribute("src", "https://micro.blog/photos/300x/" + info.image);
+			document.getElementById("details_title").innerText = info.title;
+			document.getElementById("details_author").innerText = info.authors[0].name;
 			
 			setTimeout(function() {
 				document.getElementById("books_table").classList.add("books_offscreen");
@@ -264,7 +303,7 @@
 			<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 19.980469 3.9902344 A 1.0001 1.0001 0 0 0 19.292969 4.2929688 L 9.2929688 14.292969 A 1.0001 1.0001 0 0 0 9.2929688 15.707031 L 19.292969 25.707031 A 1.0001 1.0001 0 1 0 20.707031 24.292969 L 11.414062 15 L 20.707031 5.7070312 A 1.0001 1.0001 0 0 0 19.980469 3.9902344 z"/></svg>
 		</a>			
 		
-		<a href="#" class="btn btn-light" id="nav_bookshelf" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
+		<a href="#" class="btn" id="nav_bookshelf" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
 			<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30px" height="30px"><path d="M 7 3 C 5.343 3 4 4.343 4 6 L 4 19 A 1.0001 1.0001 0 0 0 4.2949219 19.708984 C 4.6477556 20.972969 5.6303589 22 7 22 L 9 22 L 9 20 L 7 20 C 6.4349698 20 6 19.56503 6 19 C 6 18.542696 6.2910232 18.183861 6.6992188 18.058594 L 9 18.25 L 9 10 C 9 7.791 10.791 6 13 6 L 20 6 L 20 5 C 20 3.895 19.105 3 18 3 L 7 3 z M 14 8 C 12.343 8 11 9.343 11 11 L 11 24 A 1.0001 1.0001 0 0 0 11.294922 24.708984 C 11.647756 25.972969 12.630359 27 14 27 L 26 27 A 1.0001 1.0001 0 1 0 26 25 L 14 25 C 13.43497 25 13 24.56503 13 24 C 13 23.43497 13.43497 23 14 23 L 25 23 C 26.105 23 27 22.105 27 21 L 27 10 C 27 8.895 26.105 8 25 8 L 14 8 z M 16 12 L 22 12 C 22.552 12 23 12.448 23 13 C 23 13.552 22.552 14 22 14 L 16 14 C 15.448 14 15 13.552 15 13 C 15 12.448 15.448 12 16 12 z"/></svg>
 			Want to read
 		</a>
@@ -295,7 +334,27 @@
 
 <div class="container details_offscreen" id="details_screen">
 
-	<p>Book details here.</p>
+	<img id="details_cover" src="" />
+
+	<div id="details_title"></div>
+	<div id="details_author"></div>
+
+	<div id="details_options">
+		<button class="btn btn-light">New Post...</button>
+		<button class="btn btn-light">Move to: Finished reading</button>
+		
+		<button class="btn btn-light">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill icon_only_button" viewBox="0 0 16 16">
+	  	  		<path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+			</svg>
+		</button>
+
+		<button class="btn btn-light">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill icon_only_button" viewBox="0 0 16 16">
+				<path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+			</svg>
+		</button>
+	</div>
 
 </div>
 
