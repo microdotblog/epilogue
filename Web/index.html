@@ -133,6 +133,10 @@
 			}, 300);
 		}
 	
+		function checkToken() {
+			document.getElementById("nav_bookshelf").innerText = document.epilogueToken;
+		}
+	
 	</script>
 </head>
 <body>
@@ -180,19 +184,21 @@
 	
 	</div>
 	
-	<!-- <div class="mb-3">
+	<!--
+	<div class="mb-3">
 		<label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
 		<textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
 	</div>
-
+	-->
+	
 	<p>
-	<button type="submit" class="btn btn-light">Submit</button> -->
+	<button type="submit" class="btn btn-light" onClick="checkToken();">Test</button>
 
 	<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
 		<div class="offcanvas-header">
 			<h5 class="offcanvas-title" id="offcanvasBottomLabel">Bookshelves</h5>
 		</div>
-		<div class="offcanvas-body small">
+		<div class="offcanvas-body">
 			<p>Want to read</p>
 			<p>Currently reading</p>
 			<p>Finished reading</p>
