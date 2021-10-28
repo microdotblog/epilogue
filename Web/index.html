@@ -119,7 +119,7 @@
 				method: "POST",
 				body: form
 			};
-			fetch("http://localhost:3000/account/verify", options).then(response => response.json()).then(data => {
+			fetch("https://micro.blog/account/verify", options).then(response => response.json()).then(data => {
 				if (data.error == undefined) {
 					document.epilogueToken = data.token;
 					document.epilogueUsername = data.username;
@@ -142,7 +142,7 @@
 					"Authorization": "Bearer " + document.epilogueToken
 				}
 			};
-			fetch("http://localhost:3000/books/bookshelves", options).then(response => response.json()).then(data => {
+			fetch("https://micro.blog/books/bookshelves", options).then(response => response.json()).then(data => {
 				document.epilogueBookshelves = data;
 				handler();
 			});
@@ -154,7 +154,7 @@
 					"Authorization": "Bearer " + document.epilogueToken
 				}
 			};
-			fetch("http://localhost:3000/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
+			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
 				document.getElementById("books_table").innerHTML = "";
 				addSearchBar();
 				

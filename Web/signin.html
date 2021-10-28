@@ -53,7 +53,7 @@
 				// },
 				// body: JSON.stringify(fields)
 			};
-			fetch("http://localhost:3000/account/signin", options).then(response => response.json()).then(data => {
+			fetch("https://micro.blog/account/signin", options).then(response => response.json()).then(data => {
 				if (data.error == undefined) {
 					document.getElementById("alert_error").style.display = "none";
 					document.getElementById("alert_ok").style.display = "block";
