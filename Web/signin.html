@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Epilogue</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<link href="bootstrap.min.css" rel="stylesheet" />
+
+	<style>
+
+		.form-control:focus { 
+			border-color: darkgray !important;
+			box-shadow: none !important;
+		}
+
+		.btn:focus {
+			box-shadow: none !important;
+		}
+		
+		.btn-light {
+			background-color: lightgray;
+		}
+
+		.intro {
+			margin-top: 100px;
+		}
+		
+		#alert_ok {
+			display: none;
+		}
+	
+		#alert_error {
+			display: none;
+		}
+
+	</style>
+	
+	<script>
+		function submitSignin() {
+			var email = document.getElementById("input_email").value;
+			
+			let form = new FormData();
+			form.append("email", email);
+			form.append("app_name", "Epilogue");
+			form.append("redirect_url", "epilogue://signin/");
+
+			var options = {
+				method: "POST",
+				body: form
+				// headers: {
+				// 	"Content-Type": "application/json"
+				// },
+				// body: JSON.stringify(fields)
+			};
+			fetch("http://localhost:3000/account/signin", options).then(response => response.json()).then(data => {
+				if (data.error == undefined) {
+					document.getElementById("alert_error").style.display = "none";
+					document.getElementById("alert_ok").style.display = "block";
+				}
+				else {
+					document.getElementById("alert_error").style.display = "block";
+					document.getElementById("alert_error").innerText = data.error;
+				}
+			});			
+		}
+	</script>
+</head>
+<body>
+
+<div class="container">
+
+	<div class="mb-3 intro">
+		Enter your Micro.blog account email address and you'll receive a link to sign in:
+	</div>
+	
+	<div class="mb-3">
+		<input type="email" class="form-control" id="input_email" placeholder="Email address" />
+	</div>
+
+	<p>
+	<button type="submit" class="btn btn-light" onClick="submitSignin();">Sign In</button>
+
+	<div class="alert alert-success" role="alert" id="alert_ok">
+		Email sent! Check your email on this device.
+	</div>
+
+	<div class="alert alert-warning" role="alert" id="alert_error">		
+	</div>
+			
+</div>
+
+<script src="bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

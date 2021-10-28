@@ -15,7 +15,7 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Web")
+		let url = Bundle.main.url(forResource: "signin", withExtension: "html", subdirectory: "Web")
 		if let url = url {
 			self.webView.loadFileURL(url, allowingReadAccessTo: url)
 		}
