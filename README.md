@@ -1,2 +1,3 @@
-# epilogue-ios
+# Epilogue for Micro.blog
+
 Books! 📚
