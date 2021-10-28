@@ -57,6 +57,7 @@
 			height: 100px;
 			padding-left: 5px;
 			padding-right: 10px;
+			border: 0px;
 		}
 		
 		.book_title {
@@ -98,7 +99,7 @@
 	
 	<script>
 
-		function loadBookshelves() {
+		function loadBookshelves(handler) {
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + document.epilogueToken
@@ -106,6 +107,7 @@
 			};
 			fetch("http://localhost:3000/books/bookshelves", options).then(response => response.json()).then(data => {
 				document.epilogueBookshelves = data;
+				handler();
 			});
 		}
 
@@ -116,9 +118,54 @@
 				}
 			};
 			fetch("http://localhost:3000/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
-				document.epilogueBookshelves = data;
-				document.getElementById("nav_bookshelf").innerText = data.title;
+				document.getElementById("books_table").innerHTML = "";
+				addSearchBar();
+				
+				for (let i = 0; i < data.items.length; i++) {
+					var book_item = data.items[i];
+	
+					var row_item = document.createElement("div");
+					if (i == 0) {
+						row_item.setAttribute("class", "book_first");
+					}
+					else {
+						row_item.setAttribute("class", "book_row");
+					}
+					row_item.setAttribute("onClick", "showBookDetails();");
+					
+					var img_item = document.createElement("img");
+					img_item.setAttribute("src", "https://micro.blog/photos/300x/" + book_item.image);
+					img_item.setAttribute("class", "book_cover");
+					img_item.setAttribute("align", "left");
+					row_item.appendChild(img_item);
+	
+					var title_item = document.createElement("div");
+					title_item.setAttribute("class", "book_title");
+					title_item.innerText = book_item.title;
+					row_item.appendChild(title_item);
+	
+					var author_item = document.createElement("div");
+					author_item.setAttribute("class", "book_author");
+					author_item.innerText = book_item.authors[0].name;
+					row_item.appendChild(author_item);
+					
+					document.getElementById("books_table").appendChild(row_item);
+				}
 			});
+		}
+
+		function addSearchBar() {
+			var bar_item = document.createElement("div");
+			bar_item.setAttribute("class", "mb-3 search_bar");
+
+			var input_item = document.createElement("input");
+			input_item.setAttribute("type", "search");
+			input_item.setAttribute("class", "form-control rounded-pill");
+			input_item.setAttribute("id", "search_field");
+			input_item.setAttribute("placeholder", "Search for books to add");
+			bar_item.appendChild(input_item);
+			
+			document.getElementById("books_table").appendChild(bar_item);
 		}
 
 		function showBookDetails() {
@@ -157,8 +204,9 @@
 		}
 	
 		function checkToken() {
-			document.getElementById("nav_bookshelf").innerText = document.epilogueToken;
-			loadBooks(12);
+			loadBookshelves(function() {
+				loadBooks(document.epilogueBookshelves.items[0].id);
+			});
 		}
 	
 	</script>
@@ -187,46 +235,18 @@
 </nav>
 	
 <div class="container" id="books_table">
+	
+</div>
 
-	<div class="mb-3 search_bar">
-		<input type="search" class="form-control rounded-pill" id="search_field" placeholder="Search for books to add">
-	</div>
-	
-	<div class="book_first" onClick="showBookDetails();">
-		
-		<img src="https://micro.blog/photos/300x/https://images.isbndb.com/covers/32/19/9781501173219.jpg" class="book_cover" align="left" border="0">
-		<div class="book_title">All The Light We Cannot See</div>
-		<div class="book_author">by Anthony Doerr</div>	
-	
-	</div>
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
 
-	<div class="book_row" onClick="showBookDetails();">
-		
-		<img src="https://micro.blog/photos/300x/https://images.isbndb.com/covers/95/10/9780292759510.jpg" class="book_cover" align="left" border="0">		
-		<div class="book_title">Big Wonderful Thing: A History of Texas</div>
-		<div class="book_author">by Stephen Harrigan</div>	
-	
+	<div class="offcanvas-header">
+		<h5 class="offcanvas-title" id="offcanvasBottomLabel">Bookshelves</h5>
 	</div>
-	
-	<!--
-	<div class="mb-3">
-		<label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-		<textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-	</div>
-	-->
-	
-	<p>
-	<button type="submit" class="btn btn-light" onClick="checkToken();">Test</button>
-
-	<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
-		<div class="offcanvas-header">
-			<h5 class="offcanvas-title" id="offcanvasBottomLabel">Bookshelves</h5>
-		</div>
-		<div class="offcanvas-body">
-			<p>Want to read</p>
-			<p>Currently reading</p>
-			<p>Finished reading</p>
-		</div>
+	<div class="offcanvas-body">
+		<p>Want to read</p>
+		<p>Currently reading</p>
+		<p>Finished reading</p>
 	</div>
 
 </div>
