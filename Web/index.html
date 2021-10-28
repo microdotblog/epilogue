@@ -98,6 +98,29 @@
 	
 	<script>
 
+		function loadBookshelves() {
+			var options = {
+				headers: {
+					"Authorization": "Bearer " + document.epilogueToken
+				}
+			};
+			fetch("http://localhost:3000/books/bookshelves", options).then(response => response.json()).then(data => {
+				document.epilogueBookshelves = data;
+			});
+		}
+
+		function loadBooks(bookshelf_id) {
+			var options = {
+				headers: {
+					"Authorization": "Bearer " + document.epilogueToken
+				}
+			};
+			fetch("http://localhost:3000/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
+				document.epilogueBookshelves = data;
+				document.getElementById("nav_bookshelf").innerText = data.title;
+			});
+		}
+
 		function showBookDetails() {
 			document.getElementById("details_screen").style.display = "inherit";
 			
@@ -135,6 +158,7 @@
 	
 		function checkToken() {
 			document.getElementById("nav_bookshelf").innerText = document.epilogueToken;
+			loadBooks(12);
 		}
 	
 	</script>
@@ -165,7 +189,7 @@
 <div class="container" id="books_table">
 
 	<div class="mb-3 search_bar">
-		<input type="search" class="form-control rounded-pill" id="exampleFormControlInput1" placeholder="Search for books to add">
+		<input type="search" class="form-control rounded-pill" id="search_field" placeholder="Search for books to add">
 	</div>
 	
 	<div class="book_first" onClick="showBookDetails();">
