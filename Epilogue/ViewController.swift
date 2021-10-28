@@ -33,6 +33,14 @@ class ViewController: UIViewController, WKNavigationDelegate {
 		}
 	}
 
+	override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+		return UIInterfaceOrientationMask.portrait
+	}
+  
+	override var shouldAutorotate: Bool {
+		return false
+	}
+
 	@objc func tokenReceivedNotification(_ notification: Notification) {
 		if let token = notification.userInfo?["token"] as? String {
 			self.token = token
