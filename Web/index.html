@@ -9,6 +9,10 @@
 
 	<style>
 
+		body {
+			/* overflow-x: hidden; */
+		}
+
 		.form-control:focus { 
 			border-color: darkgray !important;
 			box-shadow: none !important;
@@ -38,6 +42,9 @@
 		
 		.search_bar {
 			margin-top: 75px;
+		}
+		
+		#books_table {
 		}
 		
 		.book_row {
@@ -74,6 +81,7 @@
 		#details_screen {
 			position: absolute;
 			top: 75px;
+			display: none;
 		}
 
 		.details_offscreen {
@@ -91,16 +99,20 @@
 	<script>
 
 		function showBookDetails() {
-			document.getElementById("books_table").classList.add("books_offscreen");
-
-			document.getElementById("details_screen").classList.add("details_shown");
-			document.getElementById("details_screen").classList.remove("details_offscreen");
-
-			document.getElementById("nav_profile").classList.add("nav_hidden");
-			document.getElementById("nav_profile").classList.remove("nav_visible");
-
-			document.getElementById("nav_back").classList.add("nav_visible");
-			document.getElementById("nav_back").classList.remove("nav_hidden");
+			document.getElementById("details_screen").style.display = "inherit";
+			
+			setTimeout(function() {
+				document.getElementById("books_table").classList.add("books_offscreen");
+	
+				document.getElementById("details_screen").classList.add("details_shown");
+				document.getElementById("details_screen").classList.remove("details_offscreen");
+	
+				document.getElementById("nav_profile").classList.add("nav_hidden");
+				document.getElementById("nav_profile").classList.remove("nav_visible");
+	
+				document.getElementById("nav_back").classList.add("nav_visible");
+				document.getElementById("nav_back").classList.remove("nav_hidden");
+			}, 50);
 		}
 	
 		function closeBookDetails() {
@@ -115,6 +127,10 @@
 			
 			document.getElementById("nav_back").classList.add("nav_hidden");
 			document.getElementById("nav_back").classList.remove("nav_visible");
+			
+			setTimeout(function() {
+				document.getElementById("details_screen").style.display = "none";
+			}, 300);
 		}
 	
 	</script>
