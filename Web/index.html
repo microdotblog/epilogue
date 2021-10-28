@@ -26,6 +26,11 @@
 			box-shadow: none !important;
 		}
 
+		#alert_error {
+			margin-top: 75px;
+			display: none;
+		}
+
 		#nav_profile {
 		}
 	
@@ -38,6 +43,13 @@
 
 		.nav_hidden {
 			display: none;
+		}
+		
+		#profile_icon {
+			width: 30px;
+			height: 30px;
+			border-radius: 15px;
+			background-color: lightgray;
 		}
 		
 		.search_bar {
@@ -98,6 +110,31 @@
 	</style>
 	
 	<script>
+	
+		function verifyToken(handler) {
+			let form = new FormData();
+			form.append("token", document.epilogueToken);
+			
+			var options = {
+				method: "POST",
+				body: form
+			};
+			fetch("http://localhost:3000/account/verify", options).then(response => response.json()).then(data => {
+				if (data.error == undefined) {
+					document.epilogueToken = data.token;
+					document.epilogueUsername = data.username;
+					document.epilogueAvatar = data.avatar;
+					
+					document.getElementById("profile_icon").setAttribute("src", document.epilogueAvatar);
+				}
+				else {
+					document.getElementById("alert_error").style.display = "block";
+					document.getElementById("alert_error").innerText = data.error;
+				}
+				
+				handler();
+			});
+		}
 
 		function loadBookshelves(handler) {
 			var options = {
@@ -204,8 +241,10 @@
 		}
 	
 		function checkToken() {
-			loadBookshelves(function() {
-				loadBooks(document.epilogueBookshelves.items[0].id);
+			verifyToken(function() {
+				loadBookshelves(function() {
+					loadBooks(document.epilogueBookshelves.items[0].id);
+				});
 			});
 		}
 	
@@ -217,8 +256,8 @@
 
 	<div class="container-fluid">
 		
-		<a href="#" id="nav_profile" onClick="closeBookDetails();">
-			<img src="https://micro.blog/manton/avatar.jpg" width="30" height="30" style="border-radius: 15px;" />
+		<a href="#" id="nav_profile" onClick="">
+			<img src="" id="profile_icon" />
 		</a>
 		
 		<a href="#" id="nav_back" class="nav_hidden" onClick="closeBookDetails();">
@@ -235,6 +274,9 @@
 </nav>
 	
 <div class="container" id="books_table">
+
+	<div class="alert alert-warning" role="alert" id="alert_error">
+	</div>
 	
 </div>
 
