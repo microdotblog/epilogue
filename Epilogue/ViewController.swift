@@ -57,6 +57,27 @@ class ViewController: UIViewController, WKNavigationDelegate {
 			self.webView.evaluateJavaScript(js)
 		}
 	}
+	
+	func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
+		var handled = false
+		
+		if let url = navigationAction.request.url {
+			if url.absoluteString.contains("epilogue://") {
+				if url.host == "signin" {
+					handled = true
+					let token = url.lastPathComponent
+					NotificationCenter.default.post(name: .receivedTokenNotification, object: self, userInfo: [ "token": token ])
+				}
+			}
+		}
+		
+		if handled {
+			decisionHandler(.cancel)
+		}
+		else {
+			decisionHandler(.allow)
+		}
+	}
 
 }
 

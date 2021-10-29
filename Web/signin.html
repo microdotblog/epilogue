@@ -40,29 +40,35 @@
 		function submitSignin() {
 			var email = document.getElementById("input_email").value;
 			
-			let form = new FormData();
-			form.append("email", email);
-			form.append("app_name", "Epilogue");
-			form.append("redirect_url", "epilogue://signin/");
-
-			var options = {
-				method: "POST",
-				body: form
-				// headers: {
-				// 	"Content-Type": "application/json"
-				// },
-				// body: JSON.stringify(fields)
-			};
-			fetch("https://micro.blog/account/signin", options).then(response => response.json()).then(data => {
-				if (data.error == undefined) {
-					document.getElementById("alert_error").style.display = "none";
-					document.getElementById("alert_ok").style.display = "block";
-				}
-				else {
-					document.getElementById("alert_error").style.display = "block";
-					document.getElementById("alert_error").innerText = data.error;
-				}
-			});			
+			if (!email.includes("@")) {
+				// email is actually an app token
+				location.href = "epilogue://signin/" + email;
+			}
+			else {
+				let form = new FormData();
+				form.append("email", email);
+				form.append("app_name", "Epilogue");
+				form.append("redirect_url", "epilogue://signin/");
+	
+				var options = {
+					method: "POST",
+					body: form
+					// headers: {
+					// 	"Content-Type": "application/json"
+					// },
+					// body: JSON.stringify(fields)
+				};
+				fetch("https://micro.blog/account/signin", options).then(response => response.json()).then(data => {
+					if (data.error == undefined) {
+						document.getElementById("alert_error").style.display = "none";
+						document.getElementById("alert_ok").style.display = "block";
+					}
+					else {
+						document.getElementById("alert_error").style.display = "block";
+						document.getElementById("alert_error").innerText = data.error;
+					}
+				});			
+			}
 		}
 	</script>
 </head>
