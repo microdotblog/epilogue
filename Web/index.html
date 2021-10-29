@@ -54,13 +54,29 @@
 	
 		#nav_back {
 		}
-		
+				
 		.nav_visible {
 			display: inherit;
 		}
 
 		.nav_hidden {
 			display: none;
+		}
+
+		#nav_bookshelf {			
+			display: none;
+		}
+		
+		#nav_bookshelf.nav_visible {
+			display: block;
+			opacity: 1.0;
+			transition: opacity 0.3s;
+		}
+
+		#nav_bookshelf.nav_hidden {
+			display: block;
+			opacity: 0.0;
+			transition: opacity 0.3s;
 		}
 		
 		#profile_icon {
@@ -332,6 +348,7 @@
 						title: shelf.title
 					};
 
+					document.getElementById("nav_bookshelf").style.display = "block";
 					document.getElementById("nav_bookshelf_title").innerText = shelf.title;
 				}				
 			}
@@ -376,6 +393,9 @@
 	
 				document.getElementById("nav_back").classList.add("nav_visible");
 				document.getElementById("nav_back").classList.remove("nav_hidden");
+
+				document.getElementById("nav_bookshelf").classList.add("nav_hidden");
+				document.getElementById("nav_bookshelf").classList.remove("nav_visible");
 			}, 50);
 		}
 	
@@ -391,6 +411,9 @@
 			
 			document.getElementById("nav_back").classList.add("nav_hidden");
 			document.getElementById("nav_back").classList.remove("nav_visible");
+
+			document.getElementById("nav_bookshelf").classList.add("nav_visible");
+			document.getElementById("nav_bookshelf").classList.remove("nav_hidden");
 			
 			setTimeout(function() {
 				document.getElementById("details_screen").style.display = "none";
