@@ -18,12 +18,16 @@
 			box-shadow: none !important;
 		}
 		
+		.btn:hover {
+			background-color: #cccccc;
+		}
+		
 		.btn-light {
 			background-color: #e6e6e6;
 		}
 
 		.intro {
-			margin-top: 50px;
+			margin-top: 25px;
 		}
 		
 		#alert_ok {
@@ -37,10 +41,11 @@
 	</style>
 	
 	<script>
+	
 		function submitSignin() {
 			var email = document.getElementById("input_email").value;
 			
-			if (!email.includes("@")) {
+			if ((email.length > 0) && !email.includes("@")) {
 				// email is actually an app token
 				location.href = "epilogue://signin/" + email;
 			}
@@ -70,6 +75,11 @@
 				});			
 			}
 		}
+
+		document.addEventListener("DOMContentLoaded", function() {
+			// document.getElementById("input_email").focus();
+		});
+
 	</script>
 </head>
 <body>
