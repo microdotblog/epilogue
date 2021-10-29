@@ -154,7 +154,7 @@
 		}
 		
 		#newpost_pane {
-			height: 100%;
+			height: 95%;
 		}
 		
 		#newpost_hostname {
@@ -206,6 +206,24 @@
 				}
 				
 				handler();
+			});
+		}
+
+		function loadBlogs() {
+			var options = {
+				headers: {
+					"Authorization": "Bearer " + document.epilogueToken
+				}
+			};
+			fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
+				var blogs = data.destination;
+				for (let i = 0; i < blogs.length; i++) {
+					let info = blogs[i];
+					if (info["microblog-default"] == true) {
+						document.epilogueDefaultHostname = info.name;
+						document.getElementById("newpost_hostname").innerText = info.name;
+					}
+				}
 			});
 		}
 
@@ -300,7 +318,11 @@
 			document.getElementById("details_title").innerText = info.title;
 			document.getElementById("details_author").innerText = info.authors[0].name;
 			
-			document.getElementById("newpost_text").innerText = "Currently reading: " + info.title + " 📚";
+			var s = "Currently reading: ";
+			s = s + "[" + info.title + "]";
+			s = s + "(" + info.url + ")";
+			s = s + " 📚";
+			document.getElementById("newpost_text").innerText = s;
 			
 			setTimeout(function() {
 				document.getElementById("books_table").classList.add("books_offscreen");
@@ -334,12 +356,22 @@
 			}, 300);
 		}
 	
+		function setupNewPost() {
+			var offcanvas = document.getElementById("newpost_pane");
+			offcanvas.addEventListener("show.bs.offcanvas", function() {
+				loadBlogs();
+			});
+		}
+	
 		function checkToken() {
 			verifyToken(function() {
+				loadBlogs();
 				loadBookshelves(function() {
 					loadBooks(document.epilogueBookshelves.items[0].id);
 				});
 			});
+
+			setupNewPost();
 		}
 	
 	</script>
@@ -421,7 +453,7 @@
 				<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 50 50" width="30px" height="30px"><path d="M 15.125 12.28125 L 12.28125 15.125 L 22.21875 25 L 12.28125 34.875 L 15.125 37.71875 L 25.0625 27.84375 L 35 37.71875 L 37.8125 34.875 L 27.90625 25 L 37.8125 15.125 L 35 12.28125 L 25.0625 22.15625 Z"/></svg>
 			</a>
 			
-			<a href="#" id="newpost_hostname">www.manton.org</a>
+			<a href="#" id="newpost_hostname"></a>
 			
 			<a href="#" id="newpost_send">Post</a>
 			
