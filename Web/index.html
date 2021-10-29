@@ -157,6 +157,9 @@
 			height: 100%;
 		}
 		
+		#newpost_close {			
+		}
+		
 		#newpost_hostname {
 			text-decoration: none;
 			color: darkgray;
@@ -363,6 +366,26 @@
 			});
 		}
 	
+		function sendNewPost() {
+			let s = document.getElementById("newpost_text").value;
+
+			let form = new FormData();
+			form.append("h", "entry");
+			form.append("content", s);
+			
+			var options = {
+				method: "POST",
+				body: form,
+				headers: {
+					"Authorization": "Bearer " + document.epilogueToken
+				}
+			};
+			fetch("https://micro.blog/micropub", options).then(response => response.json()).then(data => {
+				var close_button = document.getElementById("newpost_close");
+				close_button.click();
+			});
+		}
+	
 		function checkToken() {
 			verifyToken(function() {
 				loadBlogs();
@@ -449,13 +472,13 @@
 
 		<div class="container-fluid">
 			
-			<a href="#" data-bs-toggle="offcanvas" data-bs-target="#newpost_pane" aria-controls="newpost_pane">
+			<a href="#" id="newpost_close" data-bs-toggle="offcanvas" data-bs-target="#newpost_pane" aria-controls="newpost_pane">
 				<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 50 50" width="30px" height="30px"><path d="M 15.125 12.28125 L 12.28125 15.125 L 22.21875 25 L 12.28125 34.875 L 15.125 37.71875 L 25.0625 27.84375 L 35 37.71875 L 37.8125 34.875 L 27.90625 25 L 37.8125 15.125 L 35 12.28125 L 25.0625 22.15625 Z"/></svg>
 			</a>
 			
 			<a href="#" id="newpost_hostname"></a>
 			
-			<a href="#" id="newpost_send">Post</a>
+			<a href="#" id="newpost_send" onClick="sendNewPost();">Post</a>
 			
 		</div>
 	</nav>
