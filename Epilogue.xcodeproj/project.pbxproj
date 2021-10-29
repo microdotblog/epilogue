@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B076574272C77A9004BCA8A /* UUSwiftCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4B076573272C77A9004BCA8A /* UUSwiftCore */; };
 		4B4B1576272986FF003EADB3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4B1575272986FF003EADB3 /* AppDelegate.swift */; };
 		4B4B1578272986FF003EADB3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4B1577272986FF003EADB3 /* SceneDelegate.swift */; };
 		4B4B157A272986FF003EADB3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4B1579272986FF003EADB3 /* ViewController.swift */; };
@@ -35,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B076574272C77A9004BCA8A /* UUSwiftCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +91,9 @@
 			dependencies = (
 			);
 			name = Epilogue;
+			packageProductDependencies = (
+				4B076573272C77A9004BCA8A /* UUSwiftCore */,
+			);
 			productName = Epilogue;
 			productReference = 4B4B1572272986FF003EADB3 /* Epilogue.app */;
 			productType = "com.apple.product-type.application";
@@ -117,6 +122,9 @@
 				Base,
 			);
 			mainGroup = 4B4B1569272986FE003EADB3;
+			packageReferences = (
+				4B076572272C77A9004BCA8A /* XCRemoteSwiftPackageReference "UUSwiftCore" */,
+			);
 			productRefGroup = 4B4B1573272986FF003EADB3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -372,6 +380,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4B076572272C77A9004BCA8A /* XCRemoteSwiftPackageReference "UUSwiftCore" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SilverPineSoftware/UUSwiftCore";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4B076573272C77A9004BCA8A /* UUSwiftCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4B076572272C77A9004BCA8A /* XCRemoteSwiftPackageReference "UUSwiftCore" */;
+			productName = UUSwiftCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4B4B156A272986FF003EADB3 /* Project object */;
 }

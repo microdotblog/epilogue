@@ -35,7 +35,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 			let url = urlContext.url
 			if url.host == "signin" {
 				let token = url.lastPathComponent
-				NotificationCenter.default.post(name: .receivedTokenNotification, object: self, userInfo: [ "token": token ])
+				NotificationCenter.default.post(name: .tokenReceivedNotification, object: self, userInfo: [ "token": token ])
 			}
 		}
 	}

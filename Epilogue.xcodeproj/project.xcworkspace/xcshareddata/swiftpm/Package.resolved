@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "UUSwiftCore",
+        "repositoryURL": "https://github.com/SilverPineSoftware/UUSwiftCore",
+        "state": {
+          "branch": null,
+          "revision": "d1e12a0ba256a2e976bd0c5cd2ad0f9bdd558246",
+          "version": "1.1.7"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

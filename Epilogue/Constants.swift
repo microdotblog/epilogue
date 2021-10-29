@@ -9,6 +9,6 @@ import Foundation
 
 extension NSNotification.Name {
 
-	static let receivedTokenNotification = NSNotification.Name("ReceivedToken")
+	static let tokenReceivedNotification = NSNotification.Name("TokenReceived")
 
 }

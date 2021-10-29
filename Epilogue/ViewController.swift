@@ -7,6 +7,7 @@
 
 import UIKit
 import WebKit
+import UUSwiftCore
 
 class ViewController: UIViewController, WKNavigationDelegate {
 
@@ -22,13 +23,24 @@ class ViewController: UIViewController, WKNavigationDelegate {
 	}
 	
 	func setupNotifications() {
-		NotificationCenter.default.addObserver(self, selector: #selector(tokenReceivedNotification(_:)), name: .receivedTokenNotification, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(tokenReceivedNotification(_:)), name: .tokenReceivedNotification, object: nil)
 	}
 	
 	func setupWebView() {
-		let url = Bundle.main.url(forResource: "signin", withExtension: "html", subdirectory: "Web")
+		self.webView.navigationDelegate = self
+
+		if let token = UUKeychain.getString(key: "Token") {
+			self.token = token
+			self.setupPage("index")
+		}
+		else {
+			self.setupPage("signin")
+		}
+	}
+	
+	func setupPage(_ filename: String) {
+		let url = Bundle.main.url(forResource: filename, withExtension: "html", subdirectory: "Web")
 		if let url = url {
-			self.webView.navigationDelegate = self
 			self.webView.loadFileURL(url, allowingReadAccessTo: url)
 		}
 	}
@@ -43,11 +55,9 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
 	@objc func tokenReceivedNotification(_ notification: Notification) {
 		if let token = notification.userInfo?["token"] as? String {
+			UUKeychain.saveString(key: "Token", acceessLevel: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly, string: token)
 			self.token = token
-			let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Web")
-			if let url = url {
-				self.webView.loadFileURL(url, allowingReadAccessTo: url)
-			}
+			self.setupPage("index")
 		}
 	}
 
@@ -66,7 +76,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
 				if url.host == "signin" {
 					handled = true
 					let token = url.lastPathComponent
-					NotificationCenter.default.post(name: .receivedTokenNotification, object: self, userInfo: [ "token": token ])
+					NotificationCenter.default.post(name: .tokenReceivedNotification, object: self, userInfo: [ "token": token ])
 				}
 			}
 		}
