@@ -28,6 +28,7 @@
 		
 		nav {
 			border-bottom: 1px solid lightgray;
+			height: 60px;
 		}
 
 		.btn:focus {
@@ -152,6 +153,28 @@
 			padding-bottom: 15px;
 		}
 		
+		#newpost_pane {
+			height: 100%;
+		}
+		
+		#newpost_send {
+			text-decoration: none;
+			margin-right: 10px;
+		}
+		
+		#newpost_text {
+			margin-top: 75px;
+			margin-left: 15px;
+			margin-right: 15px;
+			border: 0;
+			width: 100%;
+			height: 400px;
+		}
+		
+		#newpost_text:focus {
+			outline: none;
+		}
+		
 	</style>
 	
 	<script>
@@ -272,6 +295,8 @@
 			document.getElementById("details_title").innerText = info.title;
 			document.getElementById("details_author").innerText = info.authors[0].name;
 			
+			document.getElementById("newpost_text").innerText = "Currently reading: " + info.title + " 📚";
+			
 			setTimeout(function() {
 				document.getElementById("books_table").classList.add("books_offscreen");
 	
@@ -362,9 +387,9 @@
 	<div id="details_author"></div>
 
 	<div id="details_options">
-		<button class="btn btn-light">New Post...</button>
-		
-		<a href="#" class="btn btn-light" id="nav_bookshelf" data-bs-toggle="offcanvas" data-bs-target="#bookshelves_pane" aria-controls="bookshelves_pane">Move...</a>
+		<a href="#" class="btn btn-light" id="nav_newpost" data-bs-toggle="offcanvas" data-bs-target="#newpost_pane" aria-controls="newpost_pane">New Post...</a>
+
+		<a href="#" class="btn btn-light" id="nav_move" data-bs-toggle="offcanvas" data-bs-target="#bookshelves_pane" aria-controls="bookshelves_pane">Move...</a>
 		
 		<button class="btn btn-light">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill icon_only_button" viewBox="0 0 16 16">
@@ -377,6 +402,27 @@
 				<path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
 			</svg>
 		</button>
+	</div>
+
+</div>
+
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="newpost_pane">
+
+	<nav class="navbar fixed-top navbar-light bg-light">
+
+		<div class="container-fluid">
+			
+			<a href="#" data-bs-toggle="offcanvas" data-bs-target="#newpost_pane" aria-controls="newpost_pane">
+				<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 50 50" width="30px" height="30px"><path d="M 15.125 12.28125 L 12.28125 15.125 L 22.21875 25 L 12.28125 34.875 L 15.125 37.71875 L 25.0625 27.84375 L 35 37.71875 L 37.8125 34.875 L 27.90625 25 L 37.8125 15.125 L 35 12.28125 L 25.0625 22.15625 Z"/></svg>
+			</a>
+			
+			<a href="#" id="newpost_send">Post</a>
+			
+		</div>
+	</nav>
+
+	<div class="mb-3">
+		<textarea class="" id="newpost_text"></textarea>
 	</div>
 
 </div>
