@@ -55,9 +55,16 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
 	@objc func tokenReceivedNotification(_ notification: Notification) {
 		if let token = notification.userInfo?["token"] as? String {
-			UUKeychain.saveString(key: "Token", acceessLevel: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly, string: token)
-			self.token = token
-			self.setupPage("index")
+			if token.count > 0 {
+				UUKeychain.saveString(key: "Token", acceessLevel: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly, string: token)
+				self.token = token
+				self.setupPage("index")
+			}
+			else {
+				UUKeychain.remove(key: "Token")
+				self.token = ""
+				self.setupPage("signin")
+			}
 		}
 	}
 
@@ -78,6 +85,10 @@ class ViewController: UIViewController, WKNavigationDelegate {
 					let token = url.lastPathComponent
 					NotificationCenter.default.post(name: .tokenReceivedNotification, object: self, userInfo: [ "token": token ])
 				}
+				else if url.host == "signout" {
+					handled = true
+					self.signOut()
+				}
 			}
 		}
 		
@@ -87,6 +98,23 @@ class ViewController: UIViewController, WKNavigationDelegate {
 		else {
 			decisionHandler(.allow)
 		}
+	}
+	
+	func signOut() {
+		let alert_controller = UIAlertController(title: "", message: "Sign out of Epilogue?", preferredStyle: .alert)
+
+		let ok_action = UIAlertAction(title: "Sign Out", style: .default) { action in
+			let token = ""
+			NotificationCenter.default.post(name: .tokenReceivedNotification, object: self, userInfo: [ "token": token ])
+		}
+
+		let cancel_action = UIAlertAction(title: "Cancel", style: .cancel) { action in
+		}
+		
+		alert_controller.addAction(ok_action)
+		alert_controller.addAction(cancel_action)
+		
+		self.present(alert_controller, animated: true)
 	}
 
 }

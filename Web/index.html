@@ -447,6 +447,10 @@
 			});
 		}
 	
+		function showProfile() {
+			location.href = "epilogue://signout";
+		}
+	
 		function checkToken() {
 			verifyToken(function() {
 				loadBlogs();
@@ -469,7 +473,7 @@
 
 	<div class="container-fluid">
 		
-		<a href="#" id="nav_profile" onClick="">
+		<a href="#" id="nav_profile" onClick="showProfile();">
 			<img src="" id="profile_icon" />
 		</a>
 		
