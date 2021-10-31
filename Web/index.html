@@ -390,6 +390,7 @@
 			input_item.setAttribute("class", "form-control rounded-pill");
 			input_item.setAttribute("id", "search_field");
 			input_item.setAttribute("placeholder", "Search for books to add");
+			input_item.setAttribute("onBlur", "hideKeyboard();");
 			input_item.setAttribute("value", default_text);
 			bar_item.appendChild(input_item);
 			
@@ -572,6 +573,13 @@
 		function clearSelectedResult() {
 			document.epilogueSelectedResult = null;
 			document.getElementById("bookshelves_pane_label").innerText = "Bookshelves";
+		}
+	
+		function hideKeyboard() {
+			let s = document.getElementById("search_field").value;
+			if (s.length > 0) {
+				sendSearch(s);
+			}
 		}
 	
 		function editBook() {			
