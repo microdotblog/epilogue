@@ -254,6 +254,30 @@
 			});
 		}
 
+		function selectBookshelf(bookshelf_id) {
+			if (document.epilogueSearchResults.length > 0) {
+				let form = new FormData();
+				form.append("isbn", document.epilogueSelectedResult.isbn);
+				form.append("title", document.epilogueSelectedResult.title);
+				form.append("author", document.epilogueSelectedResult.author);
+				form.append("bookshelf_id", bookshelf_id);
+				
+				var options = {
+					method: "POST",
+					body: form,
+					headers: {
+						"Authorization": "Bearer " + document.epilogueToken
+					}
+				};
+
+				fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
+				});
+			}
+			else {
+				loadBookshelf(bookshelf_id);
+			}
+		}
+
 		function loadBookshelves(handler) {
 			var options = {
 				headers: {
@@ -275,7 +299,7 @@
 					var a_tag = document.createElement("a");
 					a_tag.setAttribute("href", "#");
 					a_tag.setAttribute("class", "bookshelf_title");
-					a_tag.setAttribute("onClick", "loadBookshelf(" + shelf_item.id + ");");
+					a_tag.setAttribute("onClick", "selectBookshelf(" + shelf_item.id + ");");
 					a_tag.innerText = shelf_item.title;
 					choices_item.appendChild(a_tag);
 				}
@@ -301,6 +325,7 @@
 			};
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
 				document.epilogueBooks = data.items;
+				document.epilogueSearchResults = [];
 				document.getElementById("books_table").innerHTML = "";
 				addSearchBar();
 				
@@ -471,6 +496,7 @@
 			};
 			
 			fetch("https://www.googleapis.com/books/v1/volumes?q=" + q, options).then(response => response.json()).then(data => {
+				document.epilogueSearchResults = data.items;
 				document.getElementById("books_table").innerHTML = "";
 				addSearchBar(search_text);
 				
@@ -484,7 +510,11 @@
 					else {
 						row_item.setAttribute("class", "book_row");
 					}
-					// row_item.setAttribute("onClick", "showBookDetails(" + i + ");");
+
+					row_item.setAttribute("data-bs-toggle", "offcanvas");
+					row_item.setAttribute("data-bs-target", "#bookshelves_pane");
+					row_item.setAttribute("aria-controls", "bookshelves_pane");					
+					row_item.setAttribute("onClick", "selectSearchResult(" + i + ");");
 					
 					var img_item = document.createElement("img");
 					if (book_item.volumeInfo.imageLinks != undefined) {
@@ -507,6 +537,15 @@
 					document.getElementById("books_table").appendChild(row_item);
 				}
 			});
+		}
+		
+		function selectSearchResult(result_index) {
+			let item = document.epilogueSearchResults[result_index];
+			document.epilogueSelectedResult = {
+				isbn: item.volumeInfo.isbn13,
+				title: item.volumeInfo.title,
+				author: item.volumeInfo.authors[0]
+			};
 		}
 	
 		function showProfile() {
