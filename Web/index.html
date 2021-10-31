@@ -354,7 +354,7 @@
 			}
 		}
 
-		function addSearchBar() {
+		function addSearchBar(default_text = "") {
 			var bar_item = document.createElement("div");
 			bar_item.setAttribute("class", "mb-3 search_bar");
 
@@ -363,9 +363,12 @@
 			input_item.setAttribute("class", "form-control rounded-pill");
 			input_item.setAttribute("id", "search_field");
 			input_item.setAttribute("placeholder", "Search for books to add");
+			input_item.setAttribute("value", default_text);
 			bar_item.appendChild(input_item);
 			
 			document.getElementById("books_table").appendChild(bar_item);
+			
+			setupSearch();
 		}
 
 		function showBookDetails(book_index) {
@@ -420,6 +423,20 @@
 			}, 300);
 		}
 	
+		function setupSearch() {
+			document.getElementById("search_field").addEventListener("keydown", function(e) {
+				if (e.key == "Enter") {
+					let s = document.getElementById("search_field").value;
+					if (s.length > 0) {
+						sendSearch(s);
+					}
+					else {
+						loadBooks(document.epilogueCurrentBookshelf.id);
+					}
+				}
+			});
+		}
+	
 		function setupNewPost() {
 			var offcanvas = document.getElementById("newpost_pane");
 			offcanvas.addEventListener("show.bs.offcanvas", function() {
@@ -446,6 +463,51 @@
 				close_button.click();
 			});
 		}
+		
+		function sendSearch(search_text) {
+			let q = encodeURIComponent(search_text);
+
+			var options = {
+			};
+			
+			fetch("https://www.googleapis.com/books/v1/volumes?q=" + q, options).then(response => response.json()).then(data => {
+				document.getElementById("books_table").innerHTML = "";
+				addSearchBar(search_text);
+				
+				for (let i = 0; i < data.items.length; i++) {
+					var book_item = data.items[i];
+				
+					var row_item = document.createElement("div");
+					if (i == 0) {
+						row_item.setAttribute("class", "book_first");
+					}
+					else {
+						row_item.setAttribute("class", "book_row");
+					}
+					// row_item.setAttribute("onClick", "showBookDetails(" + i + ");");
+					
+					var img_item = document.createElement("img");
+					if (book_item.volumeInfo.imageLinks != undefined) {
+						img_item.setAttribute("src", book_item.volumeInfo.imageLinks.smallThumbnail);
+					}
+					img_item.setAttribute("class", "book_cover");
+					img_item.setAttribute("align", "left");
+					row_item.appendChild(img_item);
+				
+					var title_item = document.createElement("div");
+					title_item.setAttribute("class", "book_title");
+					title_item.innerText = book_item.volumeInfo.title;
+					row_item.appendChild(title_item);
+				
+					var author_item = document.createElement("div");
+					author_item.setAttribute("class", "book_author");
+					author_item.innerText = book_item.volumeInfo.authors[0];
+					row_item.appendChild(author_item);
+					
+					document.getElementById("books_table").appendChild(row_item);
+				}
+			});
+		}
 	
 		function showProfile() {
 			location.href = "epilogue://signout";
@@ -462,7 +524,7 @@
 			setupNewPost();
 		}
 	
-		document.addEventListener("DOMContentLoaded", function() {			
+		document.addEventListener("DOMContentLoaded", function() {
 		});
 	
 	</script>
