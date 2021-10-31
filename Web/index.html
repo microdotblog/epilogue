@@ -174,7 +174,7 @@
 			display: block;
 			color: black;
 			text-decoration: none;
-			padding-bottom: 15px;
+			padding-bottom: 17px;
 		}
 		
 		#newpost_pane {
@@ -565,10 +565,13 @@
 			if (item.volumeInfo.imageLinks != undefined) {
 				document.epilogueSelectedResult.cover_url = item.volumeInfo.imageLinks.smallThumbnail;
 			}
+			
+			document.getElementById("bookshelves_pane_label").innerText = "Add to bookshelf";
 		}
 	
 		function clearSelectedResult() {
 			document.epilogueSelectedResult = null;
+			document.getElementById("bookshelves_pane_label").innerText = "Bookshelves";
 		}
 	
 		function editBook() {			
@@ -647,7 +650,7 @@
 	<div id="details_options">
 		<a href="#" class="btn btn-light" id="nav_newpost" data-bs-toggle="offcanvas" data-bs-target="#newpost_pane" aria-controls="newpost_pane">New Post...</a>
 
-		<a href="#" class="btn btn-light" id="nav_move" data-bs-toggle="offcanvas" data-bs-target="#bookshelves_pane" aria-controls="bookshelves_pane">Move...</a>
+		<a href="#" class="btn btn-light" id="nav_move" data-bs-toggle="offcanvas" data-bs-target="#bookshelves_pane" aria-controls="bookshelves_pane">Bookshelf...</a>
 		
 		<button class="btn btn-light" onClick="editBook();">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill icon_only_button" viewBox="0 0 16 16">
