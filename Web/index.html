@@ -345,7 +345,7 @@
 					row_item.setAttribute("onClick", "showBookDetails(" + i + ");");
 					
 					var img_item = document.createElement("img");
-					img_item.setAttribute("src", "https://micro.blog/photos/300x/" + book_item.image);
+					img_item.setAttribute("src", "https://micro.blog/photos/300x/" + encodeURIComponent(book_item.image));
 					img_item.setAttribute("class", "book_cover");
 					img_item.setAttribute("align", "left");
 					row_item.appendChild(img_item);
@@ -403,7 +403,7 @@
 			document.getElementById("details_screen").style.display = "inherit";
 			
 			var info = document.epilogueBooks[book_index];
-			document.getElementById("details_cover").setAttribute("src", "https://micro.blog/photos/300x/" + info.image);
+			document.getElementById("details_cover").setAttribute("src", "https://micro.blog/photos/300x/" + encodeURIComponent(info.image));
 			document.getElementById("details_title").innerText = info.title;
 			document.getElementById("details_author").innerText = info.authors[0].name;
 			
