@@ -260,6 +260,7 @@
 				form.append("isbn", document.epilogueSelectedResult.isbn);
 				form.append("title", document.epilogueSelectedResult.title);
 				form.append("author", document.epilogueSelectedResult.author);
+				form.append("cover_url", document.epilogueSelectedResult.cover_url);
 				form.append("bookshelf_id", bookshelf_id);
 				
 				var options = {
@@ -561,6 +562,10 @@
 				title: item.volumeInfo.title,
 				author: item.volumeInfo.authors[0]
 			};
+
+			if (item.volumeInfo.imageLinks != undefined) {
+				document.epilogueSelectedResult.cover_url = item.volumeInfo.imageLinks.smallThumbnail;
+			}
 		}
 	
 		function clearSelectedResult() {
