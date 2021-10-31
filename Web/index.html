@@ -272,8 +272,7 @@
 				};
 
 				fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
-					// hide the bookshelves pane
-					document.getElementById("nav_bookshelf").click();
+					loadBookshelf(bookshelf_id);
 				});
 			}
 			else {
