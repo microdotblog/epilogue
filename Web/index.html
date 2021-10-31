@@ -49,6 +49,14 @@
 			display: none;
 		}
 
+		.progress_container {
+			text-align: center;
+		}
+
+		.progress_spinner {
+			margin-left: 5px;
+		}
+
 		#nav_profile {
 		}
 	
@@ -381,6 +389,21 @@
 			}
 		}
 
+		function addProgress() {
+			var div_item = document.createElement("div");
+			div_item.setAttribute("class", "mb-3 progress_container");
+
+			var img_item = document.createElement("img");
+			img_item.setAttribute("src", "spinner_ios_light.svg");
+			img_item.setAttribute("width", "30");
+			img_item.setAttribute("height", "30");
+			img_item.setAttribute("class", "progress_spinner");
+			img_item.setAttribute("alt", "Progress spinner");
+			div_item.appendChild(img_item);
+			
+			document.getElementById("books_table").appendChild(div_item);
+		}
+
 		function addSearchBar(default_text = "") {
 			var bar_item = document.createElement("div");
 			bar_item.setAttribute("class", "mb-3 search_bar");
@@ -495,6 +518,10 @@
 		function sendSearch(search_text) {
 			let q = encodeURIComponent(search_text);
 
+			document.getElementById("books_table").innerHTML = "";
+			addSearchBar(search_text);
+			addProgress();
+						
 			var options = {
 			};
 			
@@ -638,7 +665,7 @@
 
 	<div class="alert alert-warning" role="alert" id="alert_error">
 	</div>
-	
+		
 </div>
 
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="bookshelves_pane" aria-labelledby="bookshelves_pane_label">
