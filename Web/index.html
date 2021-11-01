@@ -287,6 +287,26 @@
 					loadBookshelf(bookshelf_id);
 				});
 			}
+			else if (document.epilogueCurrentBookIndex != null) {
+				let book_index = document.epilogueCurrentBookIndex;
+				let info = document.epilogueBooks[book_index];
+				let form = new FormData();
+				form.append("book_id", info.id);
+
+				var options = {
+					method: "POST",
+					body: form,
+					headers: {
+						"Authorization": "Bearer " + document.epilogueToken
+					}
+				};
+				
+				let url = "https://micro.blog/books/bookshelves/" + bookshelf_id + "/assign";
+				fetch(url, options).then(response => response.json()).then(data => {
+					loadBookshelf(bookshelf_id);
+					closeBookDetails();
+				});
+			}
 			else {
 				loadBookshelf(bookshelf_id);
 			}
@@ -338,6 +358,7 @@
 				}
 			};
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
+				document.epilogueCurrentBookIndex = null;
 				document.epilogueBooks = data.items;
 				document.epilogueSearchResults = [];
 				document.getElementById("books_table").innerHTML = "";
@@ -466,6 +487,8 @@
 		}
 	
 		function closeBookDetails() {
+			document.epilogueCurrentBookIndex = null;
+			
 			document.getElementById("books_table").classList.add("books_normal");
 			document.getElementById("books_table").classList.remove("books_offscreen");
 
