@@ -1,0 +1,38 @@
+@media (prefers-color-scheme: dark) {
+	
+	body {
+		background-color: #212936;
+		color: #E5E7EB;
+	}
+
+	nav {
+		border-bottom: 1px solid black;				
+	}
+	
+	nav.bg-light {
+		background-color: #121826 !important;
+	}
+
+	.btn-light {
+		color: #E5E7EB;
+		background-color: #374151;
+		border: 1px solid black;
+	}
+
+	.bookshelf_title {
+		color: #E5E7EB;
+	}
+
+	#details_title {
+		color: #E5E7EB;
+	}
+	
+	.offcanvas {
+		background-color: black;
+	}
+	
+	#nav_bookshelf {
+		color: #E5E7EB;
+	}
+	
+}

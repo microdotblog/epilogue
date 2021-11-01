@@ -28,7 +28,9 @@
 		
 		nav {
 			border-bottom: 1px solid lightgray;
-			height: 60px;
+			height: 44px;
+			padding-top: 0px !important;
+			padding-bottom: 0px !important;
 		}
 
 		.btn:focus {
@@ -45,7 +47,7 @@
 		}
 		
 		#alert_error {
-			margin-top: 75px;
+			margin-top: 60px;
 			display: none;
 		}
 
@@ -95,7 +97,7 @@
 		}
 		
 		.search_bar {
-			margin-top: 75px;
+			margin-top: 60px;
 		}
 		
 		#books_table {
@@ -135,7 +137,7 @@
 		
 		#details_screen {
 			position: fixed;
-			top: 75px;
+			top: 60px;
 			display: none;
 			text-align: center;
 		}
@@ -156,6 +158,7 @@
 		}
 		
 		#details_title {
+			color: black;
 			font-weight: bold;
 			padding-top: 10px;
 			padding-bottom: 4px;
@@ -216,6 +219,8 @@
 		}
 		
 	</style>
+
+	<link href="dark.css" rel="stylesheet" />
 	
 	<script>
 	
@@ -394,9 +399,16 @@
 			div_item.setAttribute("class", "mb-3 progress_container");
 
 			var img_item = document.createElement("img");
-			img_item.setAttribute("src", "spinner_ios_light.svg");
-			img_item.setAttribute("width", "30");
-			img_item.setAttribute("height", "30");
+			
+			if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+				img_item.setAttribute("src", "spinner_ios_dark.svg");
+			}
+			else {
+				img_item.setAttribute("src", "spinner_ios_light.svg");
+			}
+			
+			img_item.setAttribute("width", "40");
+			img_item.setAttribute("height", "40");
 			img_item.setAttribute("class", "progress_spinner");
 			img_item.setAttribute("alt", "Progress spinner");
 			div_item.appendChild(img_item);
