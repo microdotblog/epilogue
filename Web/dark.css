@@ -19,6 +19,18 @@
 		border: 1px solid black;
 	}
 
+	.btn-light:focus {
+		color: #E5E7EB;
+		background-color: #374151;
+		border: 1px solid black;		
+	}
+	
+	.btn-light:hover {
+		color: #E5E7EB;
+		background-color: #191d23;
+		border: 1px solid black;		
+	}
+
 	.rounded-pill {
 		/* background-color: #e4e4e4; */
 	}
