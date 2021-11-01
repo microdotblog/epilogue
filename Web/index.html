@@ -181,15 +181,13 @@
 		}
 		
 		.bookshelf_title {
-			display: block;
+			display: inline-block;
 			color: black;
 			text-decoration: none;
-			padding-top: 5px;
-			padding-bottom: 5px;
 		}
 		
 		.offcanvas-header {
-			padding-bottom: 0px;
+			/* padding-bottom: 0px; */
 		}
 		
 		#newpost_pane {
@@ -335,18 +333,16 @@
 				for (let i = 0; i < data.items.length; i++) {
 					var shelf_item = data.items[i];
 
-					var tr_tag = document.createElement("tr");
-					var td_tag = document.createElement("td");
-					tr_tag.appendChild(td_tag);
+					var p_tag = document.createElement("p");
 
 					var a_tag = document.createElement("a");
 					a_tag.setAttribute("href", "#");
-					a_tag.setAttribute("class", "bookshelf_title");
+					a_tag.setAttribute("class", "bookshelf_title btn btn-light");
 					a_tag.setAttribute("onClick", "selectBookshelf(" + shelf_item.id + ");");
 					a_tag.innerText = shelf_item.title;
-					td_tag.appendChild(a_tag);
+					p_tag.appendChild(a_tag);
 					
-					choices_item.appendChild(tr_tag);
+					choices_item.appendChild(p_tag);
 				}
 				
 				handler();
@@ -736,11 +732,7 @@
 	<div class="offcanvas-header">
 		<h5 class="offcanvas-title" id="bookshelves_pane_label">Bookshelves</h5>
 	</div>
-	<div class="offcanvas-body">
-		<table class="table table-striped">
-			<tbody id="bookshelves_pane_choices">
-			</tbody>
-		</table>
+	<div class="offcanvas-body" id="bookshelves_pane_choices">
 	</div>
 
 </div>
