@@ -437,6 +437,7 @@
 		function showBookDetails(book_index) {
 			document.getElementById("details_screen").style.display = "inherit";
 			
+			document.epilogueCurrentBookIndex = book_index;
 			var info = document.epilogueBooks[book_index];
 			document.getElementById("details_cover").setAttribute("src", "https://micro.blog/photos/300x/" + encodeURIComponent(info.image));
 			document.getElementById("details_title").innerText = info.title;
@@ -628,6 +629,23 @@
 		}
 		
 		function removeBook() {			
+			let book_index = document.epilogueCurrentBookIndex;
+			let info = document.epilogueBooks[book_index];
+			let bookshelf_id = document.epilogueCurrentBookshelf.id;
+			let book_id = info.id;
+
+			var options = {
+				method: "DELETE",
+				headers: {
+					"Authorization": "Bearer " + document.epilogueToken
+				}
+			};
+			
+			let url = "https://micro.blog/books/bookshelves/" + bookshelf_id + "/remove/" + book_id;
+			fetch(url, options).then(response => response.json()).then(data => {
+				loadBooks(bookshelf_id);
+				closeBookDetails();
+			});
 		}
 	
 		function showProfile() {
