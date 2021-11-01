@@ -19,6 +19,10 @@
 		border: 1px solid black;
 	}
 
+	.rounded-pill {
+		/* background-color: #e4e4e4; */
+	}
+
 	.bookshelf_title {
 		color: #E5E7EB;
 	}
@@ -32,6 +36,11 @@
 	}
 	
 	#nav_bookshelf {
+		color: #E5E7EB;
+	}
+	
+	textarea {
+		background-color: black;
 		color: #E5E7EB;
 	}
 	
