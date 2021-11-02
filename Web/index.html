@@ -176,6 +176,10 @@
 			padding-top: 12px;
 		}
 		
+		#profile_pane_content {
+			padding-top: 0px;
+		}
+		
 		#bookshelves_pane_choices {
 			padding-top: 0px;
 		}
@@ -244,6 +248,7 @@
 					document.epilogueAvatar = data.avatar;
 					
 					document.getElementById("profile_icon").setAttribute("src", document.epilogueAvatar);
+					document.getElementById("profile_username").innerText = "@" + document.epilogueUsername;
 				}
 				else {
 					document.getElementById("alert_error").style.display = "block";
@@ -684,7 +689,7 @@
 			});
 		}
 	
-		function showProfile() {
+		function signOut() {
 			location.href = "epilogue://signout";
 		}
 	
@@ -723,7 +728,7 @@
 
 	<div class="container-fluid">
 		
-		<a href="#" id="nav_profile" onClick="showProfile();">
+		<a href="#" class="btn" id="nav_profile" data-bs-toggle="offcanvas" data-bs-target="#profile_pane" aria-controls="profile_pane">
 			<img src="blank.png" id="profile_icon" />
 		</a>
 		
@@ -745,6 +750,17 @@
 	<div class="alert alert-warning" role="alert" id="alert_error">
 	</div>
 		
+</div>
+
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="profile_pane" aria-labelledby="profile_pane_label">
+
+	<div class="offcanvas-header">
+		<h5 class="offcanvas-title" id="profile_pane_label"><span id="profile_username"></span></h5>
+	</div>
+	<div class="offcanvas-body" id="profile_pane_content">
+		<button class="btn btn-light" onClick="signOut();">Sign Out</button>
+	</div>
+
 </div>
 
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="bookshelves_pane" aria-labelledby="bookshelves_pane_label">
