@@ -430,12 +430,16 @@
 
 			var img_item = document.createElement("img");
 			
+			var mode = "light";
+			var platform = "ios";
 			if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-				img_item.setAttribute("src", "spinner_ios_dark.svg");
+				mode = "dark";
 			}
-			else {
-				img_item.setAttribute("src", "spinner_ios_light.svg");
+			if (isAndroid()) {
+				platform = "android";
 			}
+
+			img_item.setAttribute("src", "spinner_" + platform + "_" + mode + ".svg");
 			
 			img_item.setAttribute("width", "40");
 			img_item.setAttribute("height", "40");
@@ -684,6 +688,11 @@
 			location.href = "epilogue://signout";
 		}
 	
+		function isAndroid() {
+			var user_agent = navigator.userAgent || navigator.vendor || window.opera;
+			return (/android/i.test(user_agent));
+		}
+	
 		function checkToken() {
 			verifyToken(function() {
 				loadBlogs();
@@ -707,7 +716,7 @@
 	<div class="container-fluid">
 		
 		<a href="#" id="nav_profile" onClick="showProfile();">
-			<img src="" id="profile_icon" />
+			<img src="blank.png" id="profile_icon" />
 		</a>
 		
 		<a href="#" id="nav_back" class="nav_hidden" onClick="closeBookDetails();">
@@ -742,7 +751,7 @@
 
 <div class="container details_offscreen" id="details_screen">
 
-	<img id="details_cover" src="" />
+	<img id="details_cover" src="blank.png" />
 
 	<div id="details_title"></div>
 	<div id="details_author"></div>
