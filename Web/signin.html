@@ -90,8 +90,20 @@
 			}
 		}
 
+		function isAndroid() {
+			var user_agent = navigator.userAgent || navigator.vendor || window.opera;
+			return (/android/i.test(user_agent));
+		}
+
 		document.addEventListener("DOMContentLoaded", function() {
-			// document.getElementById("input_email").focus();
+			if (isAndroid()) {
+				var link_tag = document.createElement("link");
+				link_tag.setAttribute("rel", "stylesheet");
+				link_tag.setAttribute("href", "android.css");
+			
+				var head_tag = document.getElementsByTagName("head")[0];
+				head_tag.appendChild(link_tag);
+			}
 		});
 
 	</script>
