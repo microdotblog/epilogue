@@ -75,7 +75,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
 	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		if self.token.count > 0 {
-			let js = "document.epilogueToken = \"\(self.token)\"; checkToken();"
+			let js = "checkToken\"\(self.token)\");"
 			self.webView.evaluateJavaScript(js)
 		}
 	}
