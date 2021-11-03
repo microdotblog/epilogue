@@ -55,5 +55,9 @@
 		background-color: black;
 		color: #E5E7EB;
 	}
+
+	#details_options {
+		border-top: 1px solid black;
+	}
 	
 }
