@@ -488,7 +488,8 @@
 			
 			var s = document.epilogueCurrentBookshelf.title + ": ";
 			s = s + "[" + info.title + "]";
-			s = s + "(" + info.url + ")";
+			s = s + "(" + info.url + ") ";
+			s = s + "by " + info.authors[0].name;
 			s = s + " 📚";
 			document.getElementById("newpost_text").innerText = s;
 			
