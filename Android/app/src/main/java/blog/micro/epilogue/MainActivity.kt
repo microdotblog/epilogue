@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        WebView.setWebContentsDebuggingEnabled(true);
+        WebView.setWebContentsDebuggingEnabled(true);
 
         setContentView(R.layout.activity_main)
 
@@ -27,10 +27,8 @@ class MainActivity : AppCompatActivity() {
         val settings = webview.settings
         settings.javaScriptEnabled = true
 
-//        Intent intent = getIntent()
-//        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-//            Uri uri = intent.getData()
-//        }
+        var intent = getIntent()
+        this.handleIntent(intent, webview)
     }
 
     override fun onBackPressed() {
@@ -39,6 +37,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+
+        val webview = findViewById<WebView>(R.id.webview)
+        intent?.also { intent ->
+            this.handleIntent(intent, webview)
+        }
+    }
+
+    fun handleIntent(intent: Intent, webview: WebView) {
+        if (intent.action == Intent.ACTION_VIEW) {
+            var uri = intent.getData()
+            uri?.also { uri ->
+                this.webclient.handleEpilogueURI(uri, webview)
+            }
+        }
     }
 
 }
@@ -62,9 +74,11 @@ private class EpilogueWebClient : WebViewClient() {
     override fun onPageFinished(view: WebView, url: String) {
         if (!this.isLoaded) {
             if (this.token.length > 0) {
-                this.isLoaded = true
-                var s = "javascript:document.epilogueToken = \"" + this.token + "\"; checkToken();"
-                view.loadUrl(s)
+                if (url.contains("index.html")) {
+                    this.isLoaded = true
+                    var s = "checkToken(\"" + this.token + "\");"
+                    view.evaluateJavascript(s, null)
+                }
             }
         }
     }

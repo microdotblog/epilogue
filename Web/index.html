@@ -606,7 +606,11 @@
 					
 					var img_item = document.createElement("img");
 					if (book_item.volumeInfo.imageLinks != undefined) {
-						img_item.setAttribute("src", book_item.volumeInfo.imageLinks.smallThumbnail);
+						var cover_url = book_item.volumeInfo.imageLinks.smallThumbnail;
+						if (cover_url.includes("http://")) {
+							cover_url = cover_url.replace("http://", "https://");
+						}
+						img_item.setAttribute("src", cover_url);
 					}
 					img_item.setAttribute("class", "book_cover");
 					img_item.setAttribute("align", "left");
@@ -702,7 +706,9 @@
 			return (/android/i.test(user_agent));
 		}
 	
-		function checkToken() {
+		function checkToken(token) {
+			document.epilogueToken = token;
+			
 			verifyToken(function() {
 				loadBlogs();
 				loadBookshelves(function() {					
@@ -712,7 +718,7 @@
 
 			setupNewPost();
 		}
-	
+		
 		document.addEventListener("DOMContentLoaded", function() {
 			if (isAndroid()) {
 				var link_tag = document.createElement("link");
