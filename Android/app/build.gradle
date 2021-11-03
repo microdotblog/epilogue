@@ -16,6 +16,12 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    sourceSets {
+        main {
+            assets.srcDirs = ['../../Web']
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
