@@ -1,5 +1,6 @@
 package blog.micro.epilogue
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.webkit.WebViewClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceError
 import android.net.Uri
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,10 +22,17 @@ class MainActivity : AppCompatActivity() {
         WebView.setWebContentsDebuggingEnabled(true);
 
         setContentView(R.layout.activity_main)
+        this.webclient.context = this
 
         val webview = findViewById<WebView>(R.id.webview)
         webview.webViewClient = this.webclient
-        webview.loadUrl("file:///android_asset/signin.html")
+
+        if (this.webclient.hasSavedToken()) {
+            webview.loadUrl("file:///android_asset/index.html")
+        }
+        else {
+            webview.loadUrl("file:///android_asset/signin.html")
+        }
 
         val settings = webview.settings
         settings.javaScriptEnabled = true
@@ -59,6 +69,7 @@ private class EpilogueWebClient : WebViewClient() {
 
     var token = ""
     var isLoaded = false
+    var context: Context? = null
 
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
         var uri = Uri.parse(url)
@@ -73,6 +84,10 @@ private class EpilogueWebClient : WebViewClient() {
 
     override fun onPageFinished(view: WebView, url: String) {
         if (!this.isLoaded) {
+            if (this.token.length == 0) {
+                this.token = getSavedToken()
+            }
+
             if (this.token.length > 0) {
                 if (url.contains("index.html")) {
                     this.isLoaded = true
@@ -87,15 +102,62 @@ private class EpilogueWebClient : WebViewClient() {
         print(error)
     }
 
+    private fun saveToken() {
+        var token = this.token
+        this.context?.also { context ->
+            val main_key = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            var prefs = EncryptedSharedPreferences.create(
+                context, "epilogue_prefs", main_key,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
+            prefs.edit().apply {
+                putString("token", token)
+            }.apply()
+        }
+    }
+
+    private fun getSavedToken(): String {
+        this.context?.also { context ->
+            val main_key = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            var prefs = EncryptedSharedPreferences.create(
+                context, "epilogue_prefs", main_key,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
+            var s = prefs.getString("token", "")
+            if (s != null) {
+                return s
+            }
+        }
+
+        return ""
+    }
+
+    public fun hasSavedToken(): Boolean {
+        var s = getSavedToken()
+        return (s.length > 0)
+    }
+
     fun handleEpilogueURI(uri: Uri, webview: WebView): Boolean {
         if (uri.host == "signin") {
             this.token = uri.path?.split("/")?.last() as String
+            saveToken()
             webview.loadUrl("file:///android_asset/index.html")
             return true
         }
         else if (uri.host == "signout") {
             this.token = ""
             this.isLoaded = false
+            saveToken()
             webview.loadUrl("file:///android_asset/signin.html")
             return true
         }
