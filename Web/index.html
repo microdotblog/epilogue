@@ -214,6 +214,10 @@
 			margin-right: 10px;
 		}
 		
+		#newpost_send.disabled {
+			color: darkgray;
+		}
+		
 		#newpost_text {
 			margin-top: 60px;
 			padding-left: 15px;
@@ -555,12 +559,16 @@
 		}
 	
 		function sendNewPost() {
+			let send_tag = document.getElementById("newpost_send");
+			send_tag.setAttribute("class", "disabled");
+			send_tag.setAttribute("onClick", "");
+			
 			let s = document.getElementById("newpost_text").value;
 
 			let form = new FormData();
 			form.append("h", "entry");
 			form.append("content", s);
-			
+						
 			var options = {
 				method: "POST",
 				body: form,
@@ -569,6 +577,9 @@
 				}
 			};
 			fetch("https://micro.blog/micropub", options).then(response => response.json()).then(data => {
+				send_tag.setAttribute("class", "");
+				send_tag.setAttribute("onClick", "sendNewPost();");
+
 				var close_button = document.getElementById("newpost_close");
 				close_button.click();
 			});
