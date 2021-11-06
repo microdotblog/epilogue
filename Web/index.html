@@ -251,6 +251,13 @@
 			};
 			fetch("https://micro.blog/account/verify", options).then(response => response.json()).then(data => {
 				if (data.error == undefined) {
+					if (data.token != document.epilogueToken) {
+						// if we're exchanging for new token, redirect back to app to save it
+						location.href = "epilogue://signin/" + data.token;
+						return;
+					}
+					
+					
 					document.epilogueToken = data.token;
 					document.epilogueUsername = data.username;
 					document.epilogueAvatar = data.avatar;
