@@ -190,6 +190,19 @@
 			text-decoration: none;
 		}
 		
+		#blogs_pane {
+		}
+		
+		#blogs_pane_choices {
+			padding-top: 0px;
+		}
+		
+		.blog_title {
+			display: inline-block;
+			color: black;
+			text-decoration: none;
+		}
+		
 		.offcanvas-header {
 		}
 		
@@ -282,12 +295,28 @@
 			};
 			fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
 				var blogs = data.destination;
+				var choices_item = document.getElementById("blogs_pane_choices");
+
 				for (let i = 0; i < blogs.length; i++) {
 					let info = blogs[i];
 					if (info["microblog-default"] == true) {
-						document.epilogueDefaultHostname = info.name;
-						document.getElementById("newpost_hostname").innerText = info.name;
+						if (document.epilogueBlogUID == null) {
+							document.epilogueBlogUID = info.uid;
+							document.epilogueBlogName = info.name;
+							document.getElementById("newpost_hostname").innerText = info.name;
+						}
 					}
+					
+					var p_tag = document.createElement("p");
+					
+					var a_tag = document.createElement("a");
+					a_tag.setAttribute("href", "#");
+					a_tag.setAttribute("class", "blog_title btn btn-light");
+					a_tag.setAttribute("onClick", "selectBlog(\"" + info.uid + "\", \"" + info.name + "\");");
+					a_tag.innerText = info.name;
+					p_tag.appendChild(a_tag);
+					
+					choices_item.appendChild(p_tag);
 				}
 			});
 		}
@@ -575,6 +604,7 @@
 			let form = new FormData();
 			form.append("h", "entry");
 			form.append("content", s);
+			form.append("mp-destination", document.epilogueBlogUID);
 						
 			var options = {
 				method: "POST",
@@ -716,6 +746,13 @@
 			});
 		}
 	
+		function selectBlog(uid, name) {
+			document.epilogueBlogUID = uid;
+			document.epilogueBlogName = name;
+			document.getElementById("newpost_hostname").innerText = name;
+			document.getElementById("nav_newpost").click();
+		}
+	
 		function signOut() {
 			location.href = "epilogue://signout";
 		}
@@ -848,7 +885,7 @@
 				<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="30px" height="30px"><path d="M 5.9902344 4.9902344 A 1.0001 1.0001 0 0 0 5.2929688 6.7070312 L 10.585938 12 L 5.2929688 17.292969 A 1.0001 1.0001 0 1 0 6.7070312 18.707031 L 12 13.414062 L 17.292969 18.707031 A 1.0001 1.0001 0 1 0 18.707031 17.292969 L 13.414062 12 L 18.707031 6.7070312 A 1.0001 1.0001 0 0 0 17.980469 4.9902344 A 1.0001 1.0001 0 0 0 17.292969 5.2929688 L 12 10.585938 L 6.7070312 5.2929688 A 1.0001 1.0001 0 0 0 5.9902344 4.9902344 z"/></svg>
 			</a>
 			
-			<a href="#" id="newpost_hostname"></a>
+			<a href="#" id="newpost_hostname" data-bs-toggle="offcanvas" data-bs-target="#blogs_pane" aria-controls="blogs_pane"></a>
 			
 			<a href="#" id="newpost_send" onClick="sendNewPost();">Post</a>
 			
@@ -857,6 +894,16 @@
 
 	<div class="mb-3">
 		<textarea class="" id="newpost_text"></textarea>
+	</div>
+
+</div>
+
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="blogs_pane" aria-labelledby="blogs_pane_label">
+
+	<div class="offcanvas-header">
+		<h5 class="offcanvas-title" id="blogs_pane_label">Select a blog...</h5>
+	</div>
+	<div class="offcanvas-body" id="blogs_pane_choices">
 	</div>
 
 </div>
