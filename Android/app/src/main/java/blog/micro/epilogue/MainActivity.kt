@@ -1,6 +1,7 @@
 package blog.micro.epilogue
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,9 +10,6 @@ import android.webkit.WebViewClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceError
 import android.net.Uri
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
-import java.security.KeyStore
 
 class MainActivity : AppCompatActivity() {
 
@@ -72,6 +70,7 @@ private class EpilogueWebClient : WebViewClient() {
     var token = ""
     var isLoaded = false
     var context: Context? = null
+    var prefsFilename = "epilogue_prefs"
 
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
         var uri = Uri.parse(url)
@@ -107,60 +106,20 @@ private class EpilogueWebClient : WebViewClient() {
     private fun saveToken() {
         var token = this.token
         this.context?.also { context ->
-            val main_key = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-
-            var prefs = EncryptedSharedPreferences.create(
-                context, "epilogue_prefs", main_key,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-
-            prefs.edit().apply {
-                putString("token", token)
-            }.apply()
+            val prefs = context.getSharedPreferences(prefsFilename, Context.MODE_PRIVATE)
+            var editor = prefs.edit()
+            editor.putString("token", token)
+            editor.apply()
+            editor.commit()
         }
     }
 
     private fun getSavedToken(): String {
         this.context?.also { context ->
-            val main_key = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-
-            try {
-                var prefs = EncryptedSharedPreferences.create(
-                    context, "epilogue_prefs", main_key,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                )
-
-                var s = prefs.getString("token", "")
-                if (s != null) {
-                    return s
-                }
-            }
-            catch (e: Exception) {
-                // if errors, delete master key
-                var keystore = KeyStore.getInstance("AndroidKeyStore")
-                keystore.load(null)
-                keystore.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
-
-                // delete prefs
-                context.getSharedPreferences("epilogue_prefs", Context.MODE_PRIVATE).edit().clear().apply()
-
-                // try creating prefs again
-                var prefs = EncryptedSharedPreferences.create(
-                    context, "epilogue_prefs", main_key,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                )
-
-                // just set to blank
-                prefs.edit().apply {
-                    putString("token", "")
-                }.apply()
+            val prefs = context.getSharedPreferences(prefsFilename, Context.MODE_PRIVATE)
+            var s = prefs.getString("token", "")
+            if (s != null) {
+                return s
             }
         }
 
@@ -176,6 +135,7 @@ private class EpilogueWebClient : WebViewClient() {
         if (uri.host == "signin") {
             this.token = uri.path?.split("/")?.last() as String
             saveToken()
+            this.isLoaded = false
             webview.loadUrl("file:///android_asset/index.html")
             return true
         }
