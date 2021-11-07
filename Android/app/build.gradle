@@ -10,7 +10,7 @@ android {
         applicationId "blog.micro.epilogue"
         minSdk 23
         targetSdk 30
-        versionCode 6
+        versionCode 7
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
