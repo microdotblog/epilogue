@@ -11,6 +11,7 @@ import android.webkit.WebResourceError
 import android.net.Uri
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import java.security.KeyStore
 
 class MainActivity : AppCompatActivity() {
 
@@ -128,15 +129,38 @@ private class EpilogueWebClient : WebViewClient() {
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
 
-            var prefs = EncryptedSharedPreferences.create(
-                context, "epilogue_prefs", main_key,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
+            try {
+                var prefs = EncryptedSharedPreferences.create(
+                    context, "epilogue_prefs", main_key,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
 
-            var s = prefs.getString("token", "")
-            if (s != null) {
-                return s
+                var s = prefs.getString("token", "")
+                if (s != null) {
+                    return s
+                }
+            }
+            catch (e: Exception) {
+                // if errors, delete master key
+                var keystore = KeyStore.getInstance("AndroidKeyStore")
+                keystore.load(null)
+                keystore.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+
+                // delete prefs
+                context.getSharedPreferences("epilogue_prefs", Context.MODE_PRIVATE).edit().clear().apply()
+
+                // try creating prefs again
+                var prefs = EncryptedSharedPreferences.create(
+                    context, "epilogue_prefs", main_key,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+
+                // just set to blank
+                prefs.edit().apply {
+                    putString("token", "")
+                }.apply()
             }
         }
 
