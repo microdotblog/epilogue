@@ -300,6 +300,7 @@
 			fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
 				var blogs = data.destination;
 				var choices_item = document.getElementById("blogs_pane_choices");
+				choices_item.innerHTML = "";
 
 				if (document.epilogueBlogName != null) {
 					document.getElementById("newpost_hostname").innerText = document.epilogueBlogName;
