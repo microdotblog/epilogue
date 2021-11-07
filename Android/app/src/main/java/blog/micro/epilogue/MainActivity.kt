@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         val settings = webview.settings
         settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
 
         var intent = getIntent()
         this.handleIntent(intent, webview)
