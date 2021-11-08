@@ -60,8 +60,9 @@
 			var email = document.getElementById("input_email").value;
 			
 			if ((email.length > 0) && !email.includes("@")) {
-				// email is actually an app token
-				location.href = "epilogue://signin/" + email;
+				// email is actually an app token (strip to avoid copy/paste errors)
+				t = email.replace("Token: ", "").trim()
+				location.href = "epilogue://signin/" + t;
 			}
 			else {
 				let form = new FormData();
