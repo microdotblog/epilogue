@@ -59,6 +59,10 @@
 		background-color: black;
 		color: #E5E7EB;
 	}
+	
+	#details_screen {
+		background-color: #212936;
+	}
 
 	#details_options {
 		border-top: 1px solid black;
