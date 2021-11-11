@@ -8,8 +8,9 @@
 import UIKit
 import WebKit
 import UUSwiftCore
+import AuthenticationServices
 
-class ViewController: UIViewController, WKNavigationDelegate {
+class ViewController: UIViewController, WKNavigationDelegate, ASAuthorizationControllerDelegate {
 
 	@IBOutlet var webView: WKWebView!
 	
@@ -72,6 +73,18 @@ class ViewController: UIViewController, WKNavigationDelegate {
 			}
 		}
 	}
+	
+	func signInWithApple() {
+		let provider = ASAuthorizationAppleIDProvider()
+		
+		let request = provider.createRequest()
+		request.requestedScopes = [ .fullName, .email ]
+		
+		let controller = ASAuthorizationController(authorizationRequests: [ request ])
+		controller.delegate = self
+		
+		controller.performRequests()
+	}
 
 	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		if self.token.count > 0 {
@@ -85,7 +98,11 @@ class ViewController: UIViewController, WKNavigationDelegate {
 		
 		if let url = navigationAction.request.url {
 			if url.absoluteString.contains("epilogue://") {
-				if url.host == "signin" {
+				if url.host == "apple" {
+					handled = true
+					self.signInWithApple()
+				}
+				else if url.host == "signin" {
 					handled = true
 					let token = url.lastPathComponent
 					NotificationCenter.default.post(name: .tokenReceivedNotification, object: self, userInfo: [ "token": token ])

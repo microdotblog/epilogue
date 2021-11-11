@@ -90,6 +90,10 @@
 				});			
 			}
 		}
+		
+		function signInWithApple() {
+			location.href = "epilogue://apple";
+		}
 
 		function isAndroid() {
 			var user_agent = navigator.userAgent || navigator.vendor || window.opera;
@@ -105,6 +109,12 @@
 				var head_tag = document.getElementsByTagName("head")[0];
 				head_tag.appendChild(link_tag);
 			}
+			
+			if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+				var img_tag = document.getElementById("apple_signin_img")
+				img_tag.setAttribute("src", "apple_signin_dark.png");
+			}
+			
 		});
 
 	</script>
@@ -133,6 +143,15 @@
 
 	<p>
 	<button type="submit" class="btn btn-light" onClick="submitSignin();">Sign In</button>
+
+	<p><hr /></p>
+	<p>New to Micro.blog?</p>
+	
+	<p>
+	<button type="submit" class="btn btn-light" onClick="signInWithApple();">
+		<img src="apple_signin_light.png" id="apple_signin_img" width="20" height="20" alt="Apple logo" style="margin-bottom: 3px;" />
+		Sign in with Apple
+	</button>
 
 	<div class="alert alert-success" role="alert" id="alert_ok">
 		Email sent! Check your email on this device.

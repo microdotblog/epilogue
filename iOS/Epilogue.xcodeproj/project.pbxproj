@@ -28,6 +28,8 @@
 		4B4B158127298700003EADB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4B4B158327298700003EADB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4B4B158D27298D8C003EADB3 /* Web */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Web; path = ../Web; sourceTree = "<group>"; };
+		4B657772273D721700502A36 /* Epilogue.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Epilogue.entitlements; sourceTree = "<group>"; };
+		4B657773273D723F00502A36 /* EpilogueRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EpilogueRelease.entitlements; sourceTree = "<group>"; };
 		4BC81496272AE1A600C32659 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -63,6 +65,8 @@
 		4B4B1574272986FF003EADB3 /* Epilogue */ = {
 			isa = PBXGroup;
 			children = (
+				4B657773273D723F00502A36 /* EpilogueRelease.entitlements */,
+				4B657772273D721700502A36 /* Epilogue.entitlements */,
 				4B4B1575272986FF003EADB3 /* AppDelegate.swift */,
 				4B4B1577272986FF003EADB3 /* SceneDelegate.swift */,
 				4B4B1579272986FF003EADB3 /* ViewController.swift */,
@@ -304,6 +308,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = Epilogue/Epilogue.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = 3F9MDJ6K4E;
@@ -334,6 +339,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = Epilogue/EpilogueRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = 3F9MDJ6K4E;
