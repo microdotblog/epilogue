@@ -101,16 +101,17 @@ class ViewController: UIViewController, WKNavigationDelegate, ASAuthorizationCon
 						}
 					}
 					
-					let form = UUHttpForm()
-					
-					form.add(field: "user_id", value: user_id)
-					form.add(field: "full_name", value: full_name)
-					form.add(field: "identity_token", value: identity_token_s)
+					var s = ""
+					s += "user_id=" + user_id.uuUrlEncoded()
+					s += "&full_name=" + full_name.uuUrlEncoded()
+					s += "&identity_token=" + identity_token_s.uuUrlEncoded()
 					if let email = email {
-						form.add(field: "email", value: email)
+						s += "&email=" + email.uuUrlEncoded()
 					}
 					
-					let request = UUHttpRequest(url: "https://micro.blog/account/apple", form: form)
+					let d = s.data(using: .utf8)
+					
+					let request = UUHttpRequest(url: "https://micro.blog/account/apple", method: .post, body: d, contentType: "application/x-www-form-urlencoded")
 					let _ = UUHttpSession.executeRequest(request) { response in
 						if let info = response.parsedResponse as? [ String: String ] {
 							let username = info["username"]
@@ -128,7 +129,11 @@ class ViewController: UIViewController, WKNavigationDelegate, ASAuthorizationCon
 							}
 							else if let username = username, username.count > 0 {
 								// user already has an account, sign them in
-								// ...
+								if let token = token {
+									DispatchQueue.main.async {
+										NotificationCenter.default.post(name: .tokenReceivedNotification, object: self, userInfo: [ "token": token ])
+									}
+								}
 							}
 							else {
 								// show username picker
