@@ -15,6 +15,7 @@
 		4B4B157F27298700003EADB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4B4B157E27298700003EADB3 /* Assets.xcassets */; };
 		4B4B158227298700003EADB3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B4B158027298700003EADB3 /* LaunchScreen.storyboard */; };
 		4B4B158E27298D8C003EADB3 /* Web in Resources */ = {isa = PBXBuildFile; fileRef = 4B4B158D27298D8C003EADB3 /* Web */; };
+		4B657776273D931900502A36 /* UUSwiftNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 4B657775273D931900502A36 /* UUSwiftNetworking */; };
 		4BC81497272AE1A600C32659 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BC81496272AE1A600C32659 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B657776273D931900502A36 /* UUSwiftNetworking in Frameworks */,
 				4B076574272C77A9004BCA8A /* UUSwiftCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,6 +99,7 @@
 			name = Epilogue;
 			packageProductDependencies = (
 				4B076573272C77A9004BCA8A /* UUSwiftCore */,
+				4B657775273D931900502A36 /* UUSwiftNetworking */,
 			);
 			productName = Epilogue;
 			productReference = 4B4B1572272986FF003EADB3 /* Epilogue.app */;
@@ -128,6 +131,7 @@
 			mainGroup = 4B4B1569272986FE003EADB3;
 			packageReferences = (
 				4B076572272C77A9004BCA8A /* XCRemoteSwiftPackageReference "UUSwiftCore" */,
+				4B657774273D931900502A36 /* XCRemoteSwiftPackageReference "UUSwiftNetworking" */,
 			);
 			productRefGroup = 4B4B1573272986FF003EADB3 /* Products */;
 			projectDirPath = "";
@@ -310,7 +314,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Epilogue/Epilogue.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 3F9MDJ6K4E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Epilogue/Info.plist;
@@ -341,7 +345,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Epilogue/EpilogueRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 3F9MDJ6K4E;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Epilogue/Info.plist;
@@ -396,6 +400,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		4B657774273D931900502A36 /* XCRemoteSwiftPackageReference "UUSwiftNetworking" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SilverPineSoftware/UUSwiftNetworking";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -403,6 +415,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4B076572272C77A9004BCA8A /* XCRemoteSwiftPackageReference "UUSwiftCore" */;
 			productName = UUSwiftCore;
+		};
+		4B657775273D931900502A36 /* UUSwiftNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4B657774273D931900502A36 /* XCRemoteSwiftPackageReference "UUSwiftNetworking" */;
+			productName = UUSwiftNetworking;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -8,6 +8,7 @@
 import UIKit
 import WebKit
 import UUSwiftCore
+import UUSwiftNetworking
 import AuthenticationServices
 
 class ViewController: UIViewController, WKNavigationDelegate, ASAuthorizationControllerDelegate {
@@ -86,6 +87,65 @@ class ViewController: UIViewController, WKNavigationDelegate, ASAuthorizationCon
 		controller.performRequests()
 	}
 
+	func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+		if let credential = authorization.credential as? ASAuthorizationAppleIDCredential {
+			let user_id = credential.user
+			let identity_token = credential.identityToken
+			let email = credential.email
+			var full_name = ""
+			if let identity_token = identity_token {
+				if let identity_token_s = String(data: identity_token, encoding: .utf8) {
+					if let name_components = credential.fullName {
+						if let first_name = name_components.givenName, let last_name = name_components.familyName {
+							full_name = "\(first_name) \(last_name)"
+						}
+					}
+					
+					let form = UUHttpForm()
+					
+					form.add(field: "user_id", value: user_id)
+					form.add(field: "full_name", value: full_name)
+					form.add(field: "identity_token", value: identity_token_s)
+					if let email = email {
+						form.add(field: "email", value: email)
+					}
+					
+					let request = UUHttpRequest(url: "https://micro.blog/account/apple", form: form)
+					let _ = UUHttpSession.executeRequest(request) { response in
+						if let info = response.parsedResponse as? [ String: String ] {
+							let username = info["username"]
+							let token = info["token"]
+							let error = info["error"]
+							
+							if error != nil {
+								// show error message
+								if let s = error {
+									let js = "document.epilogueShowError(\"\(s)\");"
+									DispatchQueue.main.async {
+										self.webView.evaluateJavaScript(js)
+									}
+								}
+							}
+							else if let username = username, username.count > 0 {
+								// user already has an account, sign them in
+								// ...
+							}
+							else {
+								// show username picker
+								// pass user_id and identity_token_s
+								// ...
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+		print(error)
+	}
+	
 	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		if self.token.count > 0 {
 			let js = "checkToken(\"\(self.token)\");"
