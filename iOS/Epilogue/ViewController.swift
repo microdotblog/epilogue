@@ -117,11 +117,11 @@ class ViewController: UIViewController, WKNavigationDelegate, ASAuthorizationCon
 							let username = info["username"]
 							let token = info["token"]
 							let error = info["error"]
-							
+
 							if error != nil {
 								// show error message
 								if let s = error {
-									let js = "document.epilogueShowError(\"\(s)\");"
+									let js = "showError(\"\(s)\");"
 									DispatchQueue.main.async {
 										self.webView.evaluateJavaScript(js)
 									}
@@ -137,8 +137,10 @@ class ViewController: UIViewController, WKNavigationDelegate, ASAuthorizationCon
 							}
 							else {
 								// show username picker
-								// pass user_id and identity_token_s
-								// ...
+								let js = "showUsername(\"\(user_id)\", \"\(identity_token_s)\");"
+								DispatchQueue.main.async {
+									self.webView.evaluateJavaScript(js)
+								}
 							}
 						}
 					}

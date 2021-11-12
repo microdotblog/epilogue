@@ -49,6 +49,14 @@
 		#alert_error {
 			display: none;
 		}
+
+		#alert_username {
+			display: none;
+		}
+		
+		#username_screen {
+			display: none;
+		}
 		
 	</style>
 
@@ -91,6 +99,33 @@
 			}
 		}
 		
+		function submitUsername() {
+			var username = document.getElementById("input_username").value;
+			var user_id = document.getElementById("input_user_id").value;
+			var identity_token = document.getElementById("input_identity_token").value;
+			
+			if (username.length > 0) {
+				let form = new FormData();
+				form.append("username", username);
+				form.append("user_id", user_id);
+				form.append("identity_token", identity_token);
+				
+				var options = {
+					method: "POST",
+					body: form
+				};
+				fetch("https://micro.blog/account/apple", options).then(response => response.json()).then(data => {
+					if (data.error == undefined) {
+						location.href = "epilogue://signin/" + data.token;
+					}
+					else {
+						document.getElementById("alert_username").style.display = "block";
+						document.getElementById("alert_username").innerText = data.error;
+					}
+				});			
+			}
+		}
+		
 		function signInWithApple() {
 			location.href = "epilogue://apple";
 		}
@@ -100,7 +135,15 @@
 			return (/android/i.test(user_agent));
 		}
 
-		document.epilogueShowError = function(error) {
+		function showUsername(user_id, identity_token) {
+			document.getElementById("signin_screen").style.display = "none";
+			document.getElementById("username_screen").style.display = "block";
+			
+			document.getElementById("input_user_id").value = user_id;
+			document.getElementById("input_identity_token").value = identity_token;
+		}
+
+		function showError(error) {
 			if (error.length == 0) {
 				document.getElementById("alert_error").style.display = "none";
 				document.getElementById("alert_ok").style.display = "block";
@@ -142,7 +185,7 @@
 
 </nav>
 
-<div class="container">
+<div class="container" id="signin_screen">
 
 	<div class="mb-3 intro">
 		Enter your Micro.blog account email address and you'll receive a link to sign in:
@@ -171,6 +214,30 @@
 	<div class="alert alert-warning" role="alert" id="alert_error">		
 	</div>
 			
+</div>
+
+<div class="container" id="username_screen">
+	
+	<div class="mb-3 intro">
+		Pick a username to finish registering your account on Micro.blog:
+	</div>
+	
+	<div class="mb-3">
+		<input type="email" class="form-control" id="input_username" placeholder="username" />
+	</div>
+	
+	<input type="hidden" id="input_user_id" />
+	<input type="hidden" id="input_identity_token" />
+	
+	<p>
+	Micro.blog will create a new hosted microblog for you to try, where you can blog about books you're reading (or anything).
+	
+	<p>
+	<button type="submit" class="btn btn-light" onClick="submitUsername();">Register</button>
+
+	<div class="alert alert-warning" role="alert" id="alert_username">
+	</div>
+	
 </div>
 
 <script src="bootstrap.bundle.min.js"></script>
