@@ -812,6 +812,30 @@
 				head_tag.appendChild(link_tag);
 			}
 		});
+
+		var start_x = null;
+		window.addEventListener("touchstart", function(event) {
+			if (event.touches.length === 1) {
+				start_x = event.touches.item(0).clientX;
+			}
+			else {
+				start_x = null;
+			}
+		});
+
+		window.addEventListener("touchend", function(event) {
+			var offset = 70; // 70px for swipe
+			if (start_x) {
+				var end_x = event.changedTouches.item(0).clientX;
+				if (end_x > (start_x + offset)) {
+					// right swipe
+					closeBookDetails();
+				}
+				if (end_x < (start_x - offset)) {
+					// left swipe
+				}
+			}
+		});
 	
 	</script>
 </head>
