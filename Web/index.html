@@ -561,6 +561,8 @@
 
 				document.getElementById("nav_bookshelf").classList.add("nav_hidden");
 				document.getElementById("nav_bookshelf").classList.remove("nav_visible");
+
+				document.body.style.overflow = "hidden";
 			}, 50);
 		}
 	
@@ -584,6 +586,7 @@
 			
 			setTimeout(function() {
 				document.getElementById("details_screen").style.display = "none";
+				document.body.style.overflow = "visible";
 			}, 300);
 		}
 	
