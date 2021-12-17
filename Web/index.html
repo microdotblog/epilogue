@@ -640,6 +640,7 @@
 		}
 		
 		function sendSearch(search_text) {
+			current_search_text = search_text;
 			let q = encodeURIComponent(search_text);
 
 			document.getElementById("books_table").innerHTML = "";
@@ -732,11 +733,13 @@
 	
 		function hideKeyboard() {
 			let s = document.getElementById("search_field").value;
-			if (s.length > 0) {
-				sendSearch(s);
-			}
-			else {
-				loadBooks(document.epilogueCurrentBookshelf.id);				
+			if (s != current_search_text) {
+				if (s.length > 0) {
+					sendSearch(s);
+				}
+				else {
+					loadBooks(document.epilogueCurrentBookshelf.id);				
+				}
 			}
 		}
 	
@@ -814,6 +817,8 @@
 		});
 
 		var start_x = null;
+		var current_search_text = "";
+		
 		window.addEventListener("touchstart", function(event) {
 			if (event.touches.length === 1) {
 				start_x = event.touches.item(0).clientX;
