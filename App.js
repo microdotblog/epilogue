@@ -68,9 +68,11 @@ function HomeScreen({ navigation }) {
       }
 
       bookshelves = new_items;
-      let first_bookshelf = new_items[0];
-      current_bookshelf = first_bookshelf;
-      loadBooks(first_bookshelf.id);
+      if (current_bookshelf.id == 0) {
+        let first_bookshelf = new_items[0];
+        current_bookshelf = first_bookshelf;
+      }
+      loadBooks(current_bookshelf.id);
       setupBookshelves(navigation, new_items, current_bookshelf.title);
     });		
   }
