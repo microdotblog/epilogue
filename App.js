@@ -3,13 +3,13 @@ import type { Node } from "react";
 import { useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { SFSymbol } from "react-native-sfsymbols";
 import { MenuView } from "@react-native-menu/menu";
 
 function HomeScreen({ navigation }) {
-  const [ data, setData ] = useState();
+  const [ books, setBooks ] = useState();
   let auth_token = "";
-  var current_bookshelf = {};
+  var bookshelves = [];
+  var current_bookshelf = { id: 0, title: "" };
   
   React.useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -24,12 +24,19 @@ function HomeScreen({ navigation }) {
     loadBookshelves(navigation)
   }
   
-  function loadBooks(bookshelf_id) {
+  function loadBooks(bookshelf_id, handler = function() {}) {
     var options = {
       headers: {
         "Authorization": "Bearer " + auth_token
       }
     };
+    
+    for (let shelf of bookshelves) {
+      if (shelf.id == bookshelf_id) {
+        current_bookshelf = shelf;
+      }
+    }
+    
     fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
       var new_items = [];
       for (let item of data.items) {
@@ -40,7 +47,8 @@ function HomeScreen({ navigation }) {
           author: item.authors[0].name
         });
       }
-      setData(new_items);
+      setBooks(new_items);
+      handler();
     });		
   }
   
@@ -59,22 +67,33 @@ function HomeScreen({ navigation }) {
         });
       }
 
-      current_bookshelf = data.items[0];
-      
-      navigation.setOptions({
-        headerRight: () => (
-          <MenuView
-            onPressAction = {({ nativeEvent }) => {
-              let shelf_id = nativeEvent.event;
-              loadBooks(shelf_id);
-            }}
-            actions = {new_items}
-            >
-            <Text>{current_bookshelf.title}</Text>
-          </MenuView>
-        )
-      });
+      bookshelves = new_items;
+      let first_bookshelf = new_items[0];
+      current_bookshelf = first_bookshelf;
+      loadBooks(first_bookshelf.id);
+      setupBookshelves(navigation, new_items, current_bookshelf.title);
     });		
+  }
+
+  function setupBookshelves(navigation, items, currentTitle) {
+    navigation.setOptions({
+      headerRight: () => (
+        <MenuView
+          onPressAction = {({ nativeEvent }) => {
+            let shelf_id = nativeEvent.event;
+            loadBooks(shelf_id, function() {
+              setupBookshelves(navigation, bookshelves, current_bookshelf.title);
+            });
+          }}
+          actions = {items}
+          >
+          <View style={styles.navbarBookshelf}>
+            <Image style={styles.navbarBookshelfIcon} source={require("./images/books.png")} />
+            <Text style={styles.navbarBookshelfTitle}>{currentTitle}</Text>
+          </View>
+        </MenuView>
+      )
+    });
   }
 
   function onShowBookPressed(item) {
@@ -84,13 +103,13 @@ function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <FlatList
-        data = {data}
+        data = {books}
         renderItem = { ({item}) => 
           <Pressable onPress={() => { onShowBookPressed(item) }}>
             <View style={styles.item}>
               <Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
-              <View>
-                <Text style={styles.bookTitle}>{item.title}</Text>
+              <View style={styles.bookItem}>
+                <Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
                 <Text style={styles.bookAuthor}>{item.author}</Text>
               </View>
             </View>
@@ -108,9 +127,11 @@ function BookDetailsScreen({ route, navigation }) {
     
   return (
     <View style={styles.container}>
-      <Image style={styles.bookDetailCover} source={{ uri: image.replace("http://", "https://") }} />
-      <Text>{title}</Text>
-      <Text>{author}</Text>
+      <View style={styles.bookDetails}>
+        <Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
+        <Text style={styles.bookDetailsTitle}>{title}</Text>
+        <Text style={styles.bookDetailsAuthor}>{author}</Text>        
+      </View>
     </View>
   );
 }
@@ -118,7 +139,6 @@ function BookDetailsScreen({ route, navigation }) {
 const Stack = createNativeStackNavigator();	
   
 const App: () => Node = () => {  
-  const [ bookshelves, setBookshelves ] = useState([]);
   const isDarkMode = useColorScheme() === "dark";
 
   return (
@@ -131,7 +151,7 @@ const App: () => Node = () => {
           ),
           headerRight: () => (
             <MenuView
-              actions = {bookshelves}
+              actions = {[]}
               >
               <Text></Text>
             </MenuView>
@@ -159,6 +179,18 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
     borderTopLeftRadius: 12
   },
+  navbarBookshelf: {
+    flexDirection: "row",
+    marginTop: 4
+  },
+  navbarBookshelfIcon: {
+    width: 22,
+    height: 22
+  },
+  navbarBookshelfTitle: {
+    paddingTop: 2,
+    paddingLeft: 5
+  },
   item: {
     flexDirection: "row",
     height: 90,
@@ -166,21 +198,36 @@ const styles = StyleSheet.create({
     marginRight: 20,
     paddingBottom: 10
   },
+  bookItem: {
+    flex: 1
+  },
   bookTitle: {
-    marginTop: 5,
-    padding: 5
+    marginTop: 8,
+    paddingLeft: 7
   },
   bookAuthor: {
-    padding: 5,
+    paddingTop: 4,
+    paddingLeft: 7,
     color: "#777777"
   },
   bookCover: {
     width: 50,
     height: 70
   },
-  bookDetailCover: {
-    width: 100,
-    height: 150
+  bookDetails: {
+    flex: 1,
+    alignItems: "center"
+  },
+  bookDetailsCover: {
+    width: 200,
+    height: 200,
+    resizeMode: "contain"
+  },
+  bookDetailsTitle: {
+    marginTop: 5
+  },
+  bookDetailsAuthor: {
+    marginTop: 5
   }
 });
 
