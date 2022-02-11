@@ -15,8 +15,6 @@ function HomeScreen({ navigation }) {
     const unsubscribe = navigation.addListener("focus", () => {
       onFocus(navigation);
     });
-  
-    // returns the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
   }, [navigation]);
   
@@ -40,11 +38,15 @@ function HomeScreen({ navigation }) {
     fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
       var new_items = [];
       for (let item of data.items) {
+        var author_name = "";
+        if (item.authors.length > 0) {
+          author_name = item.authors[0].name;
+        }
         new_items.push({
           id: item.id,
           title: item.title,
           image: item.image,
-          author: item.authors[0].name
+          author: author_name
         });
       }
       setBooks(new_items);
@@ -132,7 +134,7 @@ function BookDetailsScreen({ route, navigation }) {
       <View style={styles.bookDetails}>
         <Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
         <Text style={styles.bookDetailsTitle}>{title}</Text>
-        <Text style={styles.bookDetailsAuthor}>{author}</Text>        
+        <Text style={styles.bookDetailsAuthor}>{author}</Text>
       </View>
     </View>
   );
@@ -159,9 +161,17 @@ const App: () => Node = () => {
             </MenuView>
           )					
         }} />
-        <Stack.Screen name="Details" component={BookDetailsScreen} options={{
-          title: ""
-        }} />
+        <Stack.Screen name="Details" component={BookDetailsScreen} options={({ navigation, route }) => ({
+          headerTitle: "",
+          headerLeft: () => (
+            <Pressable onPress={() => { navigation.goBack(); }}>
+              <Image style={styles.navbarBackIcon} source={require("./images/back.png")} />
+            </Pressable>
+          ),
+          headerRight: () => (
+            <Image style={styles.navbarNewIcon} source={require("./images/create.png")} />
+          )
+        })} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -170,8 +180,7 @@ const App: () => Node = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 10,
-    marginBottom: 50
+    marginTop: 10
   },
   profileIcon: {
     width: 24,
@@ -179,19 +188,21 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
     borderTopRightRadius: 12,
-    borderTopLeftRadius: 12
+    borderTopLeftRadius: 12    
   },
   navbarBookshelf: {
     flexDirection: "row",
     marginTop: 4
   },
   navbarBookshelfIcon: {
-    width: 22,
-    height: 22
+    width: 25,
+    height: 25,
+    tintColor: "#337AB7"
   },
   navbarBookshelfTitle: {
-    paddingTop: 2,
-    paddingLeft: 5
+    paddingTop: 3,
+    paddingLeft: 5,
+    color: "#337AB7"
   },
   item: {
     flexDirection: "row",
@@ -230,6 +241,16 @@ const styles = StyleSheet.create({
   },
   bookDetailsAuthor: {
     marginTop: 5
+  },
+  navbarNewIcon: {
+    width: 25,
+    height: 25,
+    tintColor: "#337AB7"
+  },
+  navbarBackIcon: {
+    width: 19,
+    height: 25,
+    tintColor: "#337AB7"
   }
 });
 
