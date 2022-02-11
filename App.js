@@ -7,8 +7,8 @@ import { MenuView } from "@react-native-menu/menu";
 
 function HomeScreen({ navigation }) {
   const [ books, setBooks ] = useState();
+  const [ bookshelves, setBookshelves ] = useState([]);
   let auth_token = "";
-  var bookshelves = [];
   var current_bookshelf = { id: 0, title: "" };
   
   React.useEffect(() => {
@@ -63,13 +63,22 @@ function HomeScreen({ navigation }) {
     fetch("https://micro.blog/books/bookshelves", options).then(response => response.json()).then(data => {
       var new_items = [];
       for (let item of data.items) {
+        var s;
+        if (item._microblog.books_count == 1) {
+          s = "1 book";
+        }
+        else {
+          s = item._microblog.books_count + " books";
+        }
+        
         new_items.push({
           id: item.id.toString(),
-          title: item.title
+          title: item.title,
+          books_count: s
         });
       }
 
-      bookshelves = new_items;
+      setBookshelves(new_items);
       if (current_bookshelf.id == 0) {
         let first_bookshelf = new_items[0];
         current_bookshelf = first_bookshelf;
@@ -101,7 +110,14 @@ function HomeScreen({ navigation }) {
   }
 
   function onShowBookPressed(item) {
-    navigation.navigate("Details", item);
+    var params = {
+      id: item.id,
+      title: item.title,
+      image: item.image,
+      author: item.author,
+      bookshelves: bookshelves
+    };
+    navigation.navigate("Details", params);
   }
 
   return (
@@ -127,14 +143,25 @@ function HomeScreen({ navigation }) {
 
 function BookDetailsScreen({ route, navigation }) {
   const [ data, setData ] = useState();
-  const { id, title, image, author } = route.params;
-    
+  const { id, title, image, author, bookshelves } = route.params;
+  
   return (
     <View style={styles.container}>
       <View style={styles.bookDetails}>
         <Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
         <Text style={styles.bookDetailsTitle}>{title}</Text>
         <Text style={styles.bookDetailsAuthor}>{author}</Text>
+      </View>
+      <View style={styles.bookDetailsBookshelves}>
+        <Text style={styles.bookDetailsAddTo}>Add to bookshelf...</Text>
+        {
+          bookshelves.map((shelf) => (
+            <Pressable key={shelf.id} style={styles.bookDetailsButton}>
+              <Text style={styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
+              <Text style={styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
+            </Pressable>
+          ))
+        }
       </View>
     </View>
   );
@@ -228,8 +255,11 @@ const styles = StyleSheet.create({
     height: 70
   },
   bookDetails: {
-    flex: 1,
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#DEDEDE"
   },
   bookDetailsCover: {
     width: 200,
@@ -237,10 +267,35 @@ const styles = StyleSheet.create({
     resizeMode: "contain"
   },
   bookDetailsTitle: {
-    marginTop: 5
+    marginTop: 10
   },
   bookDetailsAuthor: {
-    marginTop: 5
+    marginTop: 5,
+    color: "#777777"
+  },
+  bookDetailsBookshelves: {
+    marginTop: 5,
+    marginLeft: 40,
+    marginRight: 40
+  },
+  bookDetailsAddTo: {
+    marginBottom: 10
+  },
+  bookDetailsButton: {
+    flexDirection: "row",
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderRadius: 5,
+    marginBottom: 6,
+    backgroundColor: "#DEDEDE"
+  },
+  bookDetailsBookshelfTitle: {
+    flex: 1
+  },
+  bookDetailsBookshelfCount: {
+    flex: 1,
+    textAlign: "right",
+    color: "#777777"
   },
   navbarNewIcon: {
     width: 25,
