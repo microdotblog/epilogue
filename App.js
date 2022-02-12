@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
 
+let auth_token = "";
+
 function HomeScreen({ navigation }) {
   const [ books, setBooks ] = useState();
   const [ bookshelves, setBookshelves ] = useState([]);
-  let auth_token = "";
   var current_bookshelf = { id: 0, title: "" };
   
   React.useEffect(() => {
@@ -44,6 +45,7 @@ function HomeScreen({ navigation }) {
         }
         new_items.push({
           id: item.id,
+          isbn: item._microblog.isbn,
           title: item.title,
           image: item.image,
           author: author_name
@@ -112,6 +114,7 @@ function HomeScreen({ navigation }) {
   function onShowBookPressed(item) {
     var params = {
       id: item.id,
+      isbn: item.isbn,
       title: item.title,
       image: item.image,
       author: item.author,
@@ -143,7 +146,31 @@ function HomeScreen({ navigation }) {
 
 function BookDetailsScreen({ route, navigation }) {
   const [ data, setData ] = useState();
-  const { id, title, image, author, bookshelves } = route.params;
+  const [ progressAnimating, setProgressAnimating ] = useState(false);
+  const { id, isbn, title, image, author, bookshelves } = route.params;
+  
+  function addToBookshelf(bookshelf_id) {
+    let form = new FormData();
+    form.append("isbn", isbn);
+    form.append("title", title);
+    form.append("author", author);
+    form.append("cover_url", image);
+    form.append("bookshelf_id", bookshelf_id);
+
+    var options = {
+      method: "POST",
+      body: form,
+      headers: {
+        "Authorization": "Bearer " + auth_token
+      }
+    };
+    
+    setProgressAnimating(true);
+
+    fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
+      navigation.goBack();
+    });
+  }
   
   return (
     <View style={styles.container}>
@@ -153,10 +180,18 @@ function BookDetailsScreen({ route, navigation }) {
         <Text style={styles.bookDetailsAuthor}>{author}</Text>
       </View>
       <View style={styles.bookDetailsBookshelves}>
-        <Text style={styles.bookDetailsAddTo}>Add to bookshelf...</Text>
+        <View style={styles.bookDetailsAddBar}>
+          <Text style={styles.bookDetailsAddTo}>Add to bookshelf...</Text>
+          <ActivityIndicator style={styles.BookDetailsProgress} size="small" animating={progressAnimating} />
+        </View>
         {
           bookshelves.map((shelf) => (
-            <Pressable key={shelf.id} style={styles.bookDetailsButton}>
+            <Pressable key={shelf.id} onPress={() => { addToBookshelf(shelf.id); }} style={({ pressed }) => [
+                {
+                  backgroundColor: pressed ? "#BBBBBB" : "#DEDEDE"
+                },
+                styles.bookDetailsButton
+              ]}>
               <Text style={styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
               <Text style={styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
             </Pressable>
@@ -278,16 +313,23 @@ const styles = StyleSheet.create({
     marginLeft: 40,
     marginRight: 40
   },
+  bookDetailsAddBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12
+  },
   bookDetailsAddTo: {
-    marginBottom: 10
+    flex: 1
+  },
+  bookDetailsProgress: {
+    flex: 1
   },
   bookDetailsButton: {
     flexDirection: "row",
     paddingVertical: 14,
     paddingHorizontal: 14,
     borderRadius: 5,
-    marginBottom: 6,
-    backgroundColor: "#DEDEDE"
+    marginBottom: 6
   },
   bookDetailsBookshelfTitle: {
     flex: 1
