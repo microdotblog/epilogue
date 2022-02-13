@@ -12,6 +12,7 @@ import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
 export function HomeScreen({ navigation }) {
+	const is_dark = (useColorScheme() == "dark");
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ searchText, setSearchText ] = useState("");
@@ -169,18 +170,18 @@ export function HomeScreen({ navigation }) {
 	};
 
 	return (
-		<View style={styles.container}>
-			<TextInput style={styles.searchField} onChangeText={setSearchText} value={searchText} onEndEditing={onSearch} returnKeyType="search" placeholder="Search for books to add" />
+		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
+			<TextInput style={is_dark ? [ styles.searchField, styles.dark.searchField ] : styles.searchField} onChangeText={setSearchText} value={searchText} onEndEditing={onSearch} returnKeyType="search" placeholder="Search for books to add" />
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
 				<Swipeable renderRightActions={renderRightActions}>
 					<Pressable onPress={() => { onShowBookPressed(item) }}>
-						<View style={styles.item}>
+						<View style={is_dark ? [ styles.item, styles.dark.item ] : styles.item}>
 							<Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>
-								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
-								<Text style={styles.bookAuthor}>{item.author}</Text>
+								<Text style={is_dark ? [ styles.bookTitle, styles.dark.bookTitle ] : styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
+								<Text style={is_dark ? [ styles.bookAuthor, styles.dark.bookAuthor ] : styles.bookAuthor}>{item.author}</Text>
 							</View>
 						</View>
 					</Pressable>

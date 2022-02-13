@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Node } from "react";
 import { ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
 import "react-native-gesture-handler"
@@ -12,15 +12,22 @@ import epilogueStorage from "./src/Storage";
 import { HomeScreen } from "./src/HomeScreen";
 import { BookDetailsScreen } from "./src/BookDetailsScreen";
   
-const Stack = createNativeStackNavigator();	
-  
+const Stack = createNativeStackNavigator();
+
+const EpilogueDarkTheme = {
+  dark: true,
+  colors: {
+    card: "#212936"
+  }
+};
+
 const App: () => Node = () => {  
-  const isDarkMode = useColorScheme() === "dark";
+  const is_dark = (useColorScheme() == "dark");
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} options={{ 
+        <Stack.Screen name="Home" component={HomeScreen} options={{
           headerTitle: "",
           headerLeft: () => (
             <Image style={styles.profileIcon} source={{ uri: "https://micro.blog/manton/avatar.jpg" }} />
