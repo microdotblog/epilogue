@@ -5,16 +5,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
 
-import { styles } from "./Styles";
-import { EpilogueStorage } from "./Storage";
-
-let auth_token = EpilogueStorage.get("auth_code");
+import styles from "./Styles";
+import epilogueStorage from "./Storage";
 
 export function BookDetailsScreen({ route, navigation }) {
   const [ data, setData ] = useState();
   const [ progressAnimating, setProgressAnimating ] = useState(false);
   const { id, isbn, title, image, author, bookshelves } = route.params;
-  
+
   function addToBookshelf(bookshelf_id) {
 	let form = new FormData();
 	form.append("isbn", isbn);

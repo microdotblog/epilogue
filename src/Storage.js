@@ -1,21 +1,32 @@
-import { AsyncStorage } from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export var EpilogueStorage = {
+class EpilogueStorage {
 	async set(key, value) {
 		try {
+			console.log("setting key: " + key);
 			await AsyncStorage.setItem(key, value);
+			console.log("did set key: " + key);
 		}
-		catch (error) {
+		catch (e) {
+			console.log("Error setting key: " + key);
+			console.log(e);
 		}
-	},	
+	}
+		
 	async get(key) {
 		try {
 			const value = await AsyncStorage.getItem(key);
-			if (value !== null) {
-				console.log(value);
+			if (value != null) {
+				return value;
 			}
 		}
-		catch (error) {
+		catch (e) {
+			console.log("Error getting key: " + key);
+			console.log(e);
 		}
+		
+		return null;
 	}
 }
+
+export default new EpilogueStorage();
