@@ -17,7 +17,7 @@ const Stack = createNativeStackNavigator();
 const EpilogueDarkTheme = {
   dark: true,
   colors: {
-    card: "#212936"
+    card: "#131724"
   }
 };
 

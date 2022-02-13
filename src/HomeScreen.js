@@ -118,8 +118,8 @@ export function HomeScreen({ navigation }) {
 				actions = {items}
 				>
 					<View style={styles.navbarBookshelf}>
-						<Image style={styles.navbarBookshelfIcon} source={require("../images/books.png")} />
-						<Text style={styles.navbarBookshelfTitle}>{currentTitle}</Text>
+						<Image style={is_dark ? [ styles.navbarBookshelfIcon, styles.dark.navbarBookshelfIcon ] : styles.navbarBookshelfIcon} source={require("../images/books.png")} />
+						<Text style={is_dark ? [ styles.navbarBookshelfTitle, styles.dark.navbarBookshelfTitle ] : styles.navbarBookshelfTitle}>{currentTitle}</Text>
 					</View>
 				</MenuView>
 			)

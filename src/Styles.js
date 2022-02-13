@@ -131,7 +131,7 @@ export default StyleSheet.create({
 		paddingLeft: 12,
 		paddingRight: 12,
 		borderRadius: 20,
-		borderColor: "#DEDEDE",
+		borderColor: "#ced3d8",
 		borderWidth: 0.5,
 		backgroundColor: "#FFFFFF"
 	},
@@ -146,8 +146,28 @@ export default StyleSheet.create({
 		bookAuthor: {
 			color: "#777777"
 		},		
+		navbarBookshelfIcon: {
+			tintColor: "#FFFFFF"
+		},
+		navbarBookshelfTitle: {
+			color: "#FFFFFF"
+		},
 		searchField: {
-			backgroundColor: "#444444"
+			backgroundColor: "#000000",
+			borderColor: "#555b64",
+			color: "#FFFFFF"
+		},
+		bookDetails: {
+			borderBottomColor: "#444444"
+		},
+		bookDetailsTitle: {
+			color: "#FFFFFF"
+		},
+		bookDetailsAuthor: {
+			color: "#777777"
+		},
+		bookDetailsAddTo: {
+			color: "#FFFFFF"
 		}
 	}
 });

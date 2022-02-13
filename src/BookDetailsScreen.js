@@ -9,6 +9,7 @@ import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
 export function BookDetailsScreen({ route, navigation }) {
+	const is_dark = (useColorScheme() == "dark");
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 	const { id, isbn, title, image, author, bookshelves } = route.params;
@@ -39,15 +40,15 @@ export function BookDetailsScreen({ route, navigation }) {
 	}
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.bookDetails}>
+		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
+			<View style={is_dark ? [ styles.bookDetails, styles.dark.bookDetails ] : styles.bookDetails}>
 				<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
-				<Text style={styles.bookDetailsTitle}>{title}</Text>
-				<Text style={styles.bookDetailsAuthor}>{author}</Text>
+				<Text style={is_dark ? [ styles.bookDetailsTitle, styles.dark.bookDetailsTitle ] : styles.bookDetailsTitle}>{title}</Text>
+				<Text style={is_dark ? [ styles.bookDetailsAuthor, styles.dark.bookDetailsAuthor ] : styles.bookDetailsAuthor}>{author}</Text>
 			</View>
 			<View style={styles.bookDetailsBookshelves}>
 				<View style={styles.bookDetailsAddBar}>
-				<Text style={styles.bookDetailsAddTo}>Add to bookshelf...</Text>
+				<Text style={is_dark ? [ styles.bookDetailsAddTo, styles.dark.bookDetailsAddTo ] : styles.bookDetailsAddTo}>Add to bookshelf...</Text>
 				<ActivityIndicator style={styles.BookDetailsProgress} size="small" animating={progressAnimating} />
 			</View>
 			{
