@@ -25,17 +25,17 @@ export function HomeScreen({ navigation }) {
 	}, [navigation]);
   
 	function onFocus(navigation) {
-		// epilogueStorage.set("auth_code", "TESTING").then(() => {
+		// epilogueStorage.set("auth_token", "TESTING").then(() => {
 		// });
 
 		loadBookshelves(navigation);
 	}
   
 	function loadBooks(bookshelf_id, handler = function() {}) {
-		epilogueStorage.get("auth_code").then(auth_code => {	  
+		epilogueStorage.get("auth_token").then(auth_token => {	  
 			var options = {
 				headers: {
-					"Authorization": "Bearer " + auth_code
+					"Authorization": "Bearer " + auth_token
 				}
 			};
 			
@@ -68,10 +68,10 @@ export function HomeScreen({ navigation }) {
 	}
   
 	function loadBookshelves(navigation) {
-		epilogueStorage.get("auth_code").then(auth_code => {
+		epilogueStorage.get("auth_token").then(auth_token => {
 			var options = {
 				headers: {
-					"Authorization": "Bearer " + auth_code
+					"Authorization": "Bearer " + auth_token
 				}
 			};
 
@@ -104,41 +104,41 @@ export function HomeScreen({ navigation }) {
 		});
 	}
 
-  function setupBookshelves(navigation, items, currentTitle) {
-	navigation.setOptions({
-	  headerRight: () => (
-		<MenuView
-		  onPressAction = {({ nativeEvent }) => {
-			let shelf_id = nativeEvent.event;
-			loadBooks(shelf_id, function() {
-			  setupBookshelves(navigation, bookshelves, current_bookshelf.title);
-			});
-		  }}
-		  actions = {items}
-		  >
-		  <View style={styles.navbarBookshelf}>
-			<Image style={styles.navbarBookshelfIcon} source={require("../images/books.png")} />
-			<Text style={styles.navbarBookshelfTitle}>{currentTitle}</Text>
-		  </View>
-		</MenuView>
-	  )
-	});
-  }
+	function setupBookshelves(navigation, items, currentTitle) {
+		navigation.setOptions({
+			headerRight: () => (
+				<MenuView
+				onPressAction = {({ nativeEvent }) => {
+					let shelf_id = nativeEvent.event;
+					loadBooks(shelf_id, function() {
+						setupBookshelves(navigation, bookshelves, current_bookshelf.title);
+					});
+				}}
+				actions = {items}
+				>
+					<View style={styles.navbarBookshelf}>
+						<Image style={styles.navbarBookshelfIcon} source={require("../images/books.png")} />
+						<Text style={styles.navbarBookshelfTitle}>{currentTitle}</Text>
+					</View>
+				</MenuView>
+			)
+		});
+	}
 
-  function onShowBookPressed(item) {
-	var params = {
-	  id: item.id,
-	  isbn: item.isbn,
-	  title: item.title,
-	  image: item.image,
-	  author: item.author,
-	  bookshelves: bookshelves
-	};
-	navigation.navigate("Details", params);
-  }
+	function onShowBookPressed(item) {
+		var params = {
+			id: item.id,
+			isbn: item.isbn,
+			title: item.title,
+			image: item.image,
+			author: item.author,
+			bookshelves: bookshelves
+			};
+		navigation.navigate("Details", params);
+	}
   
-  function removeFromBookshelf() {	  
-  }
+	function removeFromBookshelf() {	  
+	}
 
 	function onSearch() {
 		if (searchText.length > 0) {			
@@ -168,26 +168,26 @@ export function HomeScreen({ navigation }) {
 		);
 	};
 
-  return (
-	<View style={styles.container}>
-		<TextInput style={styles.searchField} onChangeText={setSearchText} value={searchText} onEndEditing={onSearch} returnKeyType="search" placeholder="Search for books to add" />
-	  <FlatList
-		data = {books}
-		renderItem = { ({item}) => 
-			<Swipeable renderRightActions={renderRightActions}>
-		  		<Pressable onPress={() => { onShowBookPressed(item) }}>
-					<View style={styles.item}>
-					  <Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
-					  <View style={styles.bookItem}>
-						<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
-						<Text style={styles.bookAuthor}>{item.author}</Text>
-					  </View>
-					</View>
-				</Pressable>
-			</Swipeable>
-		}
-		keyExtractor = { item => item.id }
-	  />
-	</View>
-  );
+	return (
+		<View style={styles.container}>
+			<TextInput style={styles.searchField} onChangeText={setSearchText} value={searchText} onEndEditing={onSearch} returnKeyType="search" placeholder="Search for books to add" />
+			<FlatList
+				data = {books}
+				renderItem = { ({item}) => 
+				<Swipeable renderRightActions={renderRightActions}>
+					<Pressable onPress={() => { onShowBookPressed(item) }}>
+						<View style={styles.item}>
+							<Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
+							<View style={styles.bookItem}>
+								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
+								<Text style={styles.bookAuthor}>{item.author}</Text>
+							</View>
+						</View>
+					</Pressable>
+				</Swipeable>
+				}
+				keyExtractor = { item => item.id }
+			/>
+		</View>
+	);
 }
