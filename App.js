@@ -4,6 +4,7 @@ import { ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
+import "react-native-gesture-handler"
 
 import { styles } from "./src/Styles";
 

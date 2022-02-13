@@ -4,6 +4,9 @@ import { ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+import { Animated } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 
 import { styles } from "./Styles";
 
@@ -124,21 +127,48 @@ export function HomeScreen({ navigation }) {
 	};
 	navigation.navigate("Details", params);
   }
+  
+  function removeFromBookshelf() {
+	  
+  }
+
+	renderRightActions = (progress, dragX) => {
+		const trans = dragX.interpolate({
+			inputRange: [0, 50, 100, 101],
+			outputRange: [0, 0, 0, 1],
+		});
+	
+		return (
+			<RectButton style={styles.removeAction} onPress={() => {
+				removeFromBookshelf();
+			}}>
+			<View style={styles.removeContainer}>
+				<Animated.Text style={[ styles.removeText, {
+					transform: [{ translateX: trans }],
+				}]}>
+					Remove
+				</Animated.Text>
+				</View>
+			</RectButton>
+		);
+	};
 
   return (
 	<View style={styles.container}>
 	  <FlatList
 		data = {books}
 		renderItem = { ({item}) => 
-		  <Pressable onPress={() => { onShowBookPressed(item) }}>
-			<View style={styles.item}>
-			  <Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
-			  <View style={styles.bookItem}>
-				<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
-				<Text style={styles.bookAuthor}>{item.author}</Text>
-			  </View>
-			</View>
-		  </Pressable>
+			<Swipeable renderRightActions={renderRightActions}>
+		  		<Pressable onPress={() => { onShowBookPressed(item) }}>
+					<View style={styles.item}>
+					  <Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
+					  <View style={styles.bookItem}>
+						<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
+						<Text style={styles.bookAuthor}>{item.author}</Text>
+					  </View>
+					</View>
+				</Pressable>
+			</Swipeable>
 		}
 		keyExtractor = { item => item.id }
 	  />

@@ -109,5 +109,19 @@ export const styles = StyleSheet.create({
 	width: 19,
 	height: 25,
 	tintColor: "#337AB7"
-  }
+  },
+  removeAction: {
+	  backgroundColor: "#AAAAAA",
+	  width: 100,
+	  alignItems: "center",
+	  marginBottom: 20
+  },
+	removeContainer: {
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center"
+	},
+	removeText: {
+		color: "#FFFFFF"
+	}
 });
