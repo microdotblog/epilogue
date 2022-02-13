@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
@@ -9,12 +9,14 @@ import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 
 import { styles } from "./Styles";
+import { EpilogueStorage } from "./Storage";
 
-let auth_token = "";
+let auth_token = EpilogueStorage.get("auth_code");
 
 export function HomeScreen({ navigation }) {
   const [ books, setBooks ] = useState();
   const [ bookshelves, setBookshelves ] = useState([]);
+  const [ searchText, setSearchText ] = useState("");
   var current_bookshelf = { id: 0, title: "" };
   
   React.useEffect(() => {
@@ -128,9 +130,16 @@ export function HomeScreen({ navigation }) {
 	navigation.navigate("Details", params);
   }
   
-  function removeFromBookshelf() {
-	  
+  function removeFromBookshelf() {	  
   }
+
+	function onSearch() {
+		if (searchText.length > 0) {
+			
+		}
+		else {
+		}
+	}
 
 	renderRightActions = (progress, dragX) => {
 		const trans = dragX.interpolate({
@@ -155,6 +164,7 @@ export function HomeScreen({ navigation }) {
 
   return (
 	<View style={styles.container}>
+		<TextInput style={styles.searchField} onChangeText={setSearchText} value={searchText} onEndEditing={onSearch} returnKeyType="search" placeholder="Search for books to add" />
 	  <FlatList
 		data = {books}
 		renderItem = { ({item}) => 

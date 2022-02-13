@@ -6,8 +6,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
 
 import { styles } from "./Styles";
+import { EpilogueStorage } from "./Storage";
 
-let auth_token = "";
+let auth_token = EpilogueStorage.get("auth_code");
 
 export function BookDetailsScreen({ route, navigation }) {
   const [ data, setData ] = useState();

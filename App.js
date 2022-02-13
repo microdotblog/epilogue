@@ -7,16 +7,18 @@ import { MenuView } from "@react-native-menu/menu";
 import "react-native-gesture-handler"
 
 import { styles } from "./src/Styles";
-
-let auth_token = "";
+import { EpilogueStorage } from "./src/Storage";
 
 import { HomeScreen } from "./src/HomeScreen";
 import { BookDetailsScreen } from "./src/BookDetailsScreen";
   
 const Stack = createNativeStackNavigator();	
+let auth_token = EpilogueStorage.get("auth_code");
   
 const App: () => Node = () => {  
   const isDarkMode = useColorScheme() === "dark";
+
+  // EpilogueStorage.set("auth_code", "ABCDEF");
 
   return (
     <NavigationContainer>

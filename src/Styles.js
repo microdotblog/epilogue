@@ -8,10 +8,7 @@ export const styles = StyleSheet.create({
   profileIcon: {
 	width: 24,
 	height: 24,
-	borderBottomLeftRadius: 12,
-	borderBottomRightRadius: 12,
-	borderTopRightRadius: 12,
-	borderTopLeftRadius: 12    
+	borderRadius: 12
   },
   navbarBookshelf: {
 	flexDirection: "row",
@@ -123,5 +120,19 @@ export const styles = StyleSheet.create({
 	},
 	removeText: {
 		color: "#FFFFFF"
+	},
+	searchField: {
+		marginTop: 1,
+		marginBottom: 15,
+		marginLeft: 20,
+		marginRight: 20,
+		paddingTop: 7,
+		paddingBottom: 7,
+		paddingLeft: 12,
+		paddingRight: 12,
+		borderRadius: 20,
+		borderColor: "#DEDEDE",
+		borderWidth: 0.5,
+		backgroundColor: "#FFFFFF"
 	}
 });
