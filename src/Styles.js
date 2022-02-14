@@ -141,7 +141,7 @@ export default StyleSheet.create({
 		height: 22,
 		tintColor: "#337AB7"
 	},
-	navbarPost: {
+	navbarSubmit: {
 		marginTop: 4,
 		color: "#337AB7",
 		fontSize: 16
@@ -156,6 +156,26 @@ export default StyleSheet.create({
 		paddingRight: 14,
 		paddingTop: 14,
 		paddingBottom: 14
+	},
+	signinIntro: {
+		marginTop: 5,
+		marginLeft: 15,
+		marginRight: 15
+	},
+	signinEmail: {
+		marginTop: 15,
+		marginLeft: 15,
+		marginRight: 15
+	},
+	signinAppleSection: {
+		marginTop: 15,
+		paddingTop: 15,
+		borderTopWidth: 1,
+		borderTopColor: "#DEDEDE"
+	},
+	signinAppleIntro: {
+		marginLeft: 15,
+		marginRight: 15	
 	},
 	dark: {
 		container: {

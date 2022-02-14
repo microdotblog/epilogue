@@ -31,6 +31,11 @@ export function HomeScreen({ navigation }) {
 		// epilogueStorage.remove("current_bookshelf");
 		// return;
 
+		let params = {
+		};
+		navigation.navigate("SignIn", params);
+		return;
+
 		epilogueStorage.get("current_search").then(current_search => {
 			if ((current_search == null) || (currentSearch.length == 0)) {
 				loadBookshelves(navigation);

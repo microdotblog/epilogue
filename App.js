@@ -12,6 +12,7 @@ import epilogueStorage from "./src/Storage";
 import { HomeScreen } from "./src/HomeScreen";
 import { BookDetailsScreen } from "./src/BookDetailsScreen";
 import { PostScreen } from "./src/PostScreen";
+import { SignInScreen } from "./src/SignInScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -66,7 +67,15 @@ const App: () => Node = () => {
             ),
             headerRight: () => (
               <Pressable onPress={() => { }}>
-                <Text style={styles.navbarPost}>Post</Text>
+                <Text style={styles.navbarSubmit}>Post</Text>
+              </Pressable>
+            )
+          })} />
+          <Stack.Screen name="SignIn" component={SignInScreen} options={({ navigation, route }) => ({
+            headerTitle: "",
+            headerRight: () => (
+              <Pressable onPress={() => { }}>
+                <Text style={styles.navbarSubmit}>Sign In</Text>
               </Pressable>
             )
           })} />
