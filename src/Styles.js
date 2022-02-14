@@ -151,6 +151,7 @@ export default StyleSheet.create({
 	postTextInput: {
 		textAlignVertical: "top",
 		fontSize: 16,
+		lineHeight: 22,
 		paddingLeft: 14,
 		paddingRight: 14,
 		paddingTop: 14,

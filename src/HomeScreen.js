@@ -192,15 +192,18 @@ export function HomeScreen({ navigation }) {
 	}
 	
 	function onShowBookPressed(item) {
-		var params = {
-			id: item.id,
-			isbn: item.isbn,
-			title: item.title,
-			image: item.image,
-			author: item.author,
-			bookshelves: bookshelves
+		epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+			var params = {
+				id: item.id,
+				isbn: item.isbn,
+				title: item.title,
+				image: item.image,
+				author: item.author,
+				bookshelves: bookshelves,
+				current_bookshelf: current_bookshelf
 			};
-		navigation.navigate("Details", params);
+			navigation.navigate("Details", params);
+		});
 	}
   
 	function removeFromBookshelf() {	  

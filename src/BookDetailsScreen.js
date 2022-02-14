@@ -12,7 +12,20 @@ export function BookDetailsScreen({ route, navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
-	const { id, isbn, title, image, author, bookshelves } = route.params;
+	const { id, isbn, title, image, author, bookshelves, current_bookshelf } = route.params;
+
+	React.useEffect(() => {
+		const unsubscribe = navigation.addListener("focus", () => {
+			onFocus(navigation);
+		});
+		return unsubscribe;
+	}, [navigation]);	
+	
+	function onFocus(navigation) {
+		let bookshelf_title = current_bookshelf.title;
+		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
+		epilogueStorage.set("current_text", s);
+	}
 	
 	function addToBookshelf(bookshelf_id) {
 		let form = new FormData();
