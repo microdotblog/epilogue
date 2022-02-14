@@ -61,7 +61,7 @@ const App: () => Node = () => {
             headerTitle: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Image style={styles.navbarBackIcon} source={require("./images/close.png")} />
+                <Image style={styles.navbarCloseIcon} source={require("./images/close.png")} />
               </Pressable>
             ),
             headerRight: () => (

@@ -135,6 +135,12 @@ export default StyleSheet.create({
 		borderWidth: 0.5,
 		backgroundColor: "#FFFFFF"
 	},
+	navbarCloseIcon: {
+		marginTop: 3,
+		width: 24,
+		height: 24,
+		tintColor: "#337AB7"
+	},
 	navbarPost: {
 		marginTop: 4,
 		color: "#337AB7",
