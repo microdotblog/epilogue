@@ -29,7 +29,11 @@ export function HomeScreen({ navigation }) {
 		// epilogueStorage.set("auth_token", "TESTING").then(() => {
 		// });
 
-		loadBookshelves(navigation);
+		epilogueStorage.get("current_search").then(current_search => {
+			if ((current_search == null) || (currentSearch.length == 0)) {
+				loadBookshelves(navigation);
+			}
+		});
 	}
   
 	function loadBooks(bookshelf_id, handler = function() {}) {
@@ -191,6 +195,7 @@ export function HomeScreen({ navigation }) {
 	}
 
 	function onSearch() {
+		epilogueStorage.set("current_search", searchText);
 		if (searchText.length > 0) {
 			sendSearch(searchText);
 		}
