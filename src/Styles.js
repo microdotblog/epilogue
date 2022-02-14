@@ -135,6 +135,11 @@ export default StyleSheet.create({
 		borderWidth: 0.5,
 		backgroundColor: "#FFFFFF"
 	},
+	navbarPost: {
+		marginTop: 4,
+		color: "#337AB7",
+		fontSize: 16
+	},
 	dark: {
 		container: {
 			backgroundColor: "#212936",
