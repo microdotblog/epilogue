@@ -4,7 +4,6 @@ class EpilogueStorage {
 	async set(key, value) {
 		try {
 			var s = value;
-			console.log("storage setting: ", JSON.stringify(s));
 			if (typeof s != "string") {
 				s = JSON.stringify(s);
 			}
@@ -41,7 +40,6 @@ class EpilogueStorage {
 	async remove(key) {
 		try {
 			await AsyncStorage.removeItem(key);
-			console.log("storage did remove");
 		}
 		catch (e) {
 			console.log("Error deleting key: " + key);
