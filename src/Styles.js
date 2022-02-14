@@ -168,6 +168,7 @@ export default StyleSheet.create({
 		marginRight: 15
 	},
 	signinAppleSection: {
+		opacity: 0,
 		marginTop: 15,
 		paddingTop: 15,
 		borderTopWidth: 1,
