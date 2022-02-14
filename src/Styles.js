@@ -137,14 +137,24 @@ export default StyleSheet.create({
 	},
 	navbarCloseIcon: {
 		marginTop: 3,
-		width: 24,
-		height: 24,
+		width: 22,
+		height: 22,
 		tintColor: "#337AB7"
 	},
 	navbarPost: {
 		marginTop: 4,
 		color: "#337AB7",
 		fontSize: 16
+	},
+	postTextBox: {
+	},
+	postTextInput: {
+		textAlignVertical: "top",
+		fontSize: 16,
+		paddingLeft: 14,
+		paddingRight: 14,
+		paddingTop: 14,
+		paddingBottom: 14
 	},
 	dark: {
 		container: {
