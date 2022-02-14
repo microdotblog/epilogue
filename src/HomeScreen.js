@@ -206,6 +206,22 @@ export function HomeScreen({ navigation }) {
 	function removeFromBookshelf() {	  
 	}
 
+	function onChangeSearch(text) {
+		setSearchText(text);
+		
+		// if we're clearing the text, wait a second and then send it
+		// otherwise the user is still typing
+		if (text.length == 0) {
+			setTimeout(function() {
+				epilogueStorage.remove("current_search").then(() => {
+					epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+						loadBooks(current_bookshelf.id);
+					});				
+				});
+			}, 1000);
+		}
+	}
+
 	function onSearch() {
 		if (searchText.length > 0) {
 			epilogueStorage.set("current_search", searchText);
@@ -243,7 +259,7 @@ export function HomeScreen({ navigation }) {
 
 	return (
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<TextInput style={is_dark ? [ styles.searchField, styles.dark.searchField ] : styles.searchField} onChangeText={setSearchText} value={searchText} onEndEditing={onSearch} returnKeyType="search" placeholder="Search for books to add" />
+			<TextInput style={is_dark ? [ styles.searchField, styles.dark.searchField ] : styles.searchField} onChangeText={onChangeSearch} value={searchText} onEndEditing={onSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
