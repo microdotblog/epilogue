@@ -3,7 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 class EpilogueStorage {
 	async set(key, value) {
 		try {
-			await AsyncStorage.setItem(key, value);
+			var s = value;
+			console.log("storage setting: ", JSON.stringify(s));
+			if (typeof s != "string") {
+				s = JSON.stringify(s);
+			}
+			await AsyncStorage.setItem(key, s);
 		}
 		catch (e) {
 			console.log("Error setting key: " + key);
@@ -15,7 +20,14 @@ class EpilogueStorage {
 		try {
 			const value = await AsyncStorage.getItem(key);
 			if (value != null) {
-				return value;
+				try {
+					// parse if it's a serialized object
+					return JSON.parse(value);
+				}
+				catch (e) {
+					// not JSON, just return it
+					return value;
+				}
 			}
 		}
 		catch (e) {
@@ -24,6 +36,17 @@ class EpilogueStorage {
 		}
 		
 		return null;
+	}
+	
+	async remove(key) {
+		try {
+			await AsyncStorage.removeItem(key);
+			console.log("storage did remove");
+		}
+		catch (e) {
+			console.log("Error deleting key: " + key);
+			console.log(e);
+		}
 	}
 }
 

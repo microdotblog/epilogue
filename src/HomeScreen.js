@@ -16,7 +16,6 @@ export function HomeScreen({ navigation }) {
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ searchText, setSearchText ] = useState("");
-	var current_bookshelf = { id: 0, title: "" };
   
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -29,6 +28,9 @@ export function HomeScreen({ navigation }) {
 		// epilogueStorage.set("auth_token", "TESTING").then(() => {
 		// });
 
+		// epilogueStorage.remove("current_bookshelf");
+		// return;
+
 		epilogueStorage.get("current_search").then(current_search => {
 			if ((current_search == null) || (currentSearch.length == 0)) {
 				loadBookshelves(navigation);
@@ -37,16 +39,21 @@ export function HomeScreen({ navigation }) {
 	}
   
 	function loadBooks(bookshelf_id, handler = function() {}) {
-		epilogueStorage.get("auth_token").then(auth_token => {	  
+		if (bookshelf_id == undefined) {
+			return;
+		}
+		
+		epilogueStorage.get("auth_token").then(auth_token => {
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + auth_token
 				}
 			};
 			
+			console.log("loadBooks getBookshelves: ", JSON.stringify(bookshelves));
 			for (let shelf of bookshelves) {
 				if (shelf.id == bookshelf_id) {
-					current_bookshelf = shelf;
+					epilogueStorage.set("current_bookshelf", shelf);
 				}
 			}
 			
@@ -99,12 +106,15 @@ export function HomeScreen({ navigation }) {
 				}
 				
 				setBookshelves(new_items);
-				if (current_bookshelf.id == 0) {
-					let first_bookshelf = new_items[0];
-					current_bookshelf = first_bookshelf;
-				}
-				loadBooks(current_bookshelf.id);
-				setupBookshelves(navigation, new_items, current_bookshelf.title);
+				epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+					if (current_bookshelf == null) {
+						let first_bookshelf = new_items[0];
+						epilogueStorage.set("current_bookshelf", first_bookshelf);
+						current_bookshelf = first_bookshelf;
+					}
+					loadBooks(current_bookshelf.id);
+					setupBookshelves(navigation, new_items, current_bookshelf.title);
+				});
 			});		
 		});
 	}
@@ -116,7 +126,9 @@ export function HomeScreen({ navigation }) {
 				onPressAction = {({ nativeEvent }) => {
 					let shelf_id = nativeEvent.event;
 					loadBooks(shelf_id, function() {
-						setupBookshelves(navigation, bookshelves, current_bookshelf.title);
+						epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+							setupBookshelves(navigation, bookshelves, current_bookshelf.title);
+						});
 					});
 				}}
 				actions = {items}
@@ -195,12 +207,16 @@ export function HomeScreen({ navigation }) {
 	}
 
 	function onSearch() {
-		epilogueStorage.set("current_search", searchText);
 		if (searchText.length > 0) {
+			epilogueStorage.set("current_search", searchText);
 			sendSearch(searchText);
 		}
 		else {
-			loadBooks(current_bookshelf.id);
+			epilogueStorage.remove("current_search").then(() => {
+				epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+					loadBooks(current_bookshelf.id);
+				});				
+			});
 		}
 	}
 
