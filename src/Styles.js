@@ -158,14 +158,26 @@ export default StyleSheet.create({
 		paddingBottom: 14
 	},
 	postHostnameBar: {
+		flexDirection: "row",
 		backgroundColor: "#e8e8e8",
 		paddingTop: 8,
 		paddingBottom: 8,
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
+	postHostnameLeft: {
+		flex: 1,
+		marginLeft: 15
+	},
 	postHostnameText: {
-		textAlign: "center",
+		flex: 3,
+		paddingTop: 2,
+		textAlign: "center"
+	},
+	postHostnameProgress: {
+		flex: 1,
+		alignItems: "flex-end",
+		marginRight: 15
 	},
 	signinIntro: {
 		marginTop: 5,
