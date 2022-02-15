@@ -56,7 +56,7 @@ export function HomeScreen({ navigation }) {
 	
 	function verifyToken(token) {		
 		let form = new FormData();
-		form.append("token", temp_token);
+		form.append("token", token);
 		
 		var options = {
 			method: "POST",
