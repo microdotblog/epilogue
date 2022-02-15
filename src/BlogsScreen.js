@@ -38,12 +38,15 @@ export function BlogsScreen({ navigation }) {
 				}
 				
 				setBlogs(new_items);
-			});
-			
+			});			
 		});
 	}
 	
-	function onSelectBlog(blog) {		
+	function onSelectBlog(blog) {	
+		epilogueStorage.set("current_blog_id", blog.id);
+		epilogueStorage.set("current_blog_name", blog.name);
+
+		navigation.goBack();
 	}
 	
 	return (

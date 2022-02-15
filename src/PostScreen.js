@@ -8,6 +8,7 @@ import epilogueStorage from "./Storage";
 
 export function PostScreen({ navigation }) {
 	const [ text, setText ] = useState();
+	const [ blogName, setBlogName ] = useState("");
 	
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -22,6 +23,10 @@ export function PostScreen({ navigation }) {
 				setText(current_text);
 			}
 		});
+		
+		epilogueStorage.get("current_blog_name").then(blog_name => {
+			setBlogName(blog_name);
+		});
 	}
 	
 	function onShowBlogs() {
@@ -31,7 +36,7 @@ export function PostScreen({ navigation }) {
 	return (
 		<View style={styles.postTextBox}>
 			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
-				<Text style={styles.postHostnameText}>manton.org</Text>
+				<Text style={styles.postHostnameText}>{blogName}</Text>
 			</Pressable>
 			<TextInput style={styles.postTextInput} value={text} onChangeText={setText} multiline={true} />
 		</View>
