@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
@@ -25,21 +25,82 @@ export function HomeScreen({ navigation }) {
 	}, [navigation]);
   
 	function onFocus(navigation) {
-		// epilogueStorage.set("auth_token", "TESTING").then(() => {
-		// });
+		Linking.getInitialURL().then(url => {
+			loadURL(url);
+		});
 
-		// epilogueStorage.remove("current_bookshelf");
-		// return;
-
-		// let params = {
-		// };
-		// navigation.navigate("SignIn", params);
-		// return;
+		Linking.addEventListener("url", (event) => {
+			loadURL(event.url);
+		});
+		
+		epilogueStorage.get("auth_token").then(auth_token => {
+			if ((auth_token == null) || (auth_token.length == 0)) {
+				navigation.navigate("SignIn");
+			}
+		});
 
 		epilogueStorage.get("current_search").then(current_search => {
 			if ((current_search == null) || (currentSearch.length == 0)) {
 				loadBookshelves(navigation);
 			}
+		});
+	}
+  
+	function loadURL(url) {
+		if (url != undefined) {
+			let pieces = url.split("/");
+			let temp_token = pieces[pieces.length - 1];
+			verifyToken(temp_token);
+		}
+	}
+	
+	function verifyToken(token) {		
+		let form = new FormData();
+		form.append("token", temp_token);
+		
+		var options = {
+			method: "POST",
+			body: form
+		};
+		
+		fetch("https://micro.blog/account/verify", options).then(response => response.json()).then(data => {
+			let username = data.username;
+			let new_token = data.token;
+			let blog_name = data.default_site;
+
+			// if no pref for blog, load blogs and set default
+			epilogueStorage.get("current_blog_id").then(blog_id => {
+				if ((blog_id == null) || (blog_id.length == 0)) {
+					loadBlogs();
+				}
+			});
+		
+			// save token and load books
+			epilogueStorage.set("auth_token", new_token).then(() => {
+				loadBookshelves(navigation);
+			});
+		});
+	}
+  
+  	function loadBlogs() {
+		epilogueStorage.get("auth_token").then(auth_token => {
+			var options = {
+				headers: {
+					"Authorization": "Bearer " + auth_token
+				}
+			};
+						
+			fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
+				for (blog of data.destination) {
+					if (blog["microblog-default"] == true) {
+						let blog_id = blog.uid;
+						let blog_name = blog.name;
+						
+						epilogueStorage.set("current_blog_id", blog_id);
+						epilogueStorage.set("current_blog_name", blog_name);
+					}
+				}
+			});			
 		});
 	}
   

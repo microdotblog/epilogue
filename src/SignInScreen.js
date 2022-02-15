@@ -17,11 +17,36 @@ export function SignInScreen({ navigation }) {
 	}, [navigation]);	
 	
 	function onFocus(navigation) {
+		setupSubmitButton();
+	}
+
+	function setupSubmitButton() {
+		navigation.setOptions({
+			headerRight: () => (
+			  <Pressable onPress={() => { onSendEmail(); }}>
+				<Text style={styles.navbarSubmit}>Sign In</Text>
+			  </Pressable>
+			)
+		});		
 	}
 	
 	function onSendEmail() {
 		if ((email != undefined) && (email.length > 0)) {
-			console.warn(email);
+			let form = new FormData();
+			form.append("email", email);
+			form.append("app_name", "Epilogue");
+			form.append("redirect_url", "epilogue://signin/");
+
+			var options = {
+				method: "POST",
+				body: form
+			};
+							
+			// setProgressAnimating(true);
+		
+			fetch("https://micro.blog/account/signin", options).then(response => response.json()).then(data => {
+				console.warn("Email sent.");
+			});
 		}
 	}
 	

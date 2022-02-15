@@ -26,7 +26,7 @@ const EpilogueDarkTheme = {
 
 const App: () => Node = () => {	
   const is_dark = (useColorScheme() == "dark");
-  
+
   return (
   	<NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
   		<Stack.Navigator>
