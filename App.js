@@ -13,6 +13,7 @@ import { HomeScreen } from "./src/HomeScreen";
 import { BookDetailsScreen } from "./src/BookDetailsScreen";
 import { PostScreen } from "./src/PostScreen";
 import { SignInScreen } from "./src/SignInScreen";
+import { BlogsScreen } from "./src/BlogsScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -76,6 +77,14 @@ const App: () => Node = () => {
             headerRight: () => (
               <Pressable onPress={() => { }}>
                 <Text style={styles.navbarSubmit}>Sign In</Text>
+              </Pressable>
+            )
+          })} />
+          <Stack.Screen name="Blogs" component={BlogsScreen} options={({ navigation, route }) => ({
+            headerTitle: "Blogs",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }}>
+                <Image style={styles.navbarCloseIcon} source={require("./images/close.png")} />
               </Pressable>
             )
           })} />

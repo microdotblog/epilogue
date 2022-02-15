@@ -157,6 +157,16 @@ export default StyleSheet.create({
 		paddingTop: 14,
 		paddingBottom: 14
 	},
+	postHostnameBar: {
+		backgroundColor: "#e8e8e8",
+		paddingTop: 7,
+		paddingBottom: 7,
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6"
+	},
+	postHostnameText: {
+		textAlign: "center",
+	},
 	signinIntro: {
 		marginTop: 5,
 		marginLeft: 15,
@@ -177,6 +187,16 @@ export default StyleSheet.create({
 	signinAppleIntro: {
 		marginLeft: 15,
 		marginRight: 15	
+	},
+	blogListItem: {
+		paddingLeft: 15,
+		paddingRight: 15,
+		paddingTop: 16,
+		paddingBottom: 16,
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6"
+	},
+	blogListName: {
 	},
 	dark: {
 		container: {

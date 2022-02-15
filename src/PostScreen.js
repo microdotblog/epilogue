@@ -24,8 +24,15 @@ export function PostScreen({ navigation }) {
 		});
 	}
 	
+	function onShowBlogs() {
+		navigation.navigate("Blogs");
+	}
+	
 	return (
 		<View style={styles.postTextBox}>
+			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
+				<Text style={styles.postHostnameText}>manton.org</Text>
+			</Pressable>
 			<TextInput style={styles.postTextInput} value={text} onChangeText={setText} multiline={true} />
 		</View>
 	);
