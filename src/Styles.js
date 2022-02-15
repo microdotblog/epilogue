@@ -159,8 +159,8 @@ export default StyleSheet.create({
 	},
 	postHostnameBar: {
 		backgroundColor: "#e8e8e8",
-		paddingTop: 7,
-		paddingBottom: 7,
+		paddingTop: 8,
+		paddingBottom: 8,
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
