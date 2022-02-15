@@ -33,21 +33,29 @@ export function SignInScreen({ navigation }) {
 	
 	function onSendEmail() {
 		if ((email != undefined) && (email.length > 0)) {
-			let form = new FormData();
-			form.append("email", email);
-			form.append("app_name", "Epilogue");
-			form.append("redirect_url", "epilogue://signin/");
-
-			var options = {
-				method: "POST",
-				body: form
-			};
-							
-			// setProgressAnimating(true);
-		
-			fetch("https://micro.blog/account/signin", options).then(response => response.json()).then(data => {
-				Alert.alert("Email sent", "Check your email on this device for a link to finish signing in.");
-			});
+			// allow pasting in an app token
+			if (!email.includes("?")) {
+				epilogueStorage.set(keys.authToken, email).then(() => {
+					navigation.goBack();
+				});
+			}
+			else {
+				let form = new FormData();
+				form.append("email", email);
+				form.append("app_name", "Epilogue");
+				form.append("redirect_url", "epilogue://signin/");
+	
+				var options = {
+					method: "POST",
+					body: form
+				};
+								
+				// setProgressAnimating(true);
+			
+				fetch("https://micro.blog/account/signin", options).then(response => response.json()).then(data => {
+					Alert.alert("Email sent", "Check your email on this device for a link to finish signing in.");
+				});
+			}
 		}
 	}
 	
