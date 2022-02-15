@@ -8,6 +8,7 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 
+import { keys } from "./Constants";
 import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
@@ -25,7 +26,7 @@ export function HomeScreen({ navigation }) {
 	}, [navigation]);
   
 	function onFocus(navigation) {		
-		epilogueStorage.get("auth_token").then(auth_token => {
+		epilogueStorage.get(keys.authToken).then(auth_token => {
 			if ((auth_token == null) || (auth_token.length == 0)) {
 				navigation.navigate("SignIn");
 			}
@@ -78,14 +79,14 @@ export function HomeScreen({ navigation }) {
 				let blog_name = data.default_site;
 	
 				// if no pref for blog, load blogs and set default
-				epilogueStorage.get("current_blog_id").then(blog_id => {
+				epilogueStorage.get(keys.currentBlogID).then(blog_id => {
 					if ((blog_id == null) || (blog_id.length == 0)) {
 						loadBlogs();
 					}
 				});
 			
 				// save token and load books
-				epilogueStorage.set("auth_token", new_token).then(() => {
+				epilogueStorage.set(keys.authToken, new_token).then(() => {
 					loadBookshelves(navigation);
 
 					// close sign-in screen if it was open
@@ -93,7 +94,7 @@ export function HomeScreen({ navigation }) {
 				});
 
 				// save current username
-				epilogueStorage.set("current_username", username).then(() => {
+				epilogueStorage.set(keys.currentUsername, username).then(() => {
 					setupProfileIcon();
 				});
 			}
@@ -101,7 +102,7 @@ export function HomeScreen({ navigation }) {
 	}
   
   	function loadBlogs() {
-		epilogueStorage.get("auth_token").then(auth_token => {
+		epilogueStorage.get(keys.authToken).then(auth_token => {
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + auth_token
@@ -114,8 +115,8 @@ export function HomeScreen({ navigation }) {
 						let blog_id = blog.uid;
 						let blog_name = blog.name;
 						
-						epilogueStorage.set("current_blog_id", blog_id);
-						epilogueStorage.set("current_blog_name", blog_name);
+						epilogueStorage.set(keys.currentBlogID, blog_id);
+						epilogueStorage.set(keys.currentBlogName, blog_name);
 					}
 				}
 			});			
@@ -127,14 +128,14 @@ export function HomeScreen({ navigation }) {
 			return;
 		}
 		
-		epilogueStorage.get("auth_token").then(auth_token => {
+		epilogueStorage.get(keys.authToken).then(auth_token => {
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + auth_token
 				}
 			};
 			
-			console.log("loadBooks getBookshelves: ", JSON.stringify(bookshelves));
+			// console.log("loadBooks getBookshelves: ", JSON.stringify(bookshelves));
 			for (let shelf of bookshelves) {
 				if (shelf.id == bookshelf_id) {
 					epilogueStorage.set("current_bookshelf", shelf);
@@ -164,7 +165,7 @@ export function HomeScreen({ navigation }) {
 	}
   
 	function loadBookshelves(navigation) {
-		epilogueStorage.get("auth_token").then(auth_token => {
+		epilogueStorage.get(keys.authToken).then(auth_token => {
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + auth_token
@@ -227,7 +228,7 @@ export function HomeScreen({ navigation }) {
 	}
 	
 	function setupProfileIcon() {
-		epilogueStorage.get("current_username").then(username => {
+		epilogueStorage.get(keys.currentUsername).then(username => {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
 			navigation.setOptions({
 				headerLeft: () => (
@@ -258,8 +259,8 @@ export function HomeScreen({ navigation }) {
 	}
 	
 	function clearSettings() {
-		epilogueStorage.remove("auth_token");
-		epilogueStorage.remove("current_username");		
+		epilogueStorage.remove(keys.authToken);
+		epilogueStorage.remove(keys.currentUsername);		
 	}
 	
 	function sendSearch(searchText) {

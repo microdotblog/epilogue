@@ -3,6 +3,7 @@ import type { Node } from "react";
 import { TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
+import { keys } from "./Constants";
 import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
@@ -50,11 +51,11 @@ export function PostScreen({ navigation }) {
 			}
 		});
 		
-		epilogueStorage.get("current_blog_name").then(blog_name => {
+		epilogueStorage.get(keys.currentBlogName).then(blog_name => {
 			setBlogName(blog_name);
 		});
 
-		epilogueStorage.get("current_blog_id").then(blog_id => {
+		epilogueStorage.get(keys.currentBlogID).then(blog_id => {
 			setBlogID(blog_id);
 		});
 	}
