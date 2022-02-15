@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { LogBox, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
@@ -26,6 +26,8 @@ const EpilogueDarkTheme = {
 
 const App: () => Node = () => {	
   const is_dark = (useColorScheme() == "dark");
+
+  LogBox.ignoreAllLogs();
 
   return (
   	<NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
