@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
@@ -24,15 +24,7 @@ export function HomeScreen({ navigation }) {
 		return unsubscribe;
 	}, [navigation]);
   
-	function onFocus(navigation) {
-		Linking.getInitialURL().then(url => {
-			loadURL(url);
-		});
-
-		Linking.addEventListener("url", (event) => {
-			loadURL(event.url);
-		});
-		
+	function onFocus(navigation) {		
 		epilogueStorage.get("auth_token").then(auth_token => {
 			if ((auth_token == null) || (auth_token.length == 0)) {
 				navigation.navigate("SignIn");
@@ -43,6 +35,19 @@ export function HomeScreen({ navigation }) {
 			if ((current_search == null) || (currentSearch.length == 0)) {
 				loadBookshelves(navigation);
 			}
+		});
+		
+		setupLinking();
+		setupProfileIcon();
+	}
+  
+  	function setupLinking() {
+		Linking.getInitialURL().then(url => {
+			loadURL(url);
+		});
+		
+		Linking.addEventListener("url", (event) => {
+			loadURL(event.url);
 		});
 	}
   
@@ -64,21 +69,34 @@ export function HomeScreen({ navigation }) {
 		};
 		
 		fetch("https://micro.blog/account/verify", options).then(response => response.json()).then(data => {
-			let username = data.username;
-			let new_token = data.token;
-			let blog_name = data.default_site;
+			if (data.error) {
+				Alert.alert("Error signing in", data.error);
+			}
+			else {
+				let username = data.username;
+				let new_token = data.token;
+				let blog_name = data.default_site;
+	
+				// if no pref for blog, load blogs and set default
+				epilogueStorage.get("current_blog_id").then(blog_id => {
+					if ((blog_id == null) || (blog_id.length == 0)) {
+						loadBlogs();
+					}
+				});
+			
+				// save token and load books
+				epilogueStorage.set("auth_token", new_token).then(() => {
+					loadBookshelves(navigation);
 
-			// if no pref for blog, load blogs and set default
-			epilogueStorage.get("current_blog_id").then(blog_id => {
-				if ((blog_id == null) || (blog_id.length == 0)) {
-					loadBlogs();
-				}
-			});
-		
-			// save token and load books
-			epilogueStorage.set("auth_token", new_token).then(() => {
-				loadBookshelves(navigation);
-			});
+					// close sign-in screen if it was open
+					navigation.goBack();				
+				});
+
+				// save current username
+				epilogueStorage.set("current_username", username).then(() => {
+					setupProfileIcon();
+				});
+			}
 		});
 	}
   
@@ -207,7 +225,43 @@ export function HomeScreen({ navigation }) {
 			)
 		});
 	}
-
+	
+	function setupProfileIcon() {
+		epilogueStorage.get("current_username").then(username => {
+			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
+			navigation.setOptions({
+				headerLeft: () => (
+					<Pressable onPress={() => { onSignOut(); }}>
+						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
+					</Pressable>
+				)
+			});		
+		});
+	}	
+	
+	function onSignOut() {		
+		Alert.alert("Sign out of Epilogue?", "", [
+			{
+				text: "Cancel",
+				style: "cancel"
+			},
+			{
+				text: "Sign Out",
+				onPress: () => {
+					clearSettings();
+					setTimeout(function() {
+						navigation.navigate("SignIn");
+					}, 1000);
+				}
+			}
+		]);
+	}
+	
+	function clearSettings() {
+		epilogueStorage.remove("auth_token");
+		epilogueStorage.remove("current_username");		
+	}
+	
 	function sendSearch(searchText) {
 		let q = encodeURIComponent(searchText);
 	

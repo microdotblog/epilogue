@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
+import { Alert, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import styles from "./Styles";
@@ -17,7 +17,7 @@ export function SignInScreen({ navigation }) {
 	}, [navigation]);	
 	
 	function onFocus(navigation) {
-		setupSubmitButton();
+		setupSubmitButton();		
 	}
 
 	function setupSubmitButton() {
@@ -45,7 +45,7 @@ export function SignInScreen({ navigation }) {
 			// setProgressAnimating(true);
 		
 			fetch("https://micro.blog/account/signin", options).then(response => response.json()).then(data => {
-				console.warn("Email sent.");
+				Alert.alert("Email sent", "Check your email on this device for a link to finish signing in.");
 			});
 		}
 	}

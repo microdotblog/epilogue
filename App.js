@@ -34,7 +34,7 @@ const App: () => Node = () => {
   				<Stack.Screen name="Home" component={HomeScreen} options={{
   					headerTitle: "",
   					headerLeft: () => (
-  						<Image style={styles.profileIcon} source={{ uri: "https://micro.blog/manton/avatar.jpg" }} />
+  						<Image style={styles.profileIcon} source={{ uri: "https://micro.blog/images/blank_avatar.png" }} />
   					),
   					headerRight: () => (
   						<MenuView
