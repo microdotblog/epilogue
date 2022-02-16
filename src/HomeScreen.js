@@ -39,7 +39,7 @@ export function HomeScreen({ navigation }) {
 					}
 					else {
 						// no search yet, load bookshelves
-						epilogueStorage.get("current_search").then(current_search => {
+						epilogueStorage.get(keys.currentSearch).then(current_search => {
 							if ((current_search == null) || (currentSearch.length == 0)) {
 								loadBookshelves(navigation);
 							}
@@ -278,6 +278,7 @@ export function HomeScreen({ navigation }) {
 		epilogueStorage.remove(keys.currentBlogID);
 		epilogueStorage.remove(keys.currentBlogName);
 		epilogueStorage.remove(keys.currentBookshelf);
+		epilogueStorage.remove(keys.currentSearch);
 	}
 	
 	function sendSearch(searchText) {
@@ -354,7 +355,7 @@ export function HomeScreen({ navigation }) {
 		// otherwise the user is still typing
 		if (text.length == 0) {
 			setTimeout(function() {
-				epilogueStorage.remove("current_search").then(() => {
+				epilogueStorage.remove(keys.currentSearch).then(() => {
 					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 						loadBooks(current_bookshelf.id);
 					});				
@@ -365,11 +366,11 @@ export function HomeScreen({ navigation }) {
 
 	function onSearch() {
 		if (searchText.length > 0) {
-			epilogueStorage.set("current_search", searchText);
+			epilogueStorage.set(keys.currentSearch, searchText);
 			sendSearch(searchText);
 		}
 		else {
-			epilogueStorage.remove("current_search").then(() => {
+			epilogueStorage.remove(keys.currentSearch).then(() => {
 				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 					loadBooks(current_bookshelf.id);
 				});				

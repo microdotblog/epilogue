@@ -3,5 +3,6 @@ export const keys = {
 	currentUsername: "current_username",
 	currentBlogID: "current_blog_id",
 	currentBlogName: "current_blog_name",
-	currentBookshelf: "current_bookshelf"
+	currentBookshelf: "current_bookshelf",
+	currentSearch: "current_search"
 };
