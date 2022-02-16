@@ -51,12 +51,12 @@ const App: () => Node = () => {
   					headerTitle: "",
   					headerLeft: () => (
   						<Pressable onPress={() => { navigation.goBack(); }}>
-                <SFSymbol name="chevron.left" scale="large" color="#FFFFFF" size={16} resizeMode="center" style={styles.navbarBackIcon} />                
+                <SFSymbol name="chevron.left" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={styles.navbarBackIcon} />                
   						</Pressable>
   					),
   					headerRight: () => (
               <Pressable onPress={() => { navigation.navigate("Post"); }}>
-                <SFSymbol name="square.and.pencil" scale="large" color="#FFFFFF" size={16} resizeMode="center" style={styles.navbarNewIcon} />                
+                <SFSymbol name="square.and.pencil" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={styles.navbarNewIcon} />                
               </Pressable>
   					)
   				})} />
@@ -66,7 +66,7 @@ const App: () => Node = () => {
             headerTitle: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <SFSymbol name="xmark" scale="large" color="#FFFFFF" size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
+                <SFSymbol name="xmark" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
               </Pressable>
             ),
             headerRight: () => (
@@ -87,7 +87,7 @@ const App: () => Node = () => {
             headerTitle: "Blogs",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <SFSymbol name="xmark" scale="large" color="#FFFFFF" size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
+                <SFSymbol name="xmark" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
               </Pressable>
             )
           })} />

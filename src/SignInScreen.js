@@ -64,7 +64,7 @@ export function SignInScreen({ navigation }) {
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
 			<View>
 				<Text style={is_dark ? [ styles.signinIntro, styles.dark.signinIntro ] : styles.signinIntro}>Enter your Micro.blog account email address and you'll receive a link to sign in:</Text>
-				<TextInput style={is_dark ? [ styles.signinEmail, styles.dark.signinEmail ] : styles.signinEmail} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="Email address" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />
+				<TextInput style={is_dark ? [ styles.signinEmail, styles.dark.signinEmail ] : styles.signinEmail} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="Email address" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
 			</View>
 			<View style={styles.signinAppleSection}>
 				<Text style={is_dark ? [ styles.signinAppleIntro, styles.dark.signinAppleIntro ] : styles.signinAppleIntro}>New to Micro.blog? You can register here by signing in with your Apple ID:</Text>

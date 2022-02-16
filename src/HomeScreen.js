@@ -11,6 +11,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import { keys } from "./Constants";
 import styles from "./Styles";
 import epilogueStorage from "./Storage";
+import { SFSymbol } from "./SFSymbols";
 
 export function HomeScreen({ navigation }) {
 	const is_dark = (useColorScheme() == "dark");
@@ -219,7 +220,7 @@ export function HomeScreen({ navigation }) {
 				actions = {items}
 				>
 					<View style={styles.navbarBookshelf}>
-						<Image style={is_dark ? [ styles.navbarBookshelfIcon, styles.dark.navbarBookshelfIcon ] : styles.navbarBookshelfIcon} source={require("../images/books.png")} />
+						<SFSymbol name="books.vertical" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarBookshelfIcon, styles.dark.navbarBookshelfIcon ] : styles.navbarBookshelfIcon} />                         
 						<Text style={is_dark ? [ styles.navbarBookshelfTitle, styles.dark.navbarBookshelfTitle ] : styles.navbarBookshelfTitle}>{currentTitle}</Text>
 					</View>
 				</MenuView>
