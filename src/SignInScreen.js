@@ -35,7 +35,7 @@ export function SignInScreen({ navigation }) {
 	function onSendEmail() {
 		if ((email != undefined) && (email.length > 0)) {
 			// allow pasting in an app token
-			if (!email.includes("?")) {
+			if (!email.includes("@")) {
 				epilogueStorage.set(keys.authToken, email).then(() => {
 					navigation.goBack();
 				});
