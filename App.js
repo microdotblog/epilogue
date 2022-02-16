@@ -8,6 +8,7 @@ import "react-native-gesture-handler"
 
 import styles from "./src/Styles";
 import epilogueStorage from "./src/Storage";
+import { SFSymbol } from "./src/SFSymbols";
 
 import { HomeScreen } from "./src/HomeScreen";
 import { BookDetailsScreen } from "./src/BookDetailsScreen";
@@ -50,12 +51,12 @@ const App: () => Node = () => {
   					headerTitle: "",
   					headerLeft: () => (
   						<Pressable onPress={() => { navigation.goBack(); }}>
-  							<Image style={is_dark ? [ styles.navbarBackIcon, styles.dark.navbarBackIcon ] : styles.navbarBackIcon} source={require("./images/back.png")} />
+                <SFSymbol name="chevron.left" scale="large" color="#FFFFFF" size={16} resizeMode="center" style={styles.navbarBackIcon} />                
   						</Pressable>
   					),
   					headerRight: () => (
               <Pressable onPress={() => { navigation.navigate("Post"); }}>
-  						  <Image style={is_dark ? [ styles.navbarNewIcon, styles.dark.navbarNewIcon ] : styles.navbarNewIcon} source={require("./images/create.png")} />
+                <SFSymbol name="square.and.pencil" scale="large" color="#FFFFFF" size={16} resizeMode="center" style={styles.navbarNewIcon} />                
               </Pressable>
   					)
   				})} />
@@ -65,7 +66,7 @@ const App: () => Node = () => {
             headerTitle: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Image style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} source={require("./images/close.png")} />
+                <SFSymbol name="xmark" scale="large" color="#FFFFFF" size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
               </Pressable>
             ),
             headerRight: () => (
@@ -86,7 +87,7 @@ const App: () => Node = () => {
             headerTitle: "Blogs",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Image style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} source={require("./images/close.png")} />
+                <SFSymbol name="xmark" scale="large" color="#FFFFFF" size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
               </Pressable>
             )
           })} />
