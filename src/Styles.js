@@ -87,8 +87,12 @@ export default StyleSheet.create({
 		paddingVertical: 14,
 		paddingHorizontal: 14,
 		borderRadius: 5,
-		marginBottom: 6
-	},
+		marginBottom: 6,
+		backgroundColor: "#DEDEDE",
+		pressed: {
+			backgroundColor: "#BBBBBB",
+		}
+	},	
 	bookDetailsBookshelfTitle: {
 		flex: 1
 	},
@@ -243,6 +247,22 @@ export default StyleSheet.create({
 		},
 		bookDetailsAddTo: {
 			color: "#FFFFFF"
+		},
+		postTextBox: {
+			backgroundColor: "#212936",
+			color: "#E5E7EB"
+		},
+		bookDetailsButton: {
+			backgroundColor: "#141723",
+			pressed: {
+				backgroundColor: "#000000"
+			}
+		},		
+		bookDetailsBookshelfTitle: {
+			color: "#FFFFFF"
+		},
+		bookDetailsBookshelfCount: {
+			color: "#777777"
 		}
 	}
 });

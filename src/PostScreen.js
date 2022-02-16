@@ -8,6 +8,7 @@ import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
 export function PostScreen({ navigation }) {
+	const is_dark = (useColorScheme() == "dark");
 	const [ text, setText ] = useState();
 	const [ blogID, setBlogID ] = useState();
 	const [ blogName, setBlogName ] = useState();
@@ -89,7 +90,7 @@ export function PostScreen({ navigation }) {
 	}
 	
 	return (
-		<View style={styles.postTextBox}>
+		<View style={is_dark ? [ styles.postTextBox, styles.dark.postTextBox ] : styles.postTextBox}>
 			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
 				<Text style={styles.postHostnameLeft}></Text>
 				<Text style={styles.postHostnameText}>{blogName}</Text>

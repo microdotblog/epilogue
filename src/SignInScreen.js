@@ -8,6 +8,7 @@ import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
 export function SignInScreen({ navigation }) {
+	const is_dark = (useColorScheme() == "dark");
 	const [ email, setEmail ] = useState();
 	
 	React.useEffect(() => {
@@ -60,7 +61,7 @@ export function SignInScreen({ navigation }) {
 	}
 	
 	return (
-		<View style={styles.container}>
+		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
 			<View>
 				<Text style={styles.signinIntro}>Enter your Micro.blog account email address and you'll receive a link to sign in:</Text>
 				<TextInput style={styles.signinEmail} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="Email address" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />

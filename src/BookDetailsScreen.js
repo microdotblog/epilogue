@@ -69,12 +69,14 @@ export function BookDetailsScreen({ route, navigation }) {
 				bookshelves.map((shelf) => (
 					<Pressable key={shelf.id} onPress={() => { addToBookshelf(shelf.id); }} style={({ pressed }) => [
 						{
-						backgroundColor: pressed ? "#BBBBBB" : "#DEDEDE"
+						backgroundColor: pressed ? 
+							(is_dark ? styles.dark.bookDetailsButton.pressed.backgroundColor : styles.bookDetailsButton.pressed.backgroundColor) : 
+							(is_dark ? styles.dark.bookDetailsButton.backgroundColor : styles.bookDetailsButton.backgroundColor)
 						},
-						styles.bookDetailsButton
+						styles.bookDetailsButton, styles.dark.bookDetailsButton
 					]}>
-						<Text style={styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
-						<Text style={styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
+						<Text style={is_dark ? [ styles.bookDetailsBookshelfTitle, styles.dark.bookDetailsBookshelfTitle ] : styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
+						<Text style={is_dark ? [ styles.dark.bookDetailsBookshelfCount, styles.bookDetailsBookshelfCount ] : styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
 					</Pressable>
 				))
 			}
