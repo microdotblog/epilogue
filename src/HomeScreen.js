@@ -31,11 +31,21 @@ export function HomeScreen({ navigation }) {
 			if ((auth_token == null) || (auth_token.length == 0)) {
 				navigation.navigate("SignIn");
 			}
-		});
-
-		epilogueStorage.get("current_search").then(current_search => {
-			if ((current_search == null) || (currentSearch.length == 0)) {
-				loadBookshelves(navigation);
+			else {
+				// if nothing set yet, verify token and load books
+				epilogueStorage.get(keys.currentBlogID).then(blog_id => {
+					if ((blog_id == null) || (blog_id.length == 0)) {
+						verifyToken(auth_token);
+					}
+					else {
+						// no search yet, load bookshelves
+						epilogueStorage.get("current_search").then(current_search => {
+							if ((current_search == null) || (currentSearch.length == 0)) {
+								loadBookshelves(navigation);
+							}
+						});						
+					}
+				});
 			}
 		});
 		
@@ -136,10 +146,9 @@ export function HomeScreen({ navigation }) {
 				}
 			};
 			
-			// console.log("loadBooks getBookshelves: ", JSON.stringify(bookshelves));
 			for (let shelf of bookshelves) {
 				if (shelf.id == bookshelf_id) {
-					epilogueStorage.set("current_bookshelf", shelf);
+					epilogueStorage.set(keys.currentBookshelf, shelf);
 				}
 			}
 			
@@ -192,14 +201,18 @@ export function HomeScreen({ navigation }) {
 				}
 				
 				setBookshelves(new_items);
-				epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 					if (current_bookshelf == null) {
 						let first_bookshelf = new_items[0];
-						epilogueStorage.set("current_bookshelf", first_bookshelf);
-						current_bookshelf = first_bookshelf;
+						epilogueStorage.set(keys.currentBookshelf, first_bookshelf).then(() => {
+							loadBooks(first_bookshelf.id);
+							setupBookshelves(navigation, new_items, first_bookshelf.title);
+						});
 					}
-					loadBooks(current_bookshelf.id);
-					setupBookshelves(navigation, new_items, current_bookshelf.title);
+					else {
+						loadBooks(current_bookshelf.id);						
+						setupBookshelves(navigation, new_items, current_bookshelf.title);
+					}
 				});
 			});		
 		});
@@ -212,7 +225,7 @@ export function HomeScreen({ navigation }) {
 				onPressAction = {({ nativeEvent }) => {
 					let shelf_id = nativeEvent.event;
 					loadBooks(shelf_id, function() {
-						epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+						epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 							setupBookshelves(navigation, bookshelves, current_bookshelf.title);
 						});
 					});
@@ -262,6 +275,9 @@ export function HomeScreen({ navigation }) {
 	function clearSettings() {
 		epilogueStorage.remove(keys.authToken);
 		epilogueStorage.remove(keys.currentUsername);		
+		epilogueStorage.remove(keys.currentBlogID);
+		epilogueStorage.remove(keys.currentBlogName);
+		epilogueStorage.remove(keys.currentBookshelf);
 	}
 	
 	function sendSearch(searchText) {
@@ -314,7 +330,7 @@ export function HomeScreen({ navigation }) {
 	}
 	
 	function onShowBookPressed(item) {
-		epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 			var params = {
 				id: item.id,
 				isbn: item.isbn,
@@ -339,7 +355,7 @@ export function HomeScreen({ navigation }) {
 		if (text.length == 0) {
 			setTimeout(function() {
 				epilogueStorage.remove("current_search").then(() => {
-					epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 						loadBooks(current_bookshelf.id);
 					});				
 				});
@@ -354,7 +370,7 @@ export function HomeScreen({ navigation }) {
 		}
 		else {
 			epilogueStorage.remove("current_search").then(() => {
-				epilogueStorage.get("current_bookshelf").then(current_bookshelf => {
+				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 					loadBooks(current_bookshelf.id);
 				});				
 			});
