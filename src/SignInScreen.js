@@ -26,7 +26,7 @@ export function SignInScreen({ navigation }) {
 		navigation.setOptions({
 			headerRight: () => (
 			  <Pressable onPress={() => { onSendEmail(); }}>
-				<Text style={styles.navbarSubmit}>Sign In</Text>
+				<Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign In</Text>
 			  </Pressable>
 			)
 		});		
@@ -63,11 +63,11 @@ export function SignInScreen({ navigation }) {
 	return (
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
 			<View>
-				<Text style={styles.signinIntro}>Enter your Micro.blog account email address and you'll receive a link to sign in:</Text>
-				<TextInput style={styles.signinEmail} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="Email address" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />
+				<Text style={is_dark ? [ styles.signinIntro, styles.dark.signinIntro ] : styles.signinIntro}>Enter your Micro.blog account email address and you'll receive a link to sign in:</Text>
+				<TextInput style={is_dark ? [ styles.signinEmail, styles.dark.signinEmail ] : styles.signinEmail} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="Email address" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />
 			</View>
 			<View style={styles.signinAppleSection}>
-				<Text style={styles.signinAppleIntro}>New to Micro.blog? You can register here by signing in with your Apple ID:</Text>
+				<Text style={is_dark ? [ styles.signinAppleIntro, styles.dark.signinAppleIntro ] : styles.signinAppleIntro}>New to Micro.blog? You can register here by signing in with your Apple ID:</Text>
 			</View>
 		</View>
 	);

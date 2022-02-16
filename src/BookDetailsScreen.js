@@ -76,7 +76,7 @@ export function BookDetailsScreen({ route, navigation }) {
 						styles.bookDetailsButton, styles.dark.bookDetailsButton
 					]}>
 						<Text style={is_dark ? [ styles.bookDetailsBookshelfTitle, styles.dark.bookDetailsBookshelfTitle ] : styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
-						<Text style={is_dark ? [ styles.dark.bookDetailsBookshelfCount, styles.bookDetailsBookshelfCount ] : styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
+						<Text style={is_dark ? [ styles.bookDetailsBookshelfCount, styles.dark.bookDetailsBookshelfCount ] : styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
 					</Pressable>
 				))
 			}

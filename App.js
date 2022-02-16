@@ -50,12 +50,12 @@ const App: () => Node = () => {
   					headerTitle: "",
   					headerLeft: () => (
   						<Pressable onPress={() => { navigation.goBack(); }}>
-  							<Image style={styles.navbarBackIcon} source={require("./images/back.png")} />
+  							<Image style={is_dark ? [ styles.navbarBackIcon, styles.dark.navbarBackIcon ] : styles.navbarBackIcon} source={require("./images/back.png")} />
   						</Pressable>
   					),
   					headerRight: () => (
               <Pressable onPress={() => { navigation.navigate("Post"); }}>
-  						  <Image style={styles.navbarNewIcon} source={require("./images/create.png")} />
+  						  <Image style={is_dark ? [ styles.navbarNewIcon, styles.dark.navbarNewIcon ] : styles.navbarNewIcon} source={require("./images/create.png")} />
               </Pressable>
   					)
   				})} />
@@ -65,12 +65,12 @@ const App: () => Node = () => {
             headerTitle: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Image style={styles.navbarCloseIcon} source={require("./images/close.png")} />
+                <Image style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} source={require("./images/close.png")} />
               </Pressable>
             ),
             headerRight: () => (
               <Pressable onPress={() => { }}>
-                <Text style={styles.navbarSubmit}>Post</Text>
+                <Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Post</Text>
               </Pressable>
             )
           })} />
@@ -78,7 +78,7 @@ const App: () => Node = () => {
             headerTitle: "",
             headerRight: () => (
               <Pressable onPress={() => { }}>
-                <Text style={styles.navbarSubmit}>Sign In</Text>
+                <Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign In</Text>
               </Pressable>
             )
           })} />
@@ -86,7 +86,7 @@ const App: () => Node = () => {
             headerTitle: "Blogs",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Image style={styles.navbarCloseIcon} source={require("./images/close.png")} />
+                <Image style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} source={require("./images/close.png")} />
               </Pressable>
             )
           })} />

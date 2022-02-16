@@ -39,7 +39,7 @@ export function PostScreen({ navigation }) {
 		navigation.setOptions({
 			headerRight: () => (
 			  <Pressable onPress={() => { onSendPost(); }}>
-				<Text style={styles.navbarSubmit}>Post</Text>
+				<Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Post</Text>
 			  </Pressable>
 			)
 		});		
@@ -91,12 +91,12 @@ export function PostScreen({ navigation }) {
 	
 	return (
 		<View style={is_dark ? [ styles.postTextBox, styles.dark.postTextBox ] : styles.postTextBox}>
-			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
+			<Pressable style={is_dark ? [ styles.postHostnameBar, styles.dark.postHostnameBar ] : styles.postHostnameBar} onPress={onShowBlogs}>
 				<Text style={styles.postHostnameLeft}></Text>
-				<Text style={styles.postHostnameText}>{blogName}</Text>
+				<Text style={is_dark ? [ styles.postHostnameText, styles.dark.postHostnameText ] : styles.postHostnameText}>{blogName}</Text>
 				<ActivityIndicator style={styles.postHostnameProgress} size="small" animating={progressAnimating} />
 			</Pressable>
-			<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} />
+			<TextInput style={is_dark ? [ styles.postTextInput, styles.dark.postTextInput ] : styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} />
 		</View>
 	);
 }

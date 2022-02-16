@@ -204,6 +204,9 @@ export default StyleSheet.create({
 		marginLeft: 15,
 		marginRight: 15	
 	},
+	blogListContainer: {
+		flex: 1
+	},
 	blogListItem: {
 		paddingLeft: 15,
 		paddingRight: 15,
@@ -250,7 +253,8 @@ export default StyleSheet.create({
 		},
 		postTextBox: {
 			backgroundColor: "#212936",
-			color: "#E5E7EB"
+			color: "#E5E7EB",
+			height: 2000
 		},
 		bookDetailsButton: {
 			backgroundColor: "#141723",
@@ -263,6 +267,47 @@ export default StyleSheet.create({
 		},
 		bookDetailsBookshelfCount: {
 			color: "#777777"
+		},
+		blogListContainer: {
+			backgroundColor: "#212936",
+			color: "#E5E7EB"
+		},
+		blogListItem: {
+			borderBottomColor: "#444444"			
+		},
+		blogListName: {
+			color: "#E5E7EB"
+		},
+		postHostnameBar: {
+			backgroundColor: "#000000",
+			borderBottomColor: "#444444"
+		},
+		postHostnameText: {
+			color: "#E5E7EB"
+		},
+		postTextInput: {
+			color: "#E5E7EB"
+		},
+		navbarNewIcon: {
+			tintColor: "#FFFFFF"
+		},
+		navbarBackIcon: {
+			tintColor: "#FFFFFF"
+		},
+		navbarCloseIcon: {
+			tintColor: "#FFFFFF"
+		},
+		navbarSubmit: {
+			color: "#FFFFFF"
+		},
+		signinIntro: {
+			color: "#E5E7EB"
+		},
+		signinEmail: {
+			color: "#E5E7EB"
+		},
+		signinAppleIntro: {
+			color: "#E5E7EB"
 		}
 	}
 });
