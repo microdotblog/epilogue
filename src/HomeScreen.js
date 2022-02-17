@@ -145,13 +145,7 @@ export function HomeScreen({ navigation }) {
 					"Authorization": "Bearer " + auth_token
 				}
 			};
-			
-			for (let shelf of bookshelves) {
-				if (shelf.id == bookshelf_id) {
-					epilogueStorage.set(keys.currentBookshelf, shelf);
-				}
-			}
-			
+						
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
 				var new_items = [];
 				for (let item of data.items) {
@@ -201,6 +195,8 @@ export function HomeScreen({ navigation }) {
 				}
 				
 				setBookshelves(new_items);
+				epilogueStorage.set(keys.allBookshelves, new_items);
+				
 				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 					if (current_bookshelf == null) {
 						let first_bookshelf = new_items[0];
@@ -225,8 +221,13 @@ export function HomeScreen({ navigation }) {
 				onPressAction = {({ nativeEvent }) => {
 					let shelf_id = nativeEvent.event;
 					loadBooks(shelf_id, function() {
-						epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-							setupBookshelves(navigation, bookshelves, current_bookshelf.title);
+						epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
+							for (let shelf of bookshelves) {
+								if (shelf.id == shelf_id) {
+									epilogueStorage.set(keys.currentBookshelf, shelf);
+									setupBookshelves(navigation, bookshelves, shelf.title);
+								}
+							}
 						});
 					});
 				}}
