@@ -17,12 +17,12 @@ export default StyleSheet.create({
 	navbarBookshelfIcon: {
 		width: 25,
 		height: 25,
-		tintColor: "#337AB7"
+		tintColor: "#337AB7",
 	},
 	navbarBookshelfTitle: {
-		paddingTop: 3,
+		paddingTop: 5,
 		paddingLeft: 5,
-		color: "#337AB7"
+		color: "#337AB7",
 	},
 	item: {
 		flexDirection: "row",
@@ -49,6 +49,7 @@ export default StyleSheet.create({
 	},
 	bookDetails: {
 		alignItems: "center",
+		marginTop: 5,
 		marginBottom: 20,
 		paddingBottom: 20,
 		borderBottomWidth: 1,
