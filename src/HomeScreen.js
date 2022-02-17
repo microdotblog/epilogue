@@ -17,7 +17,6 @@ export function HomeScreen({ navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
-	const [ searchText, setSearchText ] = useState("");
 	var bookRowReferences = [];
   
 	React.useEffect(() => {
@@ -376,20 +375,24 @@ export function HomeScreen({ navigation }) {
 				});
 			}, 1000);
 		}
+		else {
+			epilogueStorage.set(keys.currentSearch, text);
+		}
 	}
 
-	function onSearch() {
-		if (searchText.length > 0) {
-			epilogueStorage.set(keys.currentSearch, searchText);
-			sendSearch(searchText);
-		}
-		else {
-			epilogueStorage.remove(keys.currentSearch).then(() => {
-				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-					loadBooks(current_bookshelf.id);
-				});				
-			});
-		}
+	function onRunSearch() {
+		epilogueStorage.get(keys.currentSearch).then(search_text => {
+			if ((search_text != null) && (search_text.length > 0)) {
+				sendSearch(search_text);
+			}
+			else {
+				epilogueStorage.remove(keys.currentSearch).then(() => {
+					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+						loadBooks(current_bookshelf.id);
+					});				
+				});
+			}
+		});
 	}
 
 	function collectRowRefs(ref) {
@@ -427,10 +430,9 @@ export function HomeScreen({ navigation }) {
 		};
 		
 		render() {
-			const { children } = this.props;
 			return (
 				<Swipeable renderRightActions={this.renderRightActions} ref={collectRowRefs}>
-					{children}
+					{this.props.children}
 				</Swipeable>
 			);
 		}
@@ -438,7 +440,7 @@ export function HomeScreen({ navigation }) {
 
 	return (
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<TextInput style={is_dark ? [ styles.searchField, styles.dark.searchField ] : styles.searchField} onChangeText={onChangeSearch} value={searchText} onEndEditing={onSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
+			<TextInput style={is_dark ? [ styles.searchField, styles.dark.searchField ] : styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
