@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
 import "react-native-gesture-handler"
 
+import { keys } from "./src/Constants";
 import styles from "./src/Styles";
 import epilogueStorage from "./src/Storage";
 import { SFSymbol } from "./src/SFSymbols";
@@ -29,6 +30,7 @@ const App: () => Node = () => {
   const is_dark = (useColorScheme() == "dark");
 
   LogBox.ignoreAllLogs();
+  epilogueStorage.remove(keys.currentSearch);
 
   return (
   	<NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
