@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Component, useState } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -18,6 +18,7 @@ export function HomeScreen({ navigation }) {
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ searchText, setSearchText ] = useState("");
+	var bookRowReferences = [];
   
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -121,7 +122,7 @@ export function HomeScreen({ navigation }) {
 			};
 						
 			fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
-				for (blog of data.destination) {
+				for (let blog of data.destination) {
 					if (blog["microblog-default"] == true) {
 						let blog_id = blog.uid;
 						let blog_name = blog.name;
@@ -345,12 +346,25 @@ export function HomeScreen({ navigation }) {
 		});
 	}
   
-	function removeFromBookshelf() {	  
+	function removeFromBookshelf(bookID) {
+		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+			epilogueStorage.get("auth_token").then(auth_token => {
+				var options = {
+					method: "DELETE",
+					headers: {
+						"Authorization": "Bearer " + auth_token
+					}
+				};
+
+				let url = "https://micro.blog/books/bookshelves/" + current_bookshelf.id + "/remove/" + bookID;						
+				fetch(url, options).then(response => response.json()).then(data => {
+					loadBooks(current_bookshelf.id);
+				});
+			});
+		});
 	}
 
-	function onChangeSearch(text) {
-		setSearchText(text);
-		
+	function onChangeSearch(text) {		
 		// if we're clearing the text, wait a second and then send it
 		// otherwise the user is still typing
 		if (text.length == 0) {
@@ -378,26 +392,49 @@ export function HomeScreen({ navigation }) {
 		}
 	}
 
-	renderRightActions = (progress, dragX) => {
-		const trans = dragX.interpolate({
-			inputRange: [0, 50, 100, 101],
-			outputRange: [0, 0, 0, 1],
-		});
-	
-		return (
-			<RectButton style={styles.removeAction} onPress={() => {
-				removeFromBookshelf();
-			}}>
-			<View style={styles.removeContainer}>
-				<Animated.Text style={[ styles.removeText, {
-					transform: [{ translateX: trans }],
-				}]}>
-					Remove
-				</Animated.Text>
-				</View>
-			</RectButton>
-		);
-	};
+	function collectRowRefs(ref) {
+		bookRowReferences.push(ref);
+	}
+
+	class BookSwipeableRow extends Component {
+		constructor(props) {
+			super(props);
+			this.bookID = props.book;
+		}
+
+		renderRightActions = (progress, dragX) => {
+			const trans = dragX.interpolate({
+				inputRange: [0, 50, 100, 101],
+				outputRange: [0, 0, 0, 1],
+			});
+		
+			return (
+				<RectButton style={styles.removeAction} onPress={() => {
+					removeFromBookshelf(this.bookID);
+					for (let ref of bookRowReferences) {
+						ref.close();
+					}
+				}}>
+				<View style={styles.removeContainer}>
+					<Animated.Text style={[ styles.removeText, {
+						transform: [{ translateX: trans }],
+					}]}>
+						Remove
+					</Animated.Text>
+					</View>
+				</RectButton>
+			);
+		};
+		
+		render() {
+			const { children } = this.props;
+			return (
+				<Swipeable renderRightActions={this.renderRightActions} ref={collectRowRefs}>
+					{children}
+				</Swipeable>
+			);
+		}
+	}
 
 	return (
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
@@ -405,7 +442,7 @@ export function HomeScreen({ navigation }) {
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
-				<Swipeable renderRightActions={renderRightActions}>
+				<BookSwipeableRow book={item.id}>
 					<Pressable onPress={() => { onShowBookPressed(item) }}>
 						<View style={is_dark ? [ styles.item, styles.dark.item ] : styles.item}>
 							<Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
@@ -415,7 +452,7 @@ export function HomeScreen({ navigation }) {
 							</View>
 						</View>
 					</Pressable>
-				</Swipeable>
+				</BookSwipeableRow>
 				}
 				keyExtractor = { item => item.id }
 			/>
