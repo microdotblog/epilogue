@@ -53,9 +53,18 @@ export function PostScreen({ navigation }) {
 		});
 		
 		epilogueStorage.get(keys.currentBlogName).then(blog_name => {
-			setBlogName(blog_name);
+			if ((blog_name != undefined) && (blog_name.length > 0)) {
+				setBlogName(blog_name);
+			}
+			else {
+				epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+					let pieces = micropub_url.split("/");
+					let hostname = pieces[2];
+					setBlogName(hostname);
+				});				
+			}
 		});
-
+		
 		epilogueStorage.get(keys.currentBlogID).then(blog_id => {
 			setBlogID(blog_id);
 		});

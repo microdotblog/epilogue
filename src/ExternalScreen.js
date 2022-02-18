@@ -105,7 +105,10 @@ export function ExternalScreen({ navigation }) {
 			epilogueStorage.set(keys.authURL, authorization_endpoint);
 			epilogueStorage.set(keys.tokenURL, token_endpoint);
 			epilogueStorage.set(keys.micropubURL, micropub_endpoint);			
+
 			epilogueStorage.remove(keys.micropubToken);
+			epilogueStorage.remove(keys.currentBlogID);
+			epilogueStorage.remove(keys.currentBlogName);
 			
 			startAuthorization(authorization_endpoint, url);
 		});
