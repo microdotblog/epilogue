@@ -235,6 +235,29 @@ export default StyleSheet.create({
 	profileUsername: {
 		marginLeft: 10
 	},
+	micropubPane: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginLeft: 10,
+		marginTop: 12
+	},
+	micropubButton: {
+		marginLeft: 12,
+		paddingLeft: 8,
+		paddingRight: 8,
+		paddingTop: 4,
+		paddingBottom: 4,
+		borderRadius: 5,
+		backgroundColor: "#DEDEDE"
+	},
+	micropubIntro: {
+		marginLeft: 12,
+		marginTop: 10
+	},
+	micropubURL: {
+		marginLeft: 12,
+		marginTop: 14
+	},
 	dark: {
 		container: {
 			backgroundColor: "#212936",

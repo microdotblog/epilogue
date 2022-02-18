@@ -7,9 +7,9 @@ import { keys } from "./Constants";
 import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
-export function ProfileScreen({ navigation }) {
+export function ExternalScreen({ navigation }) {
 	const is_dark = (useColorScheme() == "dark");
-	const [ username, setUsername ] = useState("");
+	const [ url, setURL ] = useState();
 	
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -19,27 +19,23 @@ export function ProfileScreen({ navigation }) {
 	}, [navigation]);	
 	
 	function onFocus(navigation) {
-		epilogueStorage.get(keys.currentUsername).then(current_username => {
-			setUsername(current_username);
-		});
 	}
 	
-	function onChangePressed() {
-		navigation.navigate("External");
+	function onSendURL() {
+		var new_url = url;
+		if (new_url.length > 0) {
+			if (!new_url.includes("http")) {
+				new_url = "https://" + new_url;
+			}
+		}
+		
+		console.log("u " + new_url);
 	}
 	
 	return (
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<View style={styles.profilePane}>
-				<Image style={styles.profilePhoto} source={{ uri: "https://micro.blog/" + username + "/avatar.jpg" }} />
-				<Text style={styles.profileUsername}>@{username}</Text>
-			</View>
-			<View style={styles.micropubPane}>
-				<Text>Posting to: Micro.blog</Text>
-				<Pressable style={styles.micropubButton} onPress={() => { onChangePressed(); }}>
-					<Text>Change...</Text>
-				</Pressable>
-			</View>
+			<Text style={styles.micropubIntro} >Post to an external blog via Micropub:</Text>
+			<TextInput style={styles.micropubURL} value={url} onChangeText={setURL} onEndEditing={onSendURL} returnKeyType="done" placeholder="Your blog URL" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
 		</View>
 	);
 }
