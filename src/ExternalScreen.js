@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Alert, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
+import { Linking, Alert, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 
-import { keys } from "./Constants";
+import { keys, errors } from "./Constants";
 import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
@@ -20,6 +20,13 @@ export function ExternalScreen({ navigation }) {
 	}, [navigation]);	
 	
 	function onFocus(navigation) {
+		epilogueStorage.get(keys.micropubToken).then(micropub_token => {
+			if (micropub_token != undefined) {
+				epilogueStorage.set(keys.lastMicropubToken, micropub_token);
+			}
+
+			startTokenCheckTimer();
+		});
 	}
 	
 	function onSendURL() {
@@ -31,6 +38,29 @@ export function ExternalScreen({ navigation }) {
 			
 			checkForEndpoints(new_url);
 		}
+	}
+	
+	function startTokenCheckTimer() {
+		setTimeout(checkForNewToken, 1500);
+	}
+	
+	function checkForNewToken() {
+		epilogueStorage.get(keys.micropubToken).then(new_token => {
+			epilogueStorage.get(keys.lastMicropubToken).then(old_token => {
+				if (new_token == undefined) {
+					// no new token yet, check again
+					startTokenCheckTimer();
+				}
+				else if (new_token != old_token) {
+					// found new token, close screen
+					navigation.goBack();
+				}
+				else {
+					// token is the same, keep checking
+					startTokenCheckTimer();
+				}
+			});
+		});
 	}
 	
 	function checkForEndpoints(url) {
@@ -58,12 +88,57 @@ export function ExternalScreen({ navigation }) {
 				}
 			}
 			
-			console.log("got auth: " + authorization_endpoint);
-			console.log("got token: " + token_endpoint);
-			console.log("got micropub: " + micropub_endpoint);
+			if (authorization_endpoint.length == 0) {
+				Alert.alert(errors.noAuthorizationEndpoint);
+				return;
+			}
+			if (token_endpoint.length == 0) {
+				Alert.alert(errors.noTokenEndpoint);
+				return;
+			}
+			if (micropub_endpoint.length == 0) {
+				Alert.alert(errors.noMicropubEndpoint);
+				return;
+			}
+			
+			epilogueStorage.set(keys.meURL, url);
+			epilogueStorage.set(keys.authURL, authorization_endpoint);
+			epilogueStorage.set(keys.tokenURL, token_endpoint);
+			epilogueStorage.set(keys.micropubURL, micropub_endpoint);			
+			epilogueStorage.remove(keys.micropubToken);
+			
+			startAuthorization(authorization_endpoint, url);
 		});
 	}
 	
+	function startAuthorization(auth_url, me_url) {
+		var full_url = auth_url;
+		if (full_url.includes("?")) {
+			full_url = full_url + "&";
+		}
+		else {
+			full_url = full_url + "?";
+		}
+		
+		// this will redirect with "code" and "state" params
+		// on that page, JS will redirect us back to epilogue://indieauth
+		let redirect_url = "https://epilogue.micro.blog/indieauth/";		
+
+		// random number for the state
+		let state = Math.floor(Math.random() * 100000).toString();
+		epilogueStorage.set(keys.authState, state);
+		
+		full_url = full_url + "response_type=" + "code" + "&";
+		full_url = full_url + "client_id=" + encodeURIComponent("https://epilogue.micro.blog/") + "&";
+		full_url = full_url + "redirect_uri=" + encodeURIComponent(redirect_url) + "&";
+		full_url = full_url + "state=" + state + "&";
+		full_url = full_url + "scope=" + "create" + "&";
+		full_url = full_url + "me=" + encodeURIComponent(me_url) + "&";
+		
+		// open in web browser
+		Linking.openURL(full_url);		
+	}
+		
 	return (
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
 			<Text style={styles.micropubIntro} >Post to an external blog via Micropub:</Text>

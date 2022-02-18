@@ -8,7 +8,7 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 
-import { keys } from "./Constants";
+import { keys, errors } from "./Constants";
 import styles from "./Styles";
 import epilogueStorage from "./Storage";
 import { SFSymbol } from "./SFSymbols";
@@ -65,10 +65,47 @@ export function HomeScreen({ navigation }) {
   
 	function loadURL(url) {
 		if (url != undefined) {
-			let pieces = url.split("/");
-			let temp_token = pieces[pieces.length - 1];
-			verifyToken(temp_token);
+			if (url.includes("/signin")) {
+				let pieces = url.split("/");
+				let temp_token = pieces[pieces.length - 1];
+				verifyToken(temp_token);
+			}
+			else if (url.includes("/indieauth")) {
+				var args = {};
+				var parts = url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+					args[key] = value;
+				});
+				redeemAuthCode(args["code"], args["state"]);
+			}
 		}
+	}
+
+	function redeemAuthCode(code, state) {
+		epilogueStorage.get(keys.authState).then(saved_state => {
+			// check that state matches
+			if (saved_state != state) {
+				Alert.alert(errors.stateDoesNotMatch);
+				return;
+			}
+			
+			// exchange authorization code for new access token
+			epilogueStorage.get(keys.tokenURL).then(token_url => {
+				let form = new FormData();
+				form.append("grant_type", "authorization_code");
+				form.append("code", code);
+				form.append("client_id", "https://epilogue.micro.blog/");
+				form.append("redirect_uri", "https://epilogue.micro.blog/indieauth/");
+				
+				var options = {
+					method: "POST",
+					body: form
+				};
+												
+				fetch(token_url, options).then(response => response.json()).then(data => {
+					epilogueStorage.set(keys.micropubToken, data.access_token);
+				});
+			});
+		});
 	}
 	
 	function verifyToken(token) {		

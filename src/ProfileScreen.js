@@ -10,6 +10,7 @@ import epilogueStorage from "./Storage";
 export function ProfileScreen({ navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const [ username, setUsername ] = useState("");
+	const [ hostname, setHostname ] = useState("Micro.blog");
 	
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -21,6 +22,17 @@ export function ProfileScreen({ navigation }) {
 	function onFocus(navigation) {
 		epilogueStorage.get(keys.currentUsername).then(current_username => {
 			setUsername(current_username);
+		});
+
+		epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+			if ((micropub_url == undefined) || micropub_url.includes("micro.blog")) {
+				setHostname("Micro.blog");
+			}
+			else {
+				let pieces = micropub_url.split("/");
+				let hostname = pieces[2];
+				setHostname(hostname);
+			}
 		});
 	}
 	
@@ -35,7 +47,7 @@ export function ProfileScreen({ navigation }) {
 				<Text style={styles.profileUsername}>@{username}</Text>
 			</View>
 			<View style={styles.micropubPane}>
-				<Text>Posting to: Micro.blog</Text>
+				<Text>Posting to: {hostname}</Text>
 				<Pressable style={styles.micropubButton} onPress={() => { onChangePressed(); }}>
 					<Text>Change...</Text>
 				</Pressable>
