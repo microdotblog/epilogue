@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { Node } from "react";
 import { Alert, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { DOMParser } from "@xmldom/xmldom";
 
 import { keys } from "./Constants";
 import styles from "./Styles";
@@ -27,9 +28,40 @@ export function ExternalScreen({ navigation }) {
 			if (!new_url.includes("http")) {
 				new_url = "https://" + new_url;
 			}
+			
+			checkForEndpoints(new_url);
 		}
-		
-		console.log("u " + new_url);
+	}
+	
+	function checkForEndpoints(url) {
+		fetch(url).then(data => data.text()).then(html => {
+			var authorization_endpoint = "";
+			var token_endpoint = "";
+			var micropub_endpoint = "";
+			
+			let parser = new DOMParser();
+			let doc = parser.parseFromString(html, "text/html");
+			let links = doc.getElementsByTagName("link");
+			for (let i = 0; i < links.length; i++) {
+				let link = links[i];
+				let rel = link.getAttribute("rel");
+				let href = link.getAttribute("href");
+
+				if (rel == "authorization_endpoint") {
+					authorization_endpoint = href;
+				}
+				if (rel == "token_endpoint") {
+					token_endpoint = href;
+				}
+				if (rel == "micropub") {
+					micropub_endpoint = href;
+				}
+			}
+			
+			console.log("got auth: " + authorization_endpoint);
+			console.log("got token: " + token_endpoint);
+			console.log("got micropub: " + micropub_endpoint);
+		});
 	}
 	
 	return (
