@@ -218,6 +218,23 @@ export default StyleSheet.create({
 	},
 	blogListName: {
 	},
+	profilePane: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingBottom: 10,
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6"
+	},
+	profilePhoto: {
+		width: 34,
+		height: 34,
+		borderRadius: 17,
+		marginLeft: 10,
+		backgroundColor: "#DEDEDE"
+	},
+	profileUsername: {
+		marginLeft: 10
+	},
 	dark: {
 		container: {
 			backgroundColor: "#212936",

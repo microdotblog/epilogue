@@ -16,6 +16,7 @@ import { BookDetailsScreen } from "./src/BookDetailsScreen";
 import { PostScreen } from "./src/PostScreen";
 import { SignInScreen } from "./src/SignInScreen";
 import { BlogsScreen } from "./src/BlogsScreen";
+import { ProfileScreen } from "./src/ProfileScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -90,6 +91,19 @@ const App: () => Node = () => {
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
                 <SFSymbol name="xmark" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
+              </Pressable>
+            )
+          })} />
+          <Stack.Screen name="Profile" component={ProfileScreen} options={({ navigation, route }) => ({
+            headerTitle: "",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }}>
+                <SFSymbol name="xmark" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
+              </Pressable>
+            ),
+            headerRight: () => (
+              <Pressable onPress={() => { }}>
+                <Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign Out</Text>
               </Pressable>
             )
           })} />

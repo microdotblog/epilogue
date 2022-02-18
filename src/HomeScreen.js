@@ -247,13 +247,17 @@ export function HomeScreen({ navigation }) {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
 			navigation.setOptions({
 				headerLeft: () => (
-					<Pressable onPress={() => { onSignOut(); }}>
+					<Pressable onPress={() => { onShowProfile(); }}>
 						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
 					</Pressable>
 				)
 			});		
 		});
 	}	
+	
+	function onShowProfile() {
+		navigation.navigate("Profile");
+	}
 	
 	function onSignOut() {		
 		Alert.alert("Sign out of Epilogue?", "", [
