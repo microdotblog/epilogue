@@ -71,18 +71,32 @@ export function PostScreen({ navigation }) {
 				form.append("mp-destination", blog_id);
 								
 				epilogueStorage.get("auth_token").then(auth_token => {
-					var options = {
-						method: "POST",
-						body: form,
-						headers: {
-							"Authorization": "Bearer " + auth_token
+					var use_token = auth_token;
+					epilogueStorage.get(keys.micropubToken).then(micropub_token => {
+						if (micropub_token != undefined) {
+							use_token = micropub_token;
 						}
-					};
-				
-					// setProgressAnimating(true);
-				
-					fetch("https://micro.blog/micropub", options).then(response => response.json()).then(data => {
-						navigation.goBack();
+						
+						var options = {
+							method: "POST",
+							body: form,
+							headers: {
+								"Authorization": "Bearer " + use_token
+							}
+						};
+					
+						// setProgressAnimating(true);
+					
+						epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+							var use_url = micropub_url;
+							if (use_url == undefined) {
+								use_url = "https://micro.blog/micropub";
+							}
+	
+							fetch(use_url, options).then(response => response.json()).then(data => {
+								navigation.goBack();
+							});
+						});
 					});
 				});
 			});

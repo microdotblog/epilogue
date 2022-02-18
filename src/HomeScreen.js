@@ -151,23 +151,52 @@ export function HomeScreen({ navigation }) {
   
   	function loadBlogs() {
 		epilogueStorage.get(keys.authToken).then(auth_token => {
-			var options = {
-				headers: {
-					"Authorization": "Bearer " + auth_token
+			var use_token = auth_token;
+			epilogueStorage.get(keys.micropubToken).then(micropub_token => {
+				if (micropub_token != undefined) {
+					use_token = micropub_token;
 				}
-			};
+
+				var options = {
+					headers: {
+						"Authorization": "Bearer " + use_token
+					}
+				};
+
+				epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+					var use_url = micropub_url;
+					if (use_url == undefined) {
+						use_url = "https://micro.blog/micropub";
+					}
+					
+					if (use_url.includes("?")) {
+						use_url = use_url + "&q=config";
+					}
+					else {
+						use_url = use_url + "?q=config";
+					}
+					
+					fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
+						var blog_id = "";
+						var blog_name = "";
 						
-			fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
-				for (let blog of data.destination) {
-					if (blog["microblog-default"] == true) {
-						let blog_id = blog.uid;
-						let blog_name = blog.name;
-						
+						if (data.destination.length > 0) {
+							blog_id = data.destination[0].uid;
+							blog_name = data.destination[0].name;
+							
+							for (let blog of data.destination) {								
+								if (blog["microblog-default"] == true) {
+									blog_id = blog.uid;
+									blog_name = blog.name;								
+								}
+							}
+						}
+
 						epilogueStorage.set(keys.currentBlogID, blog_id);
 						epilogueStorage.set(keys.currentBlogName, blog_name);
-					}
-				}
-			});			
+					});
+				});
+			});
 		});
 	}
   

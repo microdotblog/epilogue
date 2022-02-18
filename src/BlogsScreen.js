@@ -24,23 +24,44 @@ export function BlogsScreen({ navigation }) {
 	
 	function loadBlogs() {
 		epilogueStorage.get("auth_token").then(auth_token => {
-			var options = {
-				headers: {
-					"Authorization": "Bearer " + auth_token
-				}
-			};
-						
-			fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
-				var new_items = [];
-				for (blog of data.destination) {
-					new_items.push({
-						id: blog.uid,
-						name: blog.name
-					});
+			var use_token = auth_token;
+			epilogueStorage.get(keys.micropubToken).then(micropub_token => {
+				if (micropub_token != undefined) {
+					use_token = micropub_token;
 				}
 				
-				setBlogs(new_items);
-			});			
+				var options = {
+					headers: {
+						"Authorization": "Bearer " + use_token
+					}
+				};
+
+				epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+					var use_url = micropub_url;
+					if (use_url == undefined) {
+						use_url = "https://micro.blog/micropub";
+					}
+					
+					if (use_url.includes("?")) {
+						use_url = use_url + "&q=config";
+					}
+					else {
+						use_url = use_url + "?q=config";
+					}
+							
+					fetch(use_url, options).then(response => response.json()).then(data => {
+						var new_items = [];
+						for (blog of data.destination) {
+							new_items.push({
+								id: blog.uid,
+								name: blog.name
+							});
+						}
+						
+						setBlogs(new_items);
+					});
+				});
+			});
 		});
 	}
 	
