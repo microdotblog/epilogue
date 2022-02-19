@@ -54,33 +54,35 @@ export function BookDetailsScreen({ route, navigation }) {
 	}
 
 	return (
-		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<View style={is_dark ? [ styles.bookDetails, styles.dark.bookDetails ] : styles.bookDetails}>
-				<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
-				<Text style={is_dark ? [ styles.bookDetailsTitle, styles.dark.bookDetailsTitle ] : styles.bookDetailsTitle}>{title}</Text>
-				<Text style={is_dark ? [ styles.bookDetailsAuthor, styles.dark.bookDetailsAuthor ] : styles.bookDetailsAuthor}>{author}</Text>
+		<ScrollView>
+			<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
+				<View style={is_dark ? [ styles.bookDetails, styles.dark.bookDetails ] : styles.bookDetails}>
+					<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
+					<Text style={is_dark ? [ styles.bookDetailsTitle, styles.dark.bookDetailsTitle ] : styles.bookDetailsTitle}>{title}</Text>
+					<Text style={is_dark ? [ styles.bookDetailsAuthor, styles.dark.bookDetailsAuthor ] : styles.bookDetailsAuthor}>{author}</Text>
+				</View>
+				<View style={styles.bookDetailsBookshelves}>
+					<View style={styles.bookDetailsAddBar}>
+					<Text style={is_dark ? [ styles.bookDetailsAddTo, styles.dark.bookDetailsAddTo ] : styles.bookDetailsAddTo}>Add to bookshelf...</Text>
+					<ActivityIndicator style={styles.BookDetailsProgress} size="small" animating={progressAnimating} />
+				</View>
+				{
+					bookshelves.map((shelf) => (
+						<Pressable key={shelf.id} onPress={() => { addToBookshelf(shelf.id); }} style={({ pressed }) => [
+							styles.bookDetailsButton,
+							{
+								backgroundColor: pressed ? 
+								(is_dark ? styles.dark.bookDetailsButton.pressed.backgroundColor : styles.bookDetailsButton.pressed.backgroundColor) : 
+								(is_dark ? styles.dark.bookDetailsButton.backgroundColor : styles.bookDetailsButton.backgroundColor)
+							},
+						]}>
+							<Text style={is_dark ? [ styles.bookDetailsBookshelfTitle, styles.dark.bookDetailsBookshelfTitle ] : styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
+							<Text style={is_dark ? [ styles.bookDetailsBookshelfCount, styles.dark.bookDetailsBookshelfCount ] : styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
+						</Pressable>
+					))
+				}
+				</View>
 			</View>
-			<View style={styles.bookDetailsBookshelves}>
-				<View style={styles.bookDetailsAddBar}>
-				<Text style={is_dark ? [ styles.bookDetailsAddTo, styles.dark.bookDetailsAddTo ] : styles.bookDetailsAddTo}>Add to bookshelf...</Text>
-				<ActivityIndicator style={styles.BookDetailsProgress} size="small" animating={progressAnimating} />
-			</View>
-			{
-				bookshelves.map((shelf) => (
-					<Pressable key={shelf.id} onPress={() => { addToBookshelf(shelf.id); }} style={({ pressed }) => [
-						styles.bookDetailsButton,
-						{
-							backgroundColor: pressed ? 
-							(is_dark ? styles.dark.bookDetailsButton.pressed.backgroundColor : styles.bookDetailsButton.pressed.backgroundColor) : 
-							(is_dark ? styles.dark.bookDetailsButton.backgroundColor : styles.bookDetailsButton.backgroundColor)
-						},
-					]}>
-						<Text style={is_dark ? [ styles.bookDetailsBookshelfTitle, styles.dark.bookDetailsBookshelfTitle ] : styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
-						<Text style={is_dark ? [ styles.bookDetailsBookshelfCount, styles.dark.bookDetailsBookshelfCount ] : styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
-					</Pressable>
-				))
-			}
-			</View>
-		</View>
+		</ScrollView>
 	);
 }
