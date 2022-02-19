@@ -31,7 +31,7 @@ export function ExternalScreen({ navigation }) {
 	
 	function onSendURL() {
 		var new_url = url;
-		if (new_url.length > 0) {
+		if ((new_url != undefined) && (new_url.length > 0)) {
 			if (!new_url.includes("http")) {
 				new_url = "https://" + new_url;
 			}
