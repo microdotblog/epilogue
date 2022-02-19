@@ -324,34 +324,7 @@ export function HomeScreen({ navigation }) {
 	function onShowProfile() {
 		navigation.navigate("Profile");
 	}
-	
-	function onSignOut() {		
-		Alert.alert("Sign out of Epilogue?", "", [
-			{
-				text: "Cancel",
-				style: "cancel"
-			},
-			{
-				text: "Sign Out",
-				onPress: () => {
-					clearSettings();
-					setTimeout(function() {
-						navigation.navigate("SignIn");
-					}, 1000);
-				}
-			}
-		]);
-	}
-	
-	function clearSettings() {
-		epilogueStorage.remove(keys.authToken);
-		epilogueStorage.remove(keys.currentUsername);		
-		epilogueStorage.remove(keys.currentBlogID);
-		epilogueStorage.remove(keys.currentBlogName);
-		epilogueStorage.remove(keys.currentBookshelf);
-		epilogueStorage.remove(keys.currentSearch);
-	}
-	
+		
 	function sendSearch(searchText) {
 		let q = encodeURIComponent(searchText);
 	

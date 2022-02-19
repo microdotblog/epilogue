@@ -20,6 +20,8 @@ export function ProfileScreen({ navigation }) {
 	}, [navigation]);	
 	
 	function onFocus(navigation) {
+		setupSignOutButton();
+		
 		epilogueStorage.get(keys.currentUsername).then(current_username => {
 			setUsername(current_username);
 		});
@@ -38,6 +40,49 @@ export function ProfileScreen({ navigation }) {
 	
 	function onChangePressed() {
 		navigation.navigate("External");
+	}
+
+	function onSignOut() {		
+		Alert.alert("Sign out of Epilogue?", "", [
+		  {
+			text: "Cancel",
+			style: "cancel"
+		  },
+		  {
+			text: "Sign Out",
+			onPress: () => {
+			  clearSettings();
+			  navigation.goBack();
+			}
+		  }
+		]);
+	}
+	  
+	function clearSettings() {
+		epilogueStorage.remove(keys.authToken);
+		epilogueStorage.remove(keys.currentUsername);		
+		epilogueStorage.remove(keys.currentBlogID);
+		epilogueStorage.remove(keys.currentBlogName);
+		epilogueStorage.remove(keys.currentBookshelf);
+		epilogueStorage.remove(keys.currentSearch);
+		epilogueStorage.remove(keys.allBookshelves);
+		epilogueStorage.remove(keys.meURL);
+		epilogueStorage.remove(keys.authState);
+		epilogueStorage.remove(keys.authURL);
+		epilogueStorage.remove(keys.tokenURL);
+		epilogueStorage.remove(keys.micropubURL);
+		epilogueStorage.remove(keys.micropubToken);
+		epilogueStorage.remove(keys.lastMicropubToken);
+	}
+
+	function setupSignOutButton() {
+		navigation.setOptions({
+			headerRight: () => (
+			  <Pressable onPress={() => { onSignOut(); }}>
+			  	<Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign Out</Text>
+			  </Pressable>
+			)
+		});		
 	}
 	
 	return (
