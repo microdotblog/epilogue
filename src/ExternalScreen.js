@@ -144,8 +144,8 @@ export function ExternalScreen({ navigation }) {
 		
 	return (
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<Text style={styles.micropubIntro} >Post to an external blog via Micropub:</Text>
-			<TextInput style={styles.micropubURL} value={url} onChangeText={setURL} onEndEditing={onSendURL} returnKeyType="done" placeholder="Your blog URL" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
+			<Text style={is_dark ? [ styles.micropubIntro, styles.dark.micropubIntro ] : styles.micropubIntro} >Post to an external blog via Micropub:</Text>
+			<TextInput style={is_dark ? [ styles.micropubURL, styles.dark.micropubURL ] : styles.micropubURL} value={url} onChangeText={setURL} onEndEditing={onSendURL} returnKeyType="done" placeholder="Your blog URL" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
 		</View>
 	);
 }

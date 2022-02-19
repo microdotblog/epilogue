@@ -250,6 +250,8 @@ export default StyleSheet.create({
 		borderRadius: 5,
 		backgroundColor: "#DEDEDE"
 	},
+	micropubButtonTitle: {		
+	},
 	micropubIntro: {
 		marginLeft: 12,
 		marginTop: 10
@@ -348,6 +350,27 @@ export default StyleSheet.create({
 			color: "#E5E7EB"
 		},
 		signinAppleIntro: {
+			color: "#E5E7EB"
+		},
+		profilePane: {
+			borderBottomColor: "#444444"
+		},
+		profileUsername: {
+			color: "#E5E7EB"
+		},
+		micropubHostname: {
+			color: "#E5E7EB"
+		},
+		micropubButton: {
+			backgroundColor: "#141723"
+		},
+		micropubButtonTitle: {
+			color: "#E5E7EB"
+		},
+		micropubIntro: {
+			color: "#E5E7EB"
+		},
+		micropubURL: {
 			color: "#E5E7EB"
 		}
 	}

@@ -42,14 +42,14 @@ export function ProfileScreen({ navigation }) {
 	
 	return (
 		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<View style={styles.profilePane}>
+			<View style={is_dark ? [ styles.profilePane, styles.dark.profilePane ] : styles.profilePane}>
 				<Image style={styles.profilePhoto} source={{ uri: "https://micro.blog/" + username + "/avatar.jpg" }} />
-				<Text style={styles.profileUsername}>@{username}</Text>
+				<Text style={is_dark ? [ styles.profileUsername, styles.dark.profileUsername ] : styles.profileUsername}>@{username}</Text>
 			</View>
 			<View style={styles.micropubPane}>
-				<Text>Posting to: {hostname}</Text>
-				<Pressable style={styles.micropubButton} onPress={() => { onChangePressed(); }}>
-					<Text>Change...</Text>
+				<Text style={is_dark ? [ styles.micropubHostname, styles.dark.micropubHostname ] : styles.micropubHostname}>Posting to: {hostname}</Text>
+				<Pressable style={is_dark ? [ styles.micropubButton, styles.dark.micropubButton ] : styles.micropubButton} onPress={() => { onChangePressed(); }}>
+					<Text style={is_dark ? [ styles.micropubButtonTitle, styles.dark.micropubButtonTitle ] : styles.micropubButtonTitle}>Change...</Text>
 				</Pressable>
 			</View>
 		</View>
