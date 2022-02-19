@@ -13,7 +13,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
-	const { id, isbn, title, image, author, bookshelves, current_bookshelf } = route.params;
+	const { id, isbn, title, image, author, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -29,6 +29,36 @@ export function BookDetailsScreen({ route, navigation }) {
 	}
 	
 	function addToBookshelf(bookshelf_id) {
+		if (is_search) {
+			copyToBookshelf(bookshelf_id);
+		}
+		else {
+			assignToBookshelf(bookshelf_id);
+		}
+	}
+
+	function assignToBookshelf(bookshelf_id) {
+		let form = new FormData();
+		form.append("book_id", id);
+		
+		epilogueStorage.get("auth_token").then(auth_token => {
+			var options = {
+				method: "POST",
+				body: form,
+				headers: {
+					"Authorization": "Bearer " + auth_token
+				}
+			};
+		
+			setProgressAnimating(true);
+		
+			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id + "/assign", options).then(response => response.json()).then(data => {
+				navigation.goBack();
+			});
+		});
+	}
+	
+	function copyToBookshelf(bookshelf_id) {
 		let form = new FormData();
 		form.append("isbn", isbn);
 		form.append("title", title);

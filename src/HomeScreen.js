@@ -224,7 +224,8 @@ export function HomeScreen({ navigation }) {
 						isbn: item._microblog.isbn,
 						title: item.title,
 						image: item.image,
-						author: author_name
+						author: author_name,
+						is_search: false
 					});
 				}
 				
@@ -366,7 +367,8 @@ export function HomeScreen({ navigation }) {
 							isbn: best_isbn,
 							title: book_item.volumeInfo.title,
 							image: cover_url,
-							author: author_name
+							author: author_name,
+							is_search: true
 						});
 					}
 				}
@@ -385,7 +387,8 @@ export function HomeScreen({ navigation }) {
 				image: item.image,
 				author: item.author,
 				bookshelves: bookshelves,
-				current_bookshelf: current_bookshelf
+				current_bookshelf: current_bookshelf,
+				is_search: item.is_search
 			};
 			navigation.navigate("Details", params);
 		});
