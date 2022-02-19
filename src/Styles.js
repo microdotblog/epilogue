@@ -258,7 +258,7 @@ export default StyleSheet.create({
 	},
 	micropubURL: {
 		marginLeft: 12,
-		marginTop: 14
+		marginTop: 16
 	},
 	dark: {
 		container: {
