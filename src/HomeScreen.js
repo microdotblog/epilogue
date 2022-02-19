@@ -333,40 +333,42 @@ export function HomeScreen({ navigation }) {
 		
 		fetch("https://www.googleapis.com/books/v1/volumes?q=" + q, options).then(response => response.json()).then(data => {
 			var new_items = [];
-			for (let book_item of data.items) {
-				var author_name = "";
-				if (book_item.volumeInfo.authors.length > 0) {
-					author_name = book_item.volumeInfo.authors[0];
-				}
-
-				var cover_url = "";
-				if (book_item.volumeInfo.imageLinks != undefined) {
-					cover_url = book_item.volumeInfo.imageLinks.smallThumbnail;
-					if (cover_url.includes("http://")) {
-						cover_url = cover_url.replace("http://", "https://");
-					}					
-				}
-
-				let isbns = book_item.volumeInfo.industryIdentifiers;
-				var best_isbn = "";
-				for (let isbn of isbns) {
-					if (isbn.type == "ISBN_13") {
-						best_isbn = isbn.identifier;
-						break;
+			if (data.items != undefined) {
+				for (let book_item of data.items) {
+					var author_name = "";
+					if ((book_item.volumeInfo.authors != undefined) && (book_item.volumeInfo.authors.length > 0)) {
+						author_name = book_item.volumeInfo.authors[0];
 					}
-					else if (isbn.type == "ISBN_10") {
-						best_isbn = isbn.identifier;
+	
+					var cover_url = "";
+					if (book_item.volumeInfo.imageLinks != undefined) {
+						cover_url = book_item.volumeInfo.imageLinks.smallThumbnail;
+						if (cover_url.includes("http://")) {
+							cover_url = cover_url.replace("http://", "https://");
+						}					
 					}
-				}
-
-				if ((best_isbn.length > 0) && (cover_url.length > 0)) {
-					new_items.push({
-						id: book_item.id,
-						isbn: best_isbn,
-						title: book_item.volumeInfo.title,
-						image: cover_url,
-						author: author_name
-					});
+	
+					let isbns = book_item.volumeInfo.industryIdentifiers;
+					var best_isbn = "";
+					for (let isbn of isbns) {
+						if (isbn.type == "ISBN_13") {
+							best_isbn = isbn.identifier;
+							break;
+						}
+						else if (isbn.type == "ISBN_10") {
+							best_isbn = isbn.identifier;
+						}
+					}
+	
+					if ((best_isbn.length > 0) && (cover_url.length > 0)) {
+						new_items.push({
+							id: book_item.id,
+							isbn: best_isbn,
+							title: book_item.volumeInfo.title,
+							image: cover_url,
+							author: author_name
+						});
+					}
 				}
 			}
 			
