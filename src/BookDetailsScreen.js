@@ -84,7 +84,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	}
 
 	return (
-		<ScrollView>
+		<ScrollView style={is_dark ? [ styles.bookDetailsScroll, styles.dark.bookDetailsScroll ] : styles.bookDetailsScroll}>
 			<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
 				<View style={is_dark ? [ styles.bookDetails, styles.dark.bookDetails ] : styles.bookDetails}>
 					<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />

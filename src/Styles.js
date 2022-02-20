@@ -282,6 +282,9 @@ export default StyleSheet.create({
 			borderColor: "#555b64",
 			color: "#FFFFFF"
 		},
+		bookDetailsScroll: {
+			backgroundColor: "#212936"
+		},
 		bookDetails: {
 			borderBottomColor: "#444444"
 		},
