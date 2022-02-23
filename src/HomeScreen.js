@@ -225,7 +225,7 @@ export function HomeScreen({ navigation }) {
 						title: item.title,
 						image: item.image,
 						author: author_name,
-						description: "",
+						description: item.content_text,
 						is_search: false
 					});
 				}
