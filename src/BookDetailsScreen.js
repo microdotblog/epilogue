@@ -112,7 +112,11 @@ export function BookDetailsScreen({ route, navigation }) {
 					))
 				}
 				</View>
-				<View style={is_dark ? [ styles.bookDetailsMore, styles.dark.bookDetailsMore ] : styles.bookDetailsMore}>
+				<View style={
+					description.length > 0 ?
+					(is_dark ? [ styles.bookDetailsMore, styles.dark.bookDetailsMore ] : styles.bookDetailsMore) :
+					styles.bookDetailsNoDescription
+					}>
 					<Text style={is_dark ? [ styles.bookDetailsDescription, styles.dark.bookDetailsDescription ] : styles.bookDetailsDescription}>{description}</Text>
 				</View>
 			</View>

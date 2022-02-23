@@ -271,6 +271,8 @@ export default StyleSheet.create({
 	},
 	bookDetailsDescription: {		
 	},
+	bookDetailsNoDescription: {		
+	},
 	dark: {
 		container: {
 			backgroundColor: "#212936",
