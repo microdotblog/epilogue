@@ -225,6 +225,7 @@ export function HomeScreen({ navigation }) {
 						title: item.title,
 						image: item.image,
 						author: author_name,
+						description: "",
 						is_search: false
 					});
 				}
@@ -337,8 +338,14 @@ export function HomeScreen({ navigation }) {
 			if (data.items != undefined) {
 				for (let book_item of data.items) {
 					var author_name = "";
+					var description = "";
+					
 					if ((book_item.volumeInfo.authors != undefined) && (book_item.volumeInfo.authors.length > 0)) {
 						author_name = book_item.volumeInfo.authors[0];
+					}
+
+					if (book_item.volumeInfo.description != undefined) {
+						description = book_item.volumeInfo.description;
 					}
 	
 					var cover_url = "";
@@ -368,6 +375,7 @@ export function HomeScreen({ navigation }) {
 							title: book_item.volumeInfo.title,
 							image: cover_url,
 							author: author_name,
+							description: description,
 							is_search: true
 						});
 					}
@@ -386,6 +394,7 @@ export function HomeScreen({ navigation }) {
 				title: item.title,
 				image: item.image,
 				author: item.author,
+				description: item.description,
 				bookshelves: bookshelves,
 				current_bookshelf: current_bookshelf,
 				is_search: item.is_search

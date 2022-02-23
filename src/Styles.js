@@ -260,6 +260,17 @@ export default StyleSheet.create({
 		marginLeft: 12,
 		marginTop: 16
 	},
+	bookDetailsMore: {
+		marginTop: 15,
+		marginBottom: 25,
+		paddingTop: 20,
+		paddingLeft: 20,
+		paddingRight: 20,
+		borderTopWidth: 1,
+		borderTopColor: "#DEDEDE"
+	},
+	bookDetailsDescription: {		
+	},
 	dark: {
 		container: {
 			backgroundColor: "#212936",
@@ -374,6 +385,12 @@ export default StyleSheet.create({
 			color: "#E5E7EB"
 		},
 		micropubURL: {
+			color: "#E5E7EB"
+		},
+		bookDetailsMore: {
+			borderTopColor: "#444444"
+		},
+		bookDetailsDescription: {
 			color: "#E5E7EB"
 		}
 	}

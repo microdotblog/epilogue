@@ -13,7 +13,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
-	const { id, isbn, title, image, author, bookshelves, current_bookshelf, is_search } = route.params;
+	const { id, isbn, title, image, author, description, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -111,6 +111,9 @@ export function BookDetailsScreen({ route, navigation }) {
 						</Pressable>
 					))
 				}
+				</View>
+				<View style={is_dark ? [ styles.bookDetailsMore, styles.dark.bookDetailsMore ] : styles.bookDetailsMore}>
+					<Text style={is_dark ? [ styles.bookDetailsDescription, styles.dark.bookDetailsDescription ] : styles.bookDetailsDescription}>{description}</Text>
 				</View>
 			</View>
 		</ScrollView>
