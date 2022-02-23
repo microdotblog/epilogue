@@ -94,7 +94,7 @@ export function ProfileScreen({ navigation }) {
 			<View style={styles.micropubPane}>
 				<Text style={is_dark ? [ styles.micropubHostname, styles.dark.micropubHostname ] : styles.micropubHostname}>Posting to: {hostname}</Text>
 				<Pressable style={is_dark ? [ styles.micropubButton, styles.dark.micropubButton ] : styles.micropubButton} onPress={() => { onChangePressed(); }}>
-					<Text style={is_dark ? [ styles.micropubButtonTitle, styles.dark.micropubButtonTitle ] : styles.micropubButtonTitle}>Change...</Text>
+					<Text style={is_dark ? [ styles.micropubButtonTitle, styles.dark.micropubButtonTitle ] : styles.micropubButtonTitle} accessibilityLabel="change posting blog">Change...</Text>
 				</Pressable>
 			</View>
 		</View>

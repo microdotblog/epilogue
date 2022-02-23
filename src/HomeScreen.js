@@ -284,7 +284,7 @@ export function HomeScreen({ navigation }) {
 	function setupBookshelves(navigation, items, currentTitle) {
 		navigation.setOptions({
 			headerRight: () => (
-				<MenuView
+				<MenuView accessibilityLabel={currentTitle}
 				onPressAction = {({ nativeEvent }) => {
 					let shelf_id = nativeEvent.event;
 					loadBooks(shelf_id, function() {
@@ -315,7 +315,7 @@ export function HomeScreen({ navigation }) {
 			navigation.setOptions({
 				headerLeft: () => (
 					<Pressable onPress={() => { onShowProfile(); }}>
-						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
+						<Image style={styles.profileIcon} source={{ uri: avatar_url }} accessibilityLabel="show profile" />
 					</Pressable>
 				)
 			});		

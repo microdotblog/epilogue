@@ -60,7 +60,7 @@ const App: () => Node = () => {
   					),
   					headerRight: () => (
               <Pressable onPress={() => { navigation.navigate("Post"); }}>
-                <SFSymbol name="square.and.pencil" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={styles.navbarNewIcon} />                
+                <SFSymbol name="square.and.pencil" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={styles.navbarNewIcon} accessibilityLabel="new post" />
               </Pressable>
   					)
   				})} />
