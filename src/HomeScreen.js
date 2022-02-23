@@ -314,8 +314,8 @@ export function HomeScreen({ navigation }) {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
 			navigation.setOptions({
 				headerLeft: () => (
-					<Pressable onPress={() => { onShowProfile(); }}>
-						<Image style={styles.profileIcon} source={{ uri: avatar_url }} accessibilityLabel="show profile" />
+					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
+						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
 					</Pressable>
 				)
 			});		
