@@ -39,7 +39,7 @@ const App: () => Node = () => {
   		<Stack.Navigator>
   			<Stack.Group>
   				<Stack.Screen name="Home" component={HomeScreen} options={{
-  					headerTitle: "",
+  					title: "",
   					headerLeft: () => (
   						<Image style={styles.profileIcon} source={{ uri: "https://micro.blog/images/blank_avatar.png" }} />
   					),
@@ -52,7 +52,7 @@ const App: () => Node = () => {
   					)					
   				}} />
   				<Stack.Screen name="Details" component={BookDetailsScreen} options={({ navigation, route }) => ({
-  					headerTitle: "",
+  					title: "",
   					headerLeft: () => (
   						<Pressable onPress={() => { navigation.goBack(); }}>
                           <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarBackIcon} />
@@ -67,7 +67,7 @@ const App: () => Node = () => {
   			</Stack.Group>
   			<Stack.Group screenOptions={{ presentation: "modal" }}>
   				<Stack.Screen name="Post" component={PostScreen} options={({ navigation, route }) => ({
-            headerTitle: "",
+            title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
@@ -80,7 +80,7 @@ const App: () => Node = () => {
             )
           })} />
           <Stack.Screen name="SignIn" component={SignInScreen} options={({ navigation, route }) => ({
-            headerTitle: "",
+            title: "",
             headerRight: () => (
               <Pressable onPress={() => { }}>
                 <Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign In</Text>
@@ -88,7 +88,7 @@ const App: () => Node = () => {
             )
           })} />
           <Stack.Screen name="Blogs" component={BlogsScreen} options={({ navigation, route }) => ({
-            headerTitle: "Blogs",
+            title: "Blogs",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
@@ -96,7 +96,7 @@ const App: () => Node = () => {
             )
           })} />
           <Stack.Screen name="Profile" component={ProfileScreen} options={({ navigation, route }) => ({
-            headerTitle: "",
+            title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
@@ -109,7 +109,7 @@ const App: () => Node = () => {
             )
           })} />
           <Stack.Screen name="External" component={ExternalScreen} options={({ navigation, route }) => ({
-            headerTitle: "",
+            title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
