@@ -9,7 +9,7 @@ import "react-native-gesture-handler"
 import { keys } from "./src/Constants";
 import styles from "./src/Styles";
 import epilogueStorage from "./src/Storage";
-import { SFSymbol } from "./src/SFSymbols";
+import { Icon } from "./src/Icon";
 
 import { HomeScreen } from "./src/HomeScreen";
 import { BookDetailsScreen } from "./src/BookDetailsScreen";
@@ -55,12 +55,12 @@ const App: () => Node = () => {
   					headerTitle: "",
   					headerLeft: () => (
   						<Pressable onPress={() => { navigation.goBack(); }}>
-                <SFSymbol name="chevron.left" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={styles.navbarBackIcon} />                
+                          <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarBackIcon} />
   						</Pressable>
   					),
   					headerRight: () => (
               <Pressable onPress={() => { navigation.navigate("Post"); }}>
-                <SFSymbol name="square.and.pencil" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={styles.navbarNewIcon} accessibilityLabel="new post" />
+                <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarNewIcon} accessibilityLabel="new post" />
               </Pressable>
   					)
   				})} />
@@ -70,7 +70,7 @@ const App: () => Node = () => {
             headerTitle: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <SFSymbol name="xmark" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
               </Pressable>
             ),
             headerRight: () => (
@@ -91,7 +91,7 @@ const App: () => Node = () => {
             headerTitle: "Blogs",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <SFSymbol name="xmark" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
               </Pressable>
             )
           })} />
@@ -99,7 +99,7 @@ const App: () => Node = () => {
             headerTitle: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <SFSymbol name="xmark" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
               </Pressable>
             ),
             headerRight: () => (
@@ -112,7 +112,7 @@ const App: () => Node = () => {
             headerTitle: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <SFSymbol name="xmark" scale="large" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} resizeMode="center" style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />                         
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
               </Pressable>
             )
           })} />
