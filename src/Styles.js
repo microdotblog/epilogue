@@ -12,16 +12,12 @@ export default StyleSheet.create({
 	},
 	navbarBookshelf: {
 		flexDirection: "row",
-		marginTop: 4
 	},
 	navbarBookshelfIcon: {
-		width: 25,
-		height: 25,
-		tintColor: "#337AB7",
+		color: "#337AB7",
+		marginRight: 5,
 	},
 	navbarBookshelfTitle: {
-		paddingTop: 5,
-		paddingLeft: 5,
 		color: "#337AB7",
 	},
 	item: {
