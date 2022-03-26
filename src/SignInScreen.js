@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import type { Node } from "react";
-import { Alert, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { Button, TextInput, useColorScheme, Pressable, Text, View, ScrollView, Image } from "react-native";
 
 import { keys } from "./Constants";
 import styles from "./Styles";
@@ -10,27 +8,18 @@ import epilogueStorage from "./Storage";
 export function SignInScreen({ navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const [ email, setEmail ] = useState();
-	
-	React.useEffect(() => {
-		const unsubscribe = navigation.addListener("focus", () => {
-			onFocus(navigation);
-		});
-		return unsubscribe;
-	}, [navigation]);	
-	
-	function onFocus(navigation) {
-		setupSubmitButton();		
-	}
+	const [ emailSent, setEmailSent ] = useState(false);
 
-	function setupSubmitButton() {
+	React.useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
+			!emailSent &&
 			  <Pressable onPress={() => { onSendEmail(); }}>
 				<Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign In</Text>
 			  </Pressable>
-			)
-		});		
-	}
+			),
+		});
+	}, [navigation, email, emailSent]);
 	
 	function onSendEmail() {
 		if ((email != undefined) && (email.length > 0)) {
@@ -50,25 +39,43 @@ export function SignInScreen({ navigation }) {
 					method: "POST",
 					body: form
 				};
-								
-				// setProgressAnimating(true);
 			
 				fetch("https://micro.blog/account/signin", options).then(response => response.json()).then(data => {
-					Alert.alert("Email sent", "Check your email on this device for a link to finish signing in.");
+					setEmailSent(true);
 				});
 			}
 		}
 	}
 	
 	return (
-		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<View>
-				<Text style={is_dark ? [ styles.signinIntro, styles.dark.signinIntro ] : styles.signinIntro}>Enter your Micro.blog account email address and you'll receive a link to sign in:</Text>
-				<TextInput style={is_dark ? [ styles.signinEmail, styles.dark.signinEmail ] : styles.signinEmail} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="Email address" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
+		emailSent === false ? (
+			<View style={is_dark ? [styles.signIn, styles.dark.signIn] : styles.signIn}>
+				<View style={styles.signInHeader}>
+					<Image style={styles.signInImage} source={require("../images/welcome-logo.png")} />
+					<Text style={is_dark ? [styles.signInTextHeader, styles.dark.signInText] : styles.signInTextHeader}>
+						Epilogue is a companion app for Micro.blog. It uses Micro.blog’s bookshelves to help you track which books you are reading or want to read. You can blog directly from Epilogue.
+					</Text>
+				</View>
+				<Text style={is_dark ? [styles.signInText, styles.dark.signInText, { fontWeight: "500" }] : [styles.signInText, { fontWeight: "500" }]}>
+					Enter your Micro.blog account email address and you'll receive a link to sign in:
+				</Text>
+				<TextInput style={is_dark ? [styles.signInInput, styles.dark.signInInput] : styles.signInInput} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="email@email.com" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
 			</View>
-			<View style={styles.signinAppleSection}>
-				<Text style={is_dark ? [ styles.signinAppleIntro, styles.dark.signinAppleIntro ] : styles.signinAppleIntro}>New to Micro.blog? You can register here by signing in with your Apple ID:</Text>
+		) : (
+			<View style={is_dark ? [styles.signIn, styles.dark.signIn] : styles.signIn}>
+				<View style={styles.signInHeader}>
+					<Image style={styles.signInImage} source={require("../images/welcome-logo.png")} />
+				</View>
+				<Text style={is_dark ? [styles.signInText, styles.dark.signInText] : styles.signInText}>
+					We sent an email to: <Text style={{ fontWeight: "600" }}>{email}</Text>
+				</Text>
+				<Text style={is_dark ? [styles.signInText, styles.dark.signInText] : styles.signInText}>
+					Check your email on this device for a link to finish signing in.
+				</Text>
+				<Pressable onPress={() => { setEmailSent(false); setEmail(undefined); }}>
+					<Text style={styles.signInLink}>Try a different email</Text>
+				</Pressable>
 			</View>
-		</View>
+		)
 	);
 }

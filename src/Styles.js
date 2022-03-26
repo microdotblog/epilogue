@@ -145,7 +145,8 @@ export default StyleSheet.create({
 	navbarSubmit: {
 		marginTop: 4,
 		color: "#337AB7",
-		fontSize: 16
+		fontSize: 16,
+		fontWeight: "600"
 	},
 	postTextBox: {
 	},
@@ -180,26 +181,39 @@ export default StyleSheet.create({
 		alignItems: "flex-end",
 		marginRight: 15
 	},
-	signinIntro: {
-		marginTop: 5,
-		marginLeft: 15,
-		marginRight: 15
+	signIn: {
+		flex: 1,
+		flexDirection: "column",
+		padding: 20,
+		backgroundColor: "white"
 	},
-	signinEmail: {
-		marginTop: 15,
-		marginLeft: 15,
-		marginRight: 15
+	signInHeader: {
+		flexDirection: "row",
+		marginBottom: 20,
 	},
-	signinAppleSection: {
-		opacity: 0,
-		marginTop: 15,
-		paddingTop: 15,
-		borderTopWidth: 1,
-		borderTopColor: "#DEDEDE"
+	signInTextHeader: {
+		flex: 1,
+		fontSize: 16,
 	},
-	signinAppleIntro: {
-		marginLeft: 15,
-		marginRight: 15	
+	signInImage: {
+		width: 80,
+		height: 80,
+		marginRight: 10,
+	},
+	signInText: {
+		fontSize: 16,
+		marginBottom: 20,
+	},
+	signInInput: {
+		borderStyle: 'solid',
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderWidth: 1,
+		borderRadius: 4,
+		padding: 10,
+	},
+	signInLink: {
+		color: "#337AB7",
+		textDecorationLine: 'underline',
 	},
 	blogListContainer: {
 		flex: 1
@@ -355,14 +369,15 @@ export default StyleSheet.create({
 		navbarSubmit: {
 			color: "#FFFFFF"
 		},
-		signinIntro: {
+		signIn: {
+			backgroundColor: "#000000"
+		},
+		signInText: {
 			color: "#E5E7EB"
 		},
-		signinEmail: {
-			color: "#E5E7EB"
-		},
-		signinAppleIntro: {
-			color: "#E5E7EB"
+		signInInput: {
+			borderColor: "rgba(255, 255, 255, 0.20)",
+			color: "#FFF"
 		},
 		profilePane: {
 			borderBottomColor: "#444444"

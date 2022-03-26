@@ -79,14 +79,6 @@ const App: () => Node = () => {
               </Pressable>
             )
           })} />
-          <Stack.Screen name="SignIn" component={SignInScreen} options={({ navigation, route }) => ({
-            title: "",
-            headerRight: () => (
-              <Pressable onPress={() => { }}>
-                <Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign In</Text>
-              </Pressable>
-            )
-          })} />
           <Stack.Screen name="Blogs" component={BlogsScreen} options={({ navigation, route }) => ({
             title: "Blogs",
             headerLeft: () => (
@@ -116,7 +108,13 @@ const App: () => Node = () => {
               </Pressable>
             )
           })} />
-  			</Stack.Group>
+          </Stack.Group>
+          <Stack.Group>
+            <Stack.Screen name="SignIn" component={SignInScreen} options={({ navigation, route }) => ({
+              title: "Epilogue",
+              headerBackVisible: false
+            })} />
+          </Stack.Group>
   		</Stack.Navigator>
   	</NavigationContainer>
   );
