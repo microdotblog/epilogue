@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Button, TextInput, useColorScheme, Pressable, Text, View, ScrollView, Image } from "react-native";
+import { TextInput, Pressable, Text, View, Image } from "react-native";
 
 import { keys } from "./Constants";
-import styles from "./Styles";
+import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
 
 export function SignInScreen({ navigation }) {
-	const is_dark = (useColorScheme() == "dark");
+	const styles = useEpilogueStyle()
 	const [ email, setEmail ] = useState();
 	const [ emailSent, setEmailSent ] = useState(false);
 
@@ -15,7 +15,7 @@ export function SignInScreen({ navigation }) {
 			headerRight: () => (
 			!emailSent &&
 			  <Pressable onPress={() => { onSendEmail(); }}>
-				<Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign In</Text>
+				<Text style={styles.navbarSubmit}>Sign In</Text>
 			  </Pressable>
 			),
 		});
@@ -49,27 +49,27 @@ export function SignInScreen({ navigation }) {
 	
 	return (
 		emailSent === false ? (
-			<View style={is_dark ? [styles.signIn, styles.dark.signIn] : styles.signIn}>
+			<View style={styles.signIn}>
 				<View style={styles.signInHeader}>
 					<Image style={styles.signInImage} source={require("../images/welcome-logo.png")} />
-					<Text style={is_dark ? [styles.signInTextHeader, styles.dark.signInText] : styles.signInTextHeader}>
+					<Text style={styles.signInTextHeader}>
 						Epilogue is a companion app for Micro.blog. It uses Micro.blog’s bookshelves to help you track which books you are reading or want to read. You can blog directly from Epilogue.
 					</Text>
 				</View>
-				<Text style={is_dark ? [styles.signInText, styles.dark.signInText, { fontWeight: "500" }] : [styles.signInText, { fontWeight: "500" }]}>
+				<Text style={[styles.signInText, { fontWeight: "500" }]}>
 					Enter your Micro.blog account email address and you'll receive a link to sign in:
 				</Text>
-				<TextInput style={is_dark ? [styles.signInInput, styles.dark.signInInput] : styles.signInInput} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="email@email.com" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
+				<TextInput style={styles.signInInput} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="email@email.com" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
 			</View>
 		) : (
-			<View style={is_dark ? [styles.signIn, styles.dark.signIn] : styles.signIn}>
+			<View style={styles.signIn}>
 				<View style={styles.signInHeader}>
 					<Image style={styles.signInImage} source={require("../images/welcome-logo.png")} />
 				</View>
-				<Text style={is_dark ? [styles.signInText, styles.dark.signInText] : styles.signInText}>
+				<Text style={styles.signInText}>
 					We sent an email to: <Text style={{ fontWeight: "600" }}>{email}</Text>
 				</Text>
-				<Text style={is_dark ? [styles.signInText, styles.dark.signInText] : styles.signInText}>
+				<Text style={styles.signInText}>
 					Check your email on this device for a link to finish signing in.
 				</Text>
 				<Pressable onPress={() => { setEmailSent(false); setEmail(undefined); }}>

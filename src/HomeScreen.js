@@ -9,11 +9,12 @@ import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 
 import { keys, errors } from "./Constants";
-import styles from "./Styles";
+import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
 import { Icon } from "./Icon";
 
 export function HomeScreen({ navigation }) {
+	const styles = useEpilogueStyle()
 	const is_dark = (useColorScheme() == "dark");
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
@@ -302,8 +303,8 @@ export function HomeScreen({ navigation }) {
 				actions = {items}
 				>
 					<View style={styles.navbarBookshelf}>
-						<Icon name="bookshelf" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={is_dark ? [ styles.navbarBookshelfIcon, styles.dark.navbarBookshelfIcon ] : styles.navbarBookshelfIcon} />
-						<Text style={is_dark ? [ styles.navbarBookshelfTitle, styles.dark.navbarBookshelfTitle ] : styles.navbarBookshelfTitle}>{currentTitle}</Text>
+						<Icon name="bookshelf" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBookshelfIcon} />
+						<Text style={styles.navbarBookshelfTitle}>{currentTitle}</Text>
 					</View>
 				</MenuView>
 			)
@@ -497,18 +498,18 @@ export function HomeScreen({ navigation }) {
 	}
 
 	return (
-		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<TextInput style={is_dark ? [ styles.searchField, styles.dark.searchField ] : styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
+		<View style={styles.container}>
+			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
 				<BookSwipeableRow book={item.id}>
 					<Pressable onPress={() => { onShowBookPressed(item) }}>
-						<View style={is_dark ? [ styles.item, styles.dark.item ] : styles.item}>
+						<View style={styles.item}>
 							<Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>
-								<Text style={is_dark ? [ styles.bookTitle, styles.dark.bookTitle ] : styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
-								<Text style={is_dark ? [ styles.bookAuthor, styles.dark.bookAuthor ] : styles.bookAuthor}>{item.author}</Text>
+								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
+								<Text style={styles.bookAuthor}>{item.author}</Text>
 							</View>
 						</View>
 					</Pressable>

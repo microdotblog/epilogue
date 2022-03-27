@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export default StyleSheet.create({
+export const light = StyleSheet.create({
 	container: {
 		flex: 1,
 		paddingTop: 10
@@ -15,7 +15,7 @@ export default StyleSheet.create({
 	},
 	navbarBookshelfIcon: {
 		color: "#337AB7",
-		marginRight: 5,
+		marginRight: 8,
 	},
 	navbarBookshelfTitle: {
 		color: "#337AB7",
@@ -283,128 +283,132 @@ export default StyleSheet.create({
 	},
 	bookDetailsNoDescription: {		
 	},
-	dark: {
-		container: {
-			backgroundColor: "#212936",
-			color: "#E5E7EB"
-		},
-		bookTitle: {
-			color: "#FFFFFF"	
-		},
-		bookAuthor: {
-			color: "#777777"
-		},		
-		navbarBookshelfIcon: {
-			tintColor: "#FFFFFF"
-		},
-		navbarBookshelfTitle: {
-			color: "#FFFFFF"
-		},
-		searchField: {
-			backgroundColor: "#000000",
-			borderColor: "#555b64",
-			color: "#FFFFFF"
-		},
-		bookDetailsScroll: {
-			backgroundColor: "#212936"
-		},
-		bookDetails: {
-			borderBottomColor: "#444444"
-		},
-		bookDetailsTitle: {
-			color: "#FFFFFF"
-		},
-		bookDetailsAuthor: {
-			color: "#777777"
-		},
-		bookDetailsAddTo: {
-			color: "#FFFFFF"
-		},
-		postTextBox: {
-			backgroundColor: "#212936",
-			color: "#E5E7EB",
-			height: 2000
-		},
-		bookDetailsButton: {
-			backgroundColor: "#141723",
-			pressed: {
-				backgroundColor: "#000000"
-			}
-		},		
-		bookDetailsBookshelfTitle: {
-			color: "#FFFFFF"
-		},
-		bookDetailsBookshelfCount: {
-			color: "#777777"
-		},
-		blogListContainer: {
-			backgroundColor: "#212936",
-			color: "#E5E7EB"
-		},
-		blogListItem: {
-			borderBottomColor: "#444444"			
-		},
-		blogListName: {
-			color: "#E5E7EB"
-		},
-		postHostnameBar: {
-			backgroundColor: "#000000",
-			borderBottomColor: "#444444"
-		},
-		postHostnameText: {
-			color: "#E5E7EB"
-		},
-		postTextInput: {
-			color: "#E5E7EB"
-		},
-		navbarNewIcon: {
-			tintColor: "#FFFFFF"
-		},
-		navbarBackIcon: {
-			tintColor: "#FFFFFF"
-		},
-		navbarCloseIcon: {
-			tintColor: "#FFFFFF"
-		},
-		navbarSubmit: {
-			color: "#FFFFFF"
-		},
-		signIn: {
+});
+
+export const dark = StyleSheet.create({
+	container: {
+		backgroundColor: "#212936",
+		color: "#E5E7EB"
+	},
+	bookTitle: {
+		color: "#FFFFFF"	
+	},
+	bookAuthor: {
+		color: "#777777"
+	},		
+	navbarBookshelfIcon: {
+		tintColor: "#FFFFFF"
+	},
+	navbarBookshelfTitle: {
+		color: "#FFFFFF"
+	},
+	searchField: {
+		backgroundColor: "#000000",
+		borderColor: "#555b64",
+		color: "#FFFFFF"
+	},
+	bookDetailsScroll: {
+		backgroundColor: "#212936"
+	},
+	bookDetails: {
+		borderBottomColor: "#444444"
+	},
+	bookDetailsTitle: {
+		color: "#FFFFFF"
+	},
+	bookDetailsAuthor: {
+		color: "#777777"
+	},
+	bookDetailsAddTo: {
+		color: "#FFFFFF"
+	},
+	postTextBox: {
+		backgroundColor: "#212936",
+		color: "#E5E7EB",
+		height: 2000
+	},
+	bookDetailsButton: {
+		backgroundColor: "#141723",
+		pressed: {
 			backgroundColor: "#000000"
-		},
-		signInText: {
-			color: "#E5E7EB"
-		},
-		signInInput: {
-			borderColor: "rgba(255, 255, 255, 0.20)",
-			color: "#FFF"
-		},
-		profilePane: {
-			borderBottomColor: "#444444"
-		},
-		profileUsername: {
-			color: "#E5E7EB"
-		},
-		micropubHostname: {
-			color: "#E5E7EB"
-		},
-		micropubButton: {
-			backgroundColor: "#141723"
-		},
-		micropubButtonTitle: {
-			color: "#E5E7EB"
-		},
-		micropubIntro: {
-			color: "#E5E7EB"
-		},
-		micropubURL: {
-			color: "#E5E7EB"
-		},
-		bookDetailsMore: {
-			borderTopColor: "#444444"
-		},
-		bookDetailsDescription: {
-			color: "#E5E7EB"
 		}
+	},		
+	bookDetailsBookshelfTitle: {
+		color: "#FFFFFF"
+	},
+	bookDetailsBookshelfCount: {
+		color: "#777777"
+	},
+	blogListContainer: {
+		backgroundColor: "#212936",
+		color: "#E5E7EB"
+	},
+	blogListItem: {
+		borderBottomColor: "#444444"			
+	},
+	blogListName: {
+		color: "#E5E7EB"
+	},
+	postHostnameBar: {
+		backgroundColor: "#000000",
+		borderBottomColor: "#444444"
+	},
+	postHostnameText: {
+		color: "#E5E7EB"
+	},
+	postTextInput: {
+		color: "#E5E7EB"
+	},
+	navbarNewIcon: {
+		tintColor: "#FFFFFF"
+	},
+	navbarBackIcon: {
+		tintColor: "#FFFFFF"
+	},
+	navbarCloseIcon: {
+		tintColor: "#FFFFFF"
+	},
+	navbarSubmit: {
+		color: "#FFFFFF"
+	},
+	signIn: {
+		backgroundColor: "#000000"
+	},
+	signInText: {
+		color: "#E5E7EB"
+	},
+	signInTextHeader: {
+		color: "#E5E7EB"
+	},
+	signInInput: {
+		borderColor: "rgba(255, 255, 255, 0.20)",
+		color: "#FFF"
+	},
+	profilePane: {
+		borderBottomColor: "#444444"
+	},
+	profileUsername: {
+		color: "#E5E7EB"
+	},
+	micropubHostname: {
+		color: "#E5E7EB"
+	},
+	micropubButton: {
+		backgroundColor: "#141723"
+	},
+	micropubButtonTitle: {
+		color: "#E5E7EB"
+	},
+	micropubIntro: {
+		color: "#E5E7EB"
+	},
+	micropubURL: {
+		color: "#E5E7EB"
+	},
+	bookDetailsMore: {
+		borderTopColor: "#444444"
+	},
+	bookDetailsDescription: {
+		color: "#E5E7EB"
 	}
 });
