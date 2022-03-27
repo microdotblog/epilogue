@@ -359,13 +359,15 @@ export function HomeScreen({ navigation }) {
 	
 					let isbns = book_item.volumeInfo.industryIdentifiers;
 					var best_isbn = "";
-					for (let isbn of isbns) {
-						if (isbn.type == "ISBN_13") {
-							best_isbn = isbn.identifier;
-							break;
-						}
-						else if (isbn.type == "ISBN_10") {
-							best_isbn = isbn.identifier;
+					if (isbns != undefined) {
+						for (let isbn of isbns) {
+							if (isbn.type == "ISBN_13") {
+								best_isbn = isbn.identifier;
+								break;
+							}
+							else if (isbn.type == "ISBN_10") {
+								best_isbn = isbn.identifier;
+							}
 						}
 					}
 	
