@@ -196,9 +196,11 @@ export const light = StyleSheet.create({
 		fontSize: 16,
 	},
 	signInImage: {
-		width: 80,
-		height: 80,
-		marginRight: 10,
+		width: 50,
+		height: 50,
+		marginTop: 15,
+		marginLeft: 5,
+		marginRight: 15,
 	},
 	signInText: {
 		fontSize: 16,
