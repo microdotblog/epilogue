@@ -11,7 +11,7 @@ import { SFSymbol } from "./SFSymbols";
 // To find Material icons, use the browser here: https://materialdesignicons.com
 
 const IconNames = {
-  "publish": { ios: "square.and.pencil", android: "notebook-edit-outline" },
+  "publish": { ios: "square.and.pencil", android: "pencil" },
   "navbar-back": { ios: "chevron.left", android: "arrow-left" },
   "close": { ios: "xmark", android: "close" },
   "bookshelf": { ios: "books.vertical", android: "bookshelf" }
