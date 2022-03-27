@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
+import { TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { keys } from "./Constants";
-import styles from "./Styles";
+import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
 
 export function PostScreen({ navigation }) {
-	const is_dark = (useColorScheme() == "dark");
+	const styles = useEpilogueStyle()
 	const [ text, setText ] = useState();
 	const [ blogID, setBlogID ] = useState();
 	const [ blogName, setBlogName ] = useState();
@@ -39,7 +39,7 @@ export function PostScreen({ navigation }) {
 		navigation.setOptions({
 			headerRight: () => (
 			  <Pressable onPress={() => { onSendPost(); }}>
-				<Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Post</Text>
+				<Text style={styles.navbarSubmit}>Post</Text>
 			  </Pressable>
 			)
 		});		
@@ -113,13 +113,13 @@ export function PostScreen({ navigation }) {
 	}
 	
 	return (
-		<View style={is_dark ? [ styles.postTextBox, styles.dark.postTextBox ] : styles.postTextBox}>
-			<Pressable style={is_dark ? [ styles.postHostnameBar, styles.dark.postHostnameBar ] : styles.postHostnameBar} onPress={onShowBlogs}>
+		<View style={styles.postTextBox}>
+			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
 				<Text style={styles.postHostnameLeft}></Text>
-				<Text style={is_dark ? [ styles.postHostnameText, styles.dark.postHostnameText ] : styles.postHostnameText}>{blogName}</Text>
+				<Text style={styles.postHostnameText}>{blogName}</Text>
 				<ActivityIndicator style={styles.postHostnameProgress} size="small" animating={progressAnimating} />
 			</Pressable>
-			<TextInput style={is_dark ? [ styles.postTextInput, styles.dark.postTextInput ] : styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} />
+			<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} />
 		</View>
 	);
 }

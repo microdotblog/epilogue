@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { FlatList, ActivityIndicator, useColorScheme, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { keys } from "./Constants";
-import styles from "./Styles";
+import { useEpilogueStyle } from "./hooks/useEpilogueStyle";
 import epilogueStorage from "./Storage";
 
 export function BlogsScreen({ navigation }) {
-	const is_dark = (useColorScheme() == "dark");
+	const styles = useEpilogueStyle()
 	const [ blogs, setBlogs ] = useState([]);
 	
 	React.useEffect(() => {
@@ -73,12 +73,12 @@ export function BlogsScreen({ navigation }) {
 	}
 	
 	return (
-		<View style={is_dark ? [ styles.blogListContainer, styles.dark.blogListContainer ] : styles.blogListContainer}>
+		<View style={styles.blogListContainer}>
 			<FlatList
 			data = {blogs}
 			renderItem = { ({item}) => 
-			<Pressable style={is_dark ? [ styles.blogListItem, styles.dark.blogListItem ] : styles.blogListItem} onPress={() => { onSelectBlog(item) }}>
-				<Text style={is_dark ? [ styles.blogListName, styles.dark.blogListName ] : styles.blogListName}>{item.name}</Text>
+			<Pressable style={styles.blogListItem} onPress={() => { onSelectBlog(item) }}>
+				<Text style={styles.blogListName}>{item.name}</Text>
 			</Pressable>
 			}
 			keyExtractor = { item => item.id }

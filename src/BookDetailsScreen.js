@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
 
 import { keys } from "./Constants";
-import styles from "./Styles";
+import { useEpilogueStyle } from "./hooks/useEpilogueStyle";
 import epilogueStorage from "./Storage";
 
 export function BookDetailsScreen({ route, navigation }) {
-	const is_dark = (useColorScheme() == "dark");
+	const styles = useEpilogueStyle()
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 	const { id, isbn, title, image, author, description, bookshelves, current_bookshelf, is_search } = route.params;
@@ -84,16 +84,16 @@ export function BookDetailsScreen({ route, navigation }) {
 	}
 
 	return (
-		<ScrollView style={is_dark ? [ styles.bookDetailsScroll, styles.dark.bookDetailsScroll ] : styles.bookDetailsScroll}>
-			<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-				<View style={is_dark ? [ styles.bookDetails, styles.dark.bookDetails ] : styles.bookDetails}>
+		<ScrollView style={styles.bookDetailsScroll}>
+			<View style={styles.container}>
+				<View style={styles.bookDetails}>
 					<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
-					<Text style={is_dark ? [ styles.bookDetailsTitle, styles.dark.bookDetailsTitle ] : styles.bookDetailsTitle}>{title}</Text>
-					<Text style={is_dark ? [ styles.bookDetailsAuthor, styles.dark.bookDetailsAuthor ] : styles.bookDetailsAuthor}>{author}</Text>
+					<Text style={styles.bookDetailsTitle}>{title}</Text>
+					<Text style={styles.bookDetailsAuthor}>{author}</Text>
 				</View>
 				<View style={styles.bookDetailsBookshelves}>
 					<View style={styles.bookDetailsAddBar}>
-					<Text style={is_dark ? [ styles.bookDetailsAddTo, styles.dark.bookDetailsAddTo ] : styles.bookDetailsAddTo}>Add to bookshelf...</Text>
+					<Text style={styles.bookDetailsAddTo}>Add to bookshelf...</Text>
 					<ActivityIndicator style={styles.BookDetailsProgress} size="small" animating={progressAnimating} />
 				</View>
 				{
@@ -102,22 +102,22 @@ export function BookDetailsScreen({ route, navigation }) {
 							styles.bookDetailsButton,
 							{
 								backgroundColor: pressed ? 
-								(is_dark ? styles.dark.bookDetailsButton.pressed.backgroundColor : styles.bookDetailsButton.pressed.backgroundColor) : 
-								(is_dark ? styles.dark.bookDetailsButton.backgroundColor : styles.bookDetailsButton.backgroundColor)
+								styles.bookDetailsButton.pressed.backgroundColor : 
+								styles.bookDetailsButton.backgroundColor
 							},
 						]}>
-							<Text style={is_dark ? [ styles.bookDetailsBookshelfTitle, styles.dark.bookDetailsBookshelfTitle ] : styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
-							<Text style={is_dark ? [ styles.bookDetailsBookshelfCount, styles.dark.bookDetailsBookshelfCount ] : styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
+							<Text style={styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
+							<Text style={styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
 						</Pressable>
 					))
 				}
 				</View>
 				<View style={
 					description.length > 0 ?
-					(is_dark ? [ styles.bookDetailsMore, styles.dark.bookDetailsMore ] : styles.bookDetailsMore) :
+					(styles.bookDetailsMore) :
 					styles.bookDetailsNoDescription
 					}>
-					<Text style={is_dark ? [ styles.bookDetailsDescription, styles.dark.bookDetailsDescription ] : styles.bookDetailsDescription}>{description}</Text>
+					<Text style={styles.bookDetailsDescription}>{description}</Text>
 				</View>
 			</View>
 		</ScrollView>

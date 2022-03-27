@@ -15,7 +15,7 @@ export const light = StyleSheet.create({
 	},
 	navbarBookshelfIcon: {
 		color: "#337AB7",
-		marginRight: 5,
+		marginRight: 8,
 	},
 	navbarBookshelfTitle: {
 		color: "#337AB7",
@@ -410,10 +410,5 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsDescription: {
 		color: "#E5E7EB"
-	}
-});
-
-export default StyleSheet.create({
-	dark: {
 	}
 });

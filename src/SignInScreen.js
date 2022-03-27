@@ -3,7 +3,6 @@ import { TextInput, Pressable, Text, View, Image } from "react-native";
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import styles from "./Styles";
 import epilogueStorage from "./Storage";
 
 export function SignInScreen({ navigation }) {

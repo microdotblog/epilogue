@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Linking, Alert, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
+import { Linking, Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 
 import { keys, errors } from "./Constants";
-import styles from "./Styles";
+import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
 
 export function ExternalScreen({ navigation }) {
-	const is_dark = (useColorScheme() == "dark");
+	const styles = useEpilogueStyle()
 	const [ url, setURL ] = useState();
 	
 	React.useEffect(() => {
@@ -143,9 +143,9 @@ export function ExternalScreen({ navigation }) {
 	}
 		
 	return (
-		<View style={is_dark ? [ styles.container, styles.dark.container ] : styles.container}>
-			<Text style={is_dark ? [ styles.micropubIntro, styles.dark.micropubIntro ] : styles.micropubIntro} >Post to an external blog via Micropub:</Text>
-			<TextInput style={is_dark ? [ styles.micropubURL, styles.dark.micropubURL ] : styles.micropubURL} value={url} onChangeText={setURL} onEndEditing={onSendURL} returnKeyType="done" placeholder="Your blog URL" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
+		<View style={styles.container}>
+			<Text style={styles.micropubIntro} >Post to an external blog via Micropub:</Text>
+			<TextInput style={styles.micropubURL} value={url} onChangeText={setURL} onEndEditing={onSendURL} returnKeyType="done" placeholder="Your blog URL" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
 		</View>
 	);
 }

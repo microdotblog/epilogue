@@ -7,7 +7,7 @@ import { MenuView } from "@react-native-menu/menu";
 import "react-native-gesture-handler"
 
 import { keys } from "./src/Constants";
-import styles from "./src/Styles";
+import { useEpilogueStyle } from './src/hooks/useEpilogueStyle';
 import epilogueStorage from "./src/Storage";
 import { Icon } from "./src/Icon";
 
@@ -29,6 +29,7 @@ const EpilogueDarkTheme = {
 };
 
 const App: () => Node = () => {	
+  const styles = useEpilogueStyle()
   const is_dark = (useColorScheme() == "dark");
 
   LogBox.ignoreAllLogs();
@@ -70,12 +71,12 @@ const App: () => Node = () => {
             title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
               </Pressable>
             ),
             headerRight: () => (
               <Pressable onPress={() => { }}>
-                <Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Post</Text>
+                <Text style={styles.navbarSubmit}>Post</Text>
               </Pressable>
             )
           })} />
@@ -83,7 +84,7 @@ const App: () => Node = () => {
             title: "Blogs",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
               </Pressable>
             )
           })} />
@@ -91,12 +92,12 @@ const App: () => Node = () => {
             title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
               </Pressable>
             ),
             headerRight: () => (
               <Pressable onPress={() => { }}>
-                <Text style={is_dark ? [ styles.navbarSubmit, styles.dark.navbarSubmit ] : styles.navbarSubmit}>Sign Out</Text>
+                <Text style={styles.navbarSubmit}>Sign Out</Text>
               </Pressable>
             )
           })} />
@@ -104,7 +105,7 @@ const App: () => Node = () => {
             title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }}>
-                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={is_dark ? [ styles.navbarCloseIcon, styles.dark.navbarCloseIcon ] : styles.navbarCloseIcon} />
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
               </Pressable>
             )
           })} />
