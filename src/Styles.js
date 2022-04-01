@@ -123,6 +123,7 @@ export const light = StyleSheet.create({
 		color: "#FFFFFF"
 	},
 	searchField: {
+		height: 36,
 		marginTop: 1,
 		marginBottom: 15,
 		marginLeft: 20,
@@ -131,7 +132,7 @@ export const light = StyleSheet.create({
 		paddingBottom: 7,
 		paddingLeft: 12,
 		paddingRight: 12,
-		borderRadius: 20,
+		borderRadius: 18,
 		borderColor: "#ced3d8",
 		borderWidth: 0.5,
 		backgroundColor: "#FFFFFF"
@@ -306,7 +307,7 @@ export const dark = StyleSheet.create({
 	},
 	searchField: {
 		backgroundColor: "#000000",
-		borderColor: "#555b64",
+		borderColor: "#1f1f1f",
 		color: "#FFFFFF"
 	},
 	bookDetailsScroll: {
