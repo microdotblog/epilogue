@@ -85,11 +85,11 @@ export const light = StyleSheet.create({
 		paddingHorizontal: 14,
 		borderRadius: 5,
 		marginBottom: 6,
-		backgroundColor: "#DEDEDE",
-		pressed: {
-			backgroundColor: "#BBBBBB",
-		}
+		backgroundColor: "#DEDEDE"
 	},	
+	bookDetailsButtonPressed: {
+		backgroundColor: "#BBBBBB",
+	},
 	bookDetailsBookshelfTitle: {
 		flex: 1
 	},
@@ -331,11 +331,11 @@ export const dark = StyleSheet.create({
 		height: 2000
 	},
 	bookDetailsButton: {
-		backgroundColor: "#141723",
-		pressed: {
-			backgroundColor: "#000000"
-		}
+		backgroundColor: "#141723"
 	},		
+	bookDetailsButtonPressed: {
+		backgroundColor: "#000000"
+	},
 	bookDetailsBookshelfTitle: {
 		color: "#FFFFFF"
 	},

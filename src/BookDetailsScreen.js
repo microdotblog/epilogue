@@ -100,11 +100,7 @@ export function BookDetailsScreen({ route, navigation }) {
 					bookshelves.map((shelf) => (
 						<Pressable key={shelf.id} onPress={() => { addToBookshelf(shelf.id); }} style={({ pressed }) => [
 							styles.bookDetailsButton,
-							{
-								backgroundColor: pressed ? 
-								styles.bookDetailsButton.pressed.backgroundColor : 
-								styles.bookDetailsButton.backgroundColor
-							},
+							(pressed ? styles.bookDetailsButtonPressed : styles.bookDetailsButton)
 						]}>
 							<Text style={styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
 							<Text style={styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
