@@ -56,12 +56,12 @@ const App: () => Node = () => {
   					title: "",
   					headerLeft: () => (
   						<Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
-                          <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarBackIcon} />
+                          <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
   						</Pressable>
   					),
   					headerRight: () => (
               <Pressable onPress={() => { navigation.navigate("Post"); }} hitSlop={10}>
-                <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+                <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
               </Pressable>
   					)
   				})} />
@@ -71,7 +71,7 @@ const App: () => Node = () => {
             title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
-                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
               </Pressable>
             ),
             headerRight: () => (
@@ -84,7 +84,7 @@ const App: () => Node = () => {
             title: "Blogs",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
-                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
               </Pressable>
             )
           })} />
@@ -92,7 +92,7 @@ const App: () => Node = () => {
             title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
-                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
               </Pressable>
             ),
             headerRight: () => (
@@ -105,7 +105,7 @@ const App: () => Node = () => {
             title: "",
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
-                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
               </Pressable>
             )
           })} />
