@@ -55,12 +55,12 @@ const App: () => Node = () => {
   				<Stack.Screen name="Details" component={BookDetailsScreen} options={({ navigation, route }) => ({
   					title: "",
   					headerLeft: () => (
-  						<Pressable onPress={() => { navigation.goBack(); }}>
+  						<Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                           <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarBackIcon} />
   						</Pressable>
   					),
   					headerRight: () => (
-              <Pressable onPress={() => { navigation.navigate("Post"); }}>
+              <Pressable onPress={() => { navigation.navigate("Post"); }} hitSlop={10}>
                 <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarNewIcon} accessibilityLabel="new post" />
               </Pressable>
   					)
@@ -70,7 +70,7 @@ const App: () => Node = () => {
   				<Stack.Screen name="Post" component={PostScreen} options={({ navigation, route }) => ({
             title: "",
             headerLeft: () => (
-              <Pressable onPress={() => { navigation.goBack(); }}>
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
               </Pressable>
             ),
@@ -83,7 +83,7 @@ const App: () => Node = () => {
           <Stack.Screen name="Blogs" component={BlogsScreen} options={({ navigation, route }) => ({
             title: "Blogs",
             headerLeft: () => (
-              <Pressable onPress={() => { navigation.goBack(); }}>
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
               </Pressable>
             )
@@ -91,7 +91,7 @@ const App: () => Node = () => {
           <Stack.Screen name="Profile" component={ProfileScreen} options={({ navigation, route }) => ({
             title: "",
             headerLeft: () => (
-              <Pressable onPress={() => { navigation.goBack(); }}>
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
               </Pressable>
             ),
@@ -104,7 +104,7 @@ const App: () => Node = () => {
           <Stack.Screen name="External" component={ExternalScreen} options={({ navigation, route }) => ({
             title: "",
             headerLeft: () => (
-              <Pressable onPress={() => { navigation.goBack(); }}>
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={16} style={styles.navbarCloseIcon} />
               </Pressable>
             )
