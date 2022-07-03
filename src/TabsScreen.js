@@ -21,12 +21,22 @@ export function TabsScreen({ navigation }) {
 			<Tab.Screen name="Bookshelves" component={HomeScreen} options={{				
 				headerTitle: "",
 				tabBarIcon: ({ focused, color, size }) => {
-					return <Icon name="bookshelves" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />	
+					if (focused) {
+						return <Icon name="bookshelves" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
+					}
+					else {
+						return <Icon name="bookshelves" color={"gray"} size={18} />
+					}
 				}
 			}} />
 			<Tab.Screen name="Discover" component={DiscoverScreen} options={{
 				tabBarIcon: ({ focused, color, size }) => {
-					return <Icon name="discover" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />	
+					if (focused) {
+						return <Icon name="discover" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
+					}
+					else {					
+						return <Icon name="discover" color={"gray"} size={18} />
+					}
 				}
 			}} />
 		</Tab.Navigator>
