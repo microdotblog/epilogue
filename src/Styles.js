@@ -6,12 +6,14 @@ export const light = StyleSheet.create({
 		paddingTop: 10
 	},
 	profileIcon: {
+		marginLeft: 20,
 		width: 24,
 		height: 24,
 		borderRadius: 12
 	},
 	navbarBookshelf: {
 		flexDirection: "row",
+		marginRight: 20
 	},
 	navbarBookshelfIcon: {
 		color: "#337AB7"

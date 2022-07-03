@@ -12,6 +12,7 @@ import epilogueStorage from "./src/Storage";
 import { Icon } from "./src/Icon";
 
 import { HomeScreen } from "./src/HomeScreen";
+import { TabsScreen } from "./src/TabsScreen";
 import { BookDetailsScreen } from "./src/BookDetailsScreen";
 import { PostScreen } from "./src/PostScreen";
 import { SignInScreen } from "./src/SignInScreen";
@@ -38,6 +39,11 @@ const App: () => Node = () => {
   return (
   	<NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
   		<Stack.Navigator>
+        <Stack.Group>
+          <Stack.Screen name="Tabs" component={TabsScreen} options={{
+            headerShown: false
+          }} />
+        </Stack.Group>
   			<Stack.Group>
   				<Stack.Screen name="Home" component={HomeScreen} options={{
   					title: "",
