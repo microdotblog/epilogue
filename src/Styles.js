@@ -288,6 +288,15 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsNoDescription: {		
 	},
+	// for books on discover page
+	bookCovers: {
+		height: 140,
+		width: '100%',
+		alignSelf: 'center',
+	},
+	bookCoverButtons: {
+		flex: 1,
+	},
 });
 
 export const dark = StyleSheet.create({
