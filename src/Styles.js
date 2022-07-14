@@ -292,11 +292,12 @@ export const light = StyleSheet.create({
 	bookCovers: {
 		height: 140,
 		width: '100%',
-		alignSelf: 'center',
 	},
 	bookCoverButtons: {
-		flex: 1,
-	},
+		flex: 1/3,
+		justifyContent: 'flex-start'
+	}
+	
 });
 
 export const dark = StyleSheet.create({
