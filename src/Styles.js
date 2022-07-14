@@ -293,11 +293,20 @@ export const light = StyleSheet.create({
 		height: 140,
 		width: '100%',
 	},
-	bookCoverButtons: {
+	bookContainer: {
 		flex: 1/3,
-		justifyContent: 'flex-start'
+		justifyContent: 'center',	
+	},
+	placeholderTitleText: {
+		textAlign: 'center',
+		fontWeight: '400',
+		fontStyle: 'italic',
+	},
+	loadingSpinner: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		flex: 1,
 	}
-	
 });
 
 export const dark = StyleSheet.create({
