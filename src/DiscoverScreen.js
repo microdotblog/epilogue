@@ -78,7 +78,7 @@ export function DiscoverScreen({ navigation }) {
 				/>
 			</View>
 		) : (
-			<View style={styles.loadingSpinner}>
+			<View style={styles.loadingPage}>
 				<ActivityIndicator size='large'/>
 			</View>
 		)	

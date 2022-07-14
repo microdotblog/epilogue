@@ -302,7 +302,7 @@ export const light = StyleSheet.create({
 		fontWeight: '400',
 		fontStyle: 'italic',
 	},
-	loadingSpinner: {
+	loadingPage: {
 		justifyContent: 'center',
 		alignItems: 'center',
 		flex: 1,
