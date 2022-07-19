@@ -12,7 +12,7 @@ export function DiscoverScreen({ navigation }) {
 	const [ data, setData ] = useState()
 	const [ refreshing , setRefreshing ] = useState(false)
 	const [ loaded, setLoaded ] = useState(false)
-	
+		
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			onFocus(navigation);
@@ -28,7 +28,6 @@ export function DiscoverScreen({ navigation }) {
 		await fetch("https://micro.blog/posts/discover/books").then(response => response.json()).then(data => {
 			setData(data.items)
 		})
-		console.log('loaded books')
 		setLoaded(true)
 	}
 	
@@ -41,19 +40,26 @@ export function DiscoverScreen({ navigation }) {
 		}, 1000)
 	}, [])
 		
-	const BookCover = ({ url, id }) => {
+	const BookCover = ({ url, title, author }) => {
 		if (url !== '') {
 			return (
-				<Image style={styles.bookCovers} source={{ 
-					uri: url
-				}}/>
+				<View>
+					<Image style={styles.bookCovers} source={{ 
+						uri: url
+					}}/>
+				</View>
+
 			)
 		} else {
 			return (
-				<Text style={styles.placeholderTitleText}>
-					Placeholder Book Title{'\n'}
-					Post id: {id}
-				</Text>
+				<View>
+					<Text style={styles.placeholderTitleText}>
+						{title}
+					</Text>
+					<Text style={styles.placeholderAuthorText}>
+						{author}
+					</Text>
+				</View>
 			)
 		}
 	}
@@ -72,7 +78,7 @@ export function DiscoverScreen({ navigation }) {
 					}
 					renderItem={({ item }) => (
 						<TouchableOpacity onPress={() => Linking.openURL(item.url)} style={styles.bookContainer}>
-							<BookCover url={item._microblog.cover_url} id={item.id}/>
+							<BookCover url={item._microblog.cover_url} id={item.id} title={item._microblog.book_title} author={item._microblog.book_author}/>
 						</TouchableOpacity>	
 					)}
 				/>

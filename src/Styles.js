@@ -290,17 +290,22 @@ export const light = StyleSheet.create({
 	},
 	// for books on discover page
 	bookCovers: {
-		height: 140,
+		height: '100%',
 		width: '100%',
 	},
 	bookContainer: {
 		flex: 1/3,
-		justifyContent: 'center',	
+		height: 130,
+		justifyContent: 'center',
 	},
 	placeholderTitleText: {
 		textAlign: 'center',
-		fontWeight: '400',
 		fontStyle: 'italic',
+		fontSize: 15,
+		fontWeight: '500',
+	},
+	placeholderAuthorText: {
+		textAlign: 'center',
 	},
 	loadingPage: {
 		justifyContent: 'center',
