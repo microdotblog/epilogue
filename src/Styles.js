@@ -290,17 +290,25 @@ export const light = StyleSheet.create({
 	},
 	// for books on discover page
 	bookCovers: {
-		height: 140,
+		height: '100%',
 		width: '100%',
 	},
 	bookContainer: {
 		flex: 1/3,
-		justifyContent: 'center',	
+		height: 160,
+		justifyContent: 'center',
+		padding: 5
 	},
 	placeholderTitleText: {
 		textAlign: 'center',
-		fontWeight: '400',
 		fontStyle: 'italic',
+		fontSize: 15,
+		fontWeight: '500',
+		margin: 5,
+	},
+	placeholderAuthorText: {
+		textAlign: 'center',
+		margin: 5
 	},
 	loadingPage: {
 		justifyContent: 'center',
@@ -434,5 +442,11 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsDescription: {
 		color: "#E5E7EB"
-	}
+	},
+	placeholderTitleText: {
+		color: "#E5E7EB"
+	},
+	placeholderAuthorText: {
+		color: "#E5E7EB"
+	},
 });
