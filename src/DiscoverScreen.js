@@ -48,7 +48,6 @@ export function DiscoverScreen({ navigation }) {
 						uri: url
 					}}/>
 				</View>
-
 			)
 		} else {
 			return (
@@ -78,7 +77,7 @@ export function DiscoverScreen({ navigation }) {
 					}
 					renderItem={({ item }) => (
 						<TouchableOpacity onPress={() => Linking.openURL(item.url)} style={styles.bookContainer}>
-							<BookCover url={item._microblog.cover_url} id={item.id} title={item._microblog.book_title} author={item._microblog.book_author}/>
+							<BookCover url={item._microblog.cover_url} title={item._microblog.book_title} author={item._microblog.book_author}/>
 						</TouchableOpacity>	
 					)}
 				/>
