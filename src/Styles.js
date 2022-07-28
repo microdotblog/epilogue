@@ -292,12 +292,24 @@ export const light = StyleSheet.create({
 	bookCovers: {
 		height: '100%',
 		width: '100%',
+		resizeMode: 'cover'
+	},
+	discoverView: {
+		flex: 1,
 	},
 	bookContainer: {
 		flex: 1/3,
+		flexDirection: 'column',
 		height: 160,
 		justifyContent: 'center',
-		padding: 5
+		backgroundColor: '#DEDEDE',
+		margin: 5,
+		shadowColor: '#000',
+		shadowOffset: {
+			height: 3
+		},
+		shadowRadius: 3,
+		shadowOpacity: 0.5,
 	},
 	placeholderTitleText: {
 		textAlign: 'center',
@@ -314,6 +326,11 @@ export const light = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		flex: 1,
+	},
+	bookCoverModal: {
+		height: 300,
+		width: 200,
+		resizeMode: 'contain'
 	}
 });
 
@@ -449,4 +466,11 @@ export const dark = StyleSheet.create({
 	placeholderAuthorText: {
 		color: "#E5E7EB"
 	},
+	bookContainer: {
+		backgroundColor: '#141723',
+		shadowOpacity: 0.75,
+	},
+	discoverView: {
+		backgroundColor: '#212936',
+	}
 });
