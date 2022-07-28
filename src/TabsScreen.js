@@ -27,9 +27,12 @@ export function TabsScreen({ navigation }) {
 					else {
 						return <Icon name="bookshelves" color={"gray"} size={18} />
 					}
-				}
+				},
+  				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
+				tabBarInactiveTintColor: "gray"
 			}} />
 			<Tab.Screen name="Discover" component={DiscoverScreen} options={{
+				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
 				tabBarIcon: ({ focused, color, size }) => {
 					if (focused) {
 						return <Icon name="discover" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
@@ -37,7 +40,9 @@ export function TabsScreen({ navigation }) {
 					else {					
 						return <Icon name="discover" color={"gray"} size={18} />
 					}
-				}
+				},
+				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
+				tabBarInactiveTintColor: "gray"
 			}} />
 		</Tab.Navigator>
 	);
