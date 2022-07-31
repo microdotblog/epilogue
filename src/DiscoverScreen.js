@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share } from 'react-native';
 import ContextMenu from "react-native-context-menu-view";
+import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
 import { keys } from "./Constants";
@@ -143,8 +144,12 @@ export function DiscoverScreen({ navigation }) {
 			})
 			if (result.action === Share.sharedAction) {
 				if (result.activityType) {
-					
-				} else {
+					switch (result.activityType) {
+						case 'com.apple.UIKit.activity.CopyToPasteboard':
+							Clipboard.setString(url)
+							break
+					}
+				} else {	
 					
 				}
 			} else if (result.action === Share.dismissedAction) {
