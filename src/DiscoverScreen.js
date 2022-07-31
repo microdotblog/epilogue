@@ -144,10 +144,11 @@ export function DiscoverScreen({ navigation }) {
 			})
 			if (result.action === Share.sharedAction) {
 				if (result.activityType) {
-					if (result.activityType === 'com.apple.UIKit.activity.CopyToPasteboard') {
-						Clipboard.setString(url)
+					switch (result.activityType) {
+						case 'com.apple.UIKit.activity.CopyToPasteboard':
+							Clipboard.setString(url)
+							break
 					}
-					
 				} else {	
 					
 				}
