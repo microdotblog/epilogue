@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { FlatList, Image, View, TouchableOpacity, Linking, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share } from 'react-native';
-import { MenuView } from "@react-native-menu/menu";
+import ContextMenu from "react-native-context-menu-view";
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -41,21 +41,27 @@ export function DiscoverScreen({ navigation }) {
 	const onFocus = (navigation) =>  {
 		loadBooks()
 		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
-			var items = [
+			var shelf_items = [];
+			for (var item of bookshelves) {
+				shelf_items.push({
+					id: item.id,
+					title: item.title
+				});
+			}
+			var root_items = [
 				{
 					id: 'share',
 					title: 'Share',
-					titleColor: '#000',
-					image: Platform.select({
-						  ios: 'square.and.arrow.up',
-						  android: 'ic_menu_share',
-					}),
+					systemIcon: 'square.and.arrow.up'
+				},
+				{
+					id: 'bookshelves',
+					title: 'Bookshelves',
+					inlineChildren: true,
+					actions: shelf_items
 				}
 			]
-			for (var item of bookshelves) {
-				items.push(item)
-			}
-			setMenuActions(items)
+			setMenuActions(root_items)
 		});
 	}
 	
@@ -160,19 +166,17 @@ export function DiscoverScreen({ navigation }) {
 					}
 					renderItem={({ item }) => (	
 						<View style={{flex: 1/columns}}>
-							<MenuView
+							<ContextMenu
 								title={item._microblog.book_title}
-								accessibilityLabel={item._microblog.book_title}
-								onPressAction={({nativeEvent}) => {
-									console.warn(JSON.stringify(nativeEvent))
-									let shelf_id = nativeEvent.event
-									
-									if (nativeEvent.event === 'share') {
-										onShare(item.url, item._microblog.book_title, item._microblog.book_author)
+								onPress={({nativeEvent}) => {
+									let shelf_id = nativeEvent.event;									
+									if (nativeEvent.name === 'Share') {
+										let url = "https://micro.blog/books/" + item._microblog.isbn;
+										onShare(url, item._microblog.book_title, item._microblog.book_author)
 									}
 								}}
 								actions={menuActions}
-								shouldOpenOnLongPress={true}
+								dropdownMenuMode={false}
 							>
 								<TouchableOpacity 
 									onPress={() => Linking.openURL(item.url)}
@@ -184,7 +188,7 @@ export function DiscoverScreen({ navigation }) {
 										author={item._microblog.book_author}
 									/>
 								</TouchableOpacity>	
-							</MenuView>
+							</ContextMenu>
 						</View>
 					)}
 				/>
