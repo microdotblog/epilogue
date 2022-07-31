@@ -182,3 +182,4 @@ ios/Pods/
 
 .nova
 yarn.lock
+package-lock.json
