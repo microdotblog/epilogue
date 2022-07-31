@@ -1,21 +1,26 @@
 
 import React, { useState } from "react";
-import { FlatList, Image, View, TouchableOpacity, Linking, Text, RefreshControl, ActivityIndicator, Dimensions, Platform } from 'react-native';
+import { FlatList, Image, View, TouchableOpacity, Linking, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share } from 'react-native';
+import { MenuView } from "@react-native-menu/menu";
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import EpilogueStorage from "./Storage";
+import epilogueStorage from "./Storage";
 
 export function DiscoverScreen({ navigation }) {
+		
 	const styles = useEpilogueStyle()
 	
 	const [ data, setData ] = useState()
 	const [ refreshing , setRefreshing ] = useState(false)
 	const [ loaded, setLoaded ] = useState(false)
-	const [ orientation, setOrientation ] = useState('portrait')
 	const [ columns, setColumns ] = useState(Platform.isPad ? 5 : 3)
-	const [ height, setHeight ] = useState(Platform.isPad ? 200 : 140) // book cover height
-		
+	const [ menuActions, setMenuActions] = useState([])
+	
+	const height = Platform.isPad ? 260 : 180 // book cover height
+	
+	// const { id, isbn, title, image, author, description, current_bookshelf, is_search } = route.params;
+
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			onFocus(navigation);
@@ -27,8 +32,7 @@ export function DiscoverScreen({ navigation }) {
 		const subscription = Dimensions.addEventListener(
 			'change',
 			({screen}) => {
-				setOrientation(isPortrait() ? 'portrait' : 'landscape')
-				if (Platform.isPad) setColumns(isPortrait() ? 5 : 7)
+				if (Platform.isPad) setColumns(isPortrait() ? 5 : 6)
 			}
 		)	
 		return () => subscription?.remove()
@@ -36,6 +40,23 @@ export function DiscoverScreen({ navigation }) {
 	
 	const onFocus = (navigation) =>  {
 		loadBooks()
+		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
+			var items = [
+				{
+					id: 'share',
+					title: 'Share',
+					titleColor: '#000',
+					image: Platform.select({
+						  ios: 'square.and.arrow.up',
+						  android: 'ic_menu_share',
+					}),
+				}
+			]
+			for (var item of bookshelves) {
+				items.push(item)
+			}
+			setMenuActions(items)
+		});
 	}
 	
 	async function loadBooks() {
@@ -58,7 +79,7 @@ export function DiscoverScreen({ navigation }) {
 		const dimensions = Dimensions.get('screen')
 		return dimensions.height >= dimensions.width
 	}
-		
+
 	const BookCover = ({ url, title, author }) => {
 		if (url !== '') {
 			return (
@@ -82,28 +103,89 @@ export function DiscoverScreen({ navigation }) {
 		}
 	}
 	
+	function copyToBookshelf(bookshelf_id) {
+		let form = new FormData();
+		form.append("isbn", isbn);
+		form.append("title", title);
+		form.append("author", author);
+		form.append("cover_url", image);
+		form.append("bookshelf_id", bookshelf_id);
+		
+		epilogueStorage.get("auth_token").then(auth_token => {
+			var options = {
+				method: "POST",
+				body: form,
+				headers: {
+					"Authorization": "Bearer " + auth_token
+				}
+			};
+		
+			setProgressAnimating(true);
+		
+			fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
+				navigation.goBack();
+			});
+		});
+	}
+	
+	const onShare = async (url, title, author) => {
+		try { 
+			const result = await Share.share({
+				message: title + ' by ' + author,
+				url: url,
+			})
+			if (result.action === Share.sharedAction) {
+				if (result.activityType) {
+					
+				} else {
+					
+				}
+			} else if (result.action === Share.dismissedAction) {
+				
+			}
+		} catch (error) {
+			alert(error.message)
+		}
+	}
+	
 	return (
 		loaded === true ? (
-			<View style={{flex: 1}}> 
+			<View style={styles.discoverView}> 
 				<FlatList
 					data={data}
 					key={columns}
 					numColumns={columns}
 					refreshControl={
-						<RefreshControl
-							refreshing={refreshing}
-							onRefresh={onRefresh}
-						/>
+						<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
 					}
-					renderItem={({ item }) => (
-						<TouchableOpacity onPress={() => Linking.openURL(item.url)} 
-							style={ [styles.bookContainer, {height: height}, {flex: 1/columns}] }>
-							<BookCover 
-								url={item._microblog.cover_url} 
-								title={item._microblog.book_title} 
-								author={item._microblog.book_author}
-							/>
-						</TouchableOpacity>	
+					renderItem={({ item }) => (	
+						<View style={{flex: 1/columns}}>
+							<MenuView
+								title={item._microblog.book_title}
+								accessibilityLabel={item._microblog.book_title}
+								onPressAction={({nativeEvent}) => {
+									console.warn(JSON.stringify(nativeEvent))
+									let shelf_id = nativeEvent.event
+									
+									if (nativeEvent.event === 'share') {
+										onShare(item.url, item._microblog.book_title, item._microblog.book_author)
+									}
+								}}
+								actions={menuActions}
+								shouldOpenOnLongPress={true}
+							>
+								<TouchableOpacity 
+									onPress={() => Linking.openURL(item.url)}
+									style={ [styles.bookContainer, {height: height}] 
+								}>
+									<BookCover 
+										url={item._microblog.cover_url} 
+										title={item._microblog.book_title} 
+										author={item._microblog.book_author}
+									/>
+								</TouchableOpacity>	
+							</MenuView>
+						</View>
 					)}
 				/>
 			</View>
