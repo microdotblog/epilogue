@@ -1,7 +1,8 @@
 
 import React, { useState } from "react";
-import { FlatList, Image, View, TouchableOpacity, Linking, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share } from 'react-native';
+import { FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share } from 'react-native';
 import ContextMenu from "react-native-context-menu-view";
+import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -154,6 +155,12 @@ export function DiscoverScreen({ navigation }) {
 		}
 	}
 	
+	const onOpen = async (url) => {
+		let result = await InAppBrowser.open(url, {
+			animated: true
+		});
+	}
+	
 	return (
 		loaded === true ? (
 			<View style={styles.discoverView}> 
@@ -172,14 +179,16 @@ export function DiscoverScreen({ navigation }) {
 									let shelf_id = nativeEvent.event;									
 									if (nativeEvent.name === 'Share') {
 										let url = "https://micro.blog/books/" + item._microblog.isbn;
-										onShare(url, item._microblog.book_title, item._microblog.book_author)
+										onShare(url, item._microblog.book_title, item._microblog.book_author);
 									}
 								}}
 								actions={menuActions}
 								dropdownMenuMode={false}
 							>
 								<TouchableOpacity 
-									onPress={() => Linking.openURL(item.url)}
+									onPress={() => {
+										onOpen(item.url);
+									}}
 									style={ [styles.bookContainer, {height: height}] 
 								}>
 									<BookCover 
