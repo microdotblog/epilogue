@@ -181,3 +181,4 @@ vendor/
 ios/Pods/
 
 .nova
+yarn.lock
