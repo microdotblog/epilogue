@@ -111,7 +111,7 @@ export function DiscoverScreen({ navigation }) {
 		}
 	}
 	
-	function copyToBookshelf(bookshelf_id) {
+	function copyToBookshelf(bookshelf_id, isbn, title, author, image) {
 		let form = new FormData();
 		form.append("isbn", isbn);
 		form.append("title", title);
@@ -128,10 +128,10 @@ export function DiscoverScreen({ navigation }) {
 				}
 			};
 		
-			setProgressAnimating(true);
+			// setProgressAnimating(true);
 		
 			fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
-				navigation.goBack();
+				console.log("Copied");
 			});
 		});
 	}
@@ -165,6 +165,22 @@ export function DiscoverScreen({ navigation }) {
 			animated: true
 		});
 	}
+
+	const onCopyToBookshelfName = async (bookshelf_name, book_item) => {
+		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
+			var found_bookshelf;
+			for (var item of bookshelves) {
+				if (item.title == bookshelf_name) {
+					found_bookshelf = item;
+					break;
+				}
+			}
+			
+			if (found_bookshelf != undefined) {
+				copyToBookshelf(found_bookshelf.id, book_item._microblog.isbn, book_item._microblog.book_title, book_item._microblog.book_author, book_item._microblog.cover_url);
+			}
+		});
+	}
 	
 	return (
 		loaded === true ? (
@@ -181,10 +197,13 @@ export function DiscoverScreen({ navigation }) {
 							<ContextMenu
 								title={item._microblog.book_title}
 								onPress={({nativeEvent}) => {
-									let shelf_id = nativeEvent.event;									
+									let shelf_id = nativeEvent.event;
 									if (nativeEvent.name === 'Share') {
 										let url = "https://micro.blog/books/" + item._microblog.isbn;
 										onShare(url, item._microblog.book_title, item._microblog.book_author);
+									}
+									else {
+										onCopyToBookshelfName(nativeEvent.name, item);
 									}
 								}}
 								actions={menuActions}
