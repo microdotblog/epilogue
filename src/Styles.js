@@ -331,6 +331,14 @@ export const light = StyleSheet.create({
 		height: 300,
 		width: 200,
 		resizeMode: 'contain'
+	},
+	addingBookSpinner: {
+		flex: 1, 
+		position: 'absolute', 
+		justifyContent: 'center', 
+		alignItems: 'center', 
+		width: '100%', 
+		height: '100%'
 	}
 });
 

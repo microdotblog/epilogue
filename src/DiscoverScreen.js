@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share } from 'react-native';
+import { FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share, Modal } from 'react-native';
 import ContextMenu from "react-native-context-menu-view";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -13,16 +13,16 @@ export function DiscoverScreen({ navigation }) {
 		
 	const styles = useEpilogueStyle()
 	
+	const height = Platform.isPad ? 260 : 180 // book cover height
+	
 	const [ data, setData ] = useState()
 	const [ refreshing , setRefreshing ] = useState(false)
 	const [ loaded, setLoaded ] = useState(false)
 	const [ columns, setColumns ] = useState(Platform.isPad ? 5 : 3)
 	const [ menuActions, setMenuActions] = useState([])
 	
-	const height = Platform.isPad ? 260 : 180 // book cover height
-	
-	// const { id, isbn, title, image, author, description, current_bookshelf, is_search } = route.params;
-
+	const [ itemUpdating, setItemUpdating ] = useState('')
+			
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			onFocus(navigation);
@@ -87,31 +87,10 @@ export function DiscoverScreen({ navigation }) {
 		const dimensions = Dimensions.get('screen')
 		return dimensions.height >= dimensions.width
 	}
-
-	const BookCover = ({ url, title, author }) => {
-		if (url !== '') {
-			return (
-				<View>
-					<Image style={styles.bookCovers} source={{ 
-						uri: url
-					}}/>
-				</View>
-			)
-		} else {
-			return (
-				<View>
-					<Text style={styles.placeholderTitleText}>
-						{title}
-					</Text>
-					<Text style={styles.placeholderAuthorText}>
-						{author}
-					</Text>
-				</View>
-			)
-		}
-	}
 	
-	function copyToBookshelf(bookshelf_id, isbn, title, author, image) {
+	function copyToBookshelf(bookshelf_id, isbn, title, author, image, id) {
+		setItemUpdating(id.toString())
+		
 		let form = new FormData();
 		form.append("isbn", isbn);
 		form.append("title", title);
@@ -133,6 +112,9 @@ export function DiscoverScreen({ navigation }) {
 			fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
 				console.log("Copied");
 			});
+			setTimeout(() => {
+				setItemUpdating(null)
+			}, 1200)
 		});
 	}
 	
@@ -177,53 +159,81 @@ export function DiscoverScreen({ navigation }) {
 			}
 			
 			if (found_bookshelf != undefined) {
-				copyToBookshelf(found_bookshelf.id, book_item._microblog.isbn, book_item._microblog.book_title, book_item._microblog.book_author, book_item._microblog.cover_url);
+				copyToBookshelf(found_bookshelf.id, book_item._microblog.isbn, book_item._microblog.book_title, book_item._microblog.book_author, book_item._microblog.cover_url, book_item.id);
 			}
 		});
 	}
+	
+	const BookCover = ({ url, title, author, id }) => {
+		if (url !== '') {
+			return (
+				<Image style={styles.bookCovers} source={{ 
+					uri: url
+				}}/>
+			)
+		} else {
+			return (
+				<View >
+					<Text style={styles.placeholderTitleText}>
+						{title}
+					</Text>
+					<Text style={styles.placeholderAuthorText}>
+						{author}
+					</Text>
+				</View>
+			)
+		}
+	}
+	
+	const renderItem =({item}) => (
+		<View style={{flex: 1/columns}}>
+			<ContextMenu
+				title={item._microblog.book_title}
+				onPress={({nativeEvent}) => {
+					// let shelf_id = nativeEvent.event;
+					if (nativeEvent.name === 'Share') {
+						let url = "https://micro.blog/books/" + item._microblog.isbn;
+						onShare(url, item._microblog.book_title, item._microblog.book_author);
+					}
+					else {
+						onCopyToBookshelfName(nativeEvent.name, item);
+					}
+				}}
+				actions={menuActions}
+				dropdownMenuMode={false}
+			>
+
+				<TouchableOpacity 
+					onPress={() => { onOpen(item.url) }}
+					style={ [styles.bookContainer, {height: height}] }>
+					
+					<View style={[styles.addingBookSpinner, {opacity: itemUpdating === item.id.toString() ? 0.5 : 0.0, backgroundColor: itemUpdating === item.id.toString() ? '#111' : null, zIndex: itemUpdating === item.id.toString() ? 5 : 0}]}>
+						<ActivityIndicator color={'#fff'} animating={itemUpdating===item.id.toString()} hidesWhenStopped={true}/>
+					</View>
+					
+					<BookCover 
+						url={item._microblog.cover_url} 
+						title={item._microblog.book_title} 
+						author={item._microblog.book_author}
+						id={item.id}
+					/>	
+				</TouchableOpacity>	
+			</ContextMenu>
+		</View>
+	)
 	
 	return (
 		loaded === true ? (
 			<View style={styles.discoverView}> 
 				<FlatList
 					data={data}
-					key={columns}
+					// key={columns}
+					keyExtractor={(item) => item.id.toString()}
 					numColumns={columns}
 					refreshControl={
 						<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
 					}
-					renderItem={({ item }) => (	
-						<View style={{flex: 1/columns}}>
-							<ContextMenu
-								title={item._microblog.book_title}
-								onPress={({nativeEvent}) => {
-									let shelf_id = nativeEvent.event;
-									if (nativeEvent.name === 'Share') {
-										let url = "https://micro.blog/books/" + item._microblog.isbn;
-										onShare(url, item._microblog.book_title, item._microblog.book_author);
-									}
-									else {
-										onCopyToBookshelfName(nativeEvent.name, item);
-									}
-								}}
-								actions={menuActions}
-								dropdownMenuMode={false}
-							>
-								<TouchableOpacity 
-									onPress={() => {
-										onOpen(item.url);
-									}}
-									style={ [styles.bookContainer, {height: height}] 
-								}>
-									<BookCover 
-										url={item._microblog.cover_url} 
-										title={item._microblog.book_title} 
-										author={item._microblog.book_author}
-									/>
-								</TouchableOpacity>	
-							</ContextMenu>
-						</View>
-					)}
+					renderItem={renderItem}
 				/>
 			</View>
 		) : (
