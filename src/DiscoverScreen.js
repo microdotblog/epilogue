@@ -22,9 +22,7 @@ export function DiscoverScreen({ navigation }) {
 	const [ menuActions, setMenuActions] = useState([])
 	
 	const [ itemUpdating, setItemUpdating ] = useState('')
-	
-	const [ adding, setAdding ] = useState(true)
-		
+			
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			onFocus(navigation);
@@ -91,9 +89,7 @@ export function DiscoverScreen({ navigation }) {
 	}
 	
 	function copyToBookshelf(bookshelf_id, isbn, title, author, image, id) {
-		var d1 = new Date()
 		setItemUpdating(id.toString())
-		console.log(id + ' updating')
 		
 		let form = new FormData();
 		form.append("isbn", isbn);
@@ -118,9 +114,7 @@ export function DiscoverScreen({ navigation }) {
 			});
 			setTimeout(() => {
 				setItemUpdating(null)
-				var d2 = new Date()
-				console.log(id + ' finished adding in ' + ((d2 - d1) - 1500) + 'ms')
-			}, 1500)
+			}, 1200)
 		});
 	}
 	
@@ -179,7 +173,7 @@ export function DiscoverScreen({ navigation }) {
 			)
 		} else {
 			return (
-				<View style={{alignContent: 'center', justifyContent: 'center', zIndex: 3, flex: 1, backgroundColor: itemUpdating === id.toString() ? 'lightgray' : null}}>
+				<View >
 					<Text style={styles.placeholderTitleText}>
 						{title}
 					</Text>
@@ -213,7 +207,7 @@ export function DiscoverScreen({ navigation }) {
 					onPress={() => { onOpen(item.url) }}
 					style={ [styles.bookContainer, {height: height}] }>
 					
-					<View style={{flex: 1, opacity: itemUpdating === item.id.toString() ? 0.5 : 0.0, backgroundColor: itemUpdating === item.id.toString() ? '#111' : null , position: 'absolute', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', zIndex: itemUpdating === item.id.toString() ? 5 : 0}}>
+					<View style={[styles.addingBookSpinner, {opacity: itemUpdating === item.id.toString() ? 0.5 : 0.0, backgroundColor: itemUpdating === item.id.toString() ? '#111' : null, zIndex: itemUpdating === item.id.toString() ? 5 : 0}]}>
 						<ActivityIndicator color={'#fff'} animating={itemUpdating===item.id.toString()} hidesWhenStopped={true}/>
 					</View>
 					
@@ -233,7 +227,6 @@ export function DiscoverScreen({ navigation }) {
 			<View style={styles.discoverView}> 
 				<FlatList
 					data={data}
-					extraData={data}
 					// key={columns}
 					keyExtractor={(item) => item.id.toString()}
 					numColumns={columns}
