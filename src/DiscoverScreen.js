@@ -166,7 +166,6 @@ export function DiscoverScreen({ navigation }) {
 	}
 
 	function onShowBookPressed(item) {
-		console.warn("pressed " + item.title);
 		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
 			epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 				var params = {
