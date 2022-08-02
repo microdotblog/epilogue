@@ -179,3 +179,7 @@ lint/tmp/
 node_modules
 vendor/
 ios/Pods/
+
+.nova
+yarn.lock
+package-lock.json

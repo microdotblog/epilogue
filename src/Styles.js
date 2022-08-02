@@ -6,12 +6,14 @@ export const light = StyleSheet.create({
 		paddingTop: 10
 	},
 	profileIcon: {
+		marginLeft: 20,
 		width: 24,
 		height: 24,
 		borderRadius: 12
 	},
 	navbarBookshelf: {
 		flexDirection: "row",
+		marginRight: 20
 	},
 	navbarBookshelfIcon: {
 		color: "#337AB7"
@@ -126,6 +128,21 @@ export const light = StyleSheet.create({
 		height: 36,
 		marginTop: 1,
 		marginBottom: 15,
+		marginLeft: 20,
+		marginRight: 20,
+		paddingTop: 7,
+		paddingBottom: 7,
+		paddingLeft: 12,
+		paddingRight: 12,
+		borderRadius: 18,
+		borderColor: "#ced3d8",
+		borderWidth: 0.5,
+		backgroundColor: "#FFFFFF"
+	},
+	discoverSearchField: {
+		height: 36,
+		marginTop: 1,
+		marginBottom: 10,
 		marginLeft: 20,
 		marginRight: 20,
 		paddingTop: 7,
@@ -286,6 +303,61 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsNoDescription: {		
 	},
+	// for books on discover page
+	bookCovers: {
+		height: '100%',
+		width: '100%',
+		resizeMode: 'cover'
+	},
+	discoverView: {
+		flex: 1,
+		paddingTop: 10
+	},
+	bookContainer: {
+		flex: 1/3,
+		flexDirection: 'column',
+		height: 160,
+		justifyContent: 'center',
+		backgroundColor: '#DEDEDE',
+		marginLeft: 6,
+		marginRight: 6,
+		marginBottom: 11,
+		shadowColor: '#000',
+		shadowOffset: {
+			height: 2
+		},
+		shadowRadius: 2,
+		shadowOpacity: 0.1,
+	},
+	placeholderTitleText: {
+		textAlign: 'center',
+		fontStyle: 'italic',
+		fontSize: 15,
+		fontWeight: '500',
+		margin: 5,
+	},
+	placeholderAuthorText: {
+		textAlign: 'center',
+		margin: 5
+	},
+	loadingPage: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		flex: 1,
+	},
+	bookCoverModal: {
+		height: 300,
+		width: 200,
+		resizeMode: 'contain'
+	},
+	addingBookSpinner: {
+		flex: 1, 
+		position: 'absolute', 
+		justifyContent: 'center', 
+		alignItems: 'center', 
+		width: '100%', 
+		height: '100%'
+	}
 });
 
 export const dark = StyleSheet.create({
@@ -413,5 +485,18 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsDescription: {
 		color: "#E5E7EB"
+	},
+	placeholderTitleText: {
+		color: "#E5E7EB"
+	},
+	placeholderAuthorText: {
+		color: "#E5E7EB"
+	},
+	bookContainer: {
+		backgroundColor: '#141723',
+		shadowOpacity: 0.75,
+	},
+	discoverView: {
+		backgroundColor: '#212936',
 	}
 });
