@@ -139,6 +139,21 @@ export const light = StyleSheet.create({
 		borderWidth: 0.5,
 		backgroundColor: "#FFFFFF"
 	},
+	discoverSearchField: {
+		height: 36,
+		marginTop: 1,
+		marginBottom: 10,
+		marginLeft: 20,
+		marginRight: 20,
+		paddingTop: 7,
+		paddingBottom: 7,
+		paddingLeft: 12,
+		paddingRight: 12,
+		borderRadius: 18,
+		borderColor: "#ced3d8",
+		borderWidth: 0.5,
+		backgroundColor: "#FFFFFF"
+	},
 	navbarCloseIcon: {
 		marginTop: 3,
 		width: 22,
@@ -296,6 +311,7 @@ export const light = StyleSheet.create({
 	},
 	discoverView: {
 		flex: 1,
+		paddingTop: 10
 	},
 	bookContainer: {
 		flex: 1/3,
@@ -303,13 +319,15 @@ export const light = StyleSheet.create({
 		height: 160,
 		justifyContent: 'center',
 		backgroundColor: '#DEDEDE',
-		margin: 5,
+		marginLeft: 6,
+		marginRight: 6,
+		marginBottom: 11,
 		shadowColor: '#000',
 		shadowOffset: {
-			height: 3
+			height: 2
 		},
-		shadowRadius: 3,
-		shadowOpacity: 0.5,
+		shadowRadius: 2,
+		shadowOpacity: 0.1,
 	},
 	placeholderTitleText: {
 		textAlign: 'center',

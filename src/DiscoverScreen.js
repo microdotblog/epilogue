@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share, Modal } from 'react-native';
+import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share, Modal } from 'react-native';
 import ContextMenu from "react-native-context-menu-view";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -18,9 +18,10 @@ export function DiscoverScreen({ navigation }) {
 	const [ data, setData ] = useState()
 	const [ refreshing , setRefreshing ] = useState(false)
 	const [ loaded, setLoaded ] = useState(false)
+	const [ searching, setSearching ] = useState(false)
 	const [ columns, setColumns ] = useState(Platform.isPad ? 5 : 3)
-	const [ menuActions, setMenuActions] = useState([])
-	
+	const [ menuActions, setMenuActions] = useState([])	
+	const [ books, setBooks ] = useState()
 	const [ itemUpdating, setItemUpdating ] = useState('')
 			
 	React.useEffect(() => {
@@ -163,7 +164,123 @@ export function DiscoverScreen({ navigation }) {
 			}
 		});
 	}
+
+	function onShowBookPressed(item) {
+		console.warn("pressed " + item.title);
+		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
+			epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+				var params = {
+					id: item.id,
+					isbn: item.isbn,
+					title: item.title,
+					image: item.image,
+					author: item.author,
+					description: item.description,
+					bookshelves: bookshelves,
+					current_bookshelf: current_bookshelf,
+					is_search: item.is_search
+				};
+				navigation.navigate("Details", params);
+			});
+		});
+	}
 	
+	function onChangeSearch(text) {		
+		// if we're clearing the text, wait a second and then send it
+		// otherwise the user is still typing
+		if (text.length == 0) {
+			setTimeout(function() {
+				epilogueStorage.remove(keys.currentSearch).then(() => {
+					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+						setSearching(false);
+						setBooks([]);
+					});				
+				});
+			}, 500);
+		}
+		else {
+			epilogueStorage.set(keys.currentSearch, text);
+		}
+	}
+	
+	function onRunSearch() {
+		epilogueStorage.get(keys.currentSearch).then(search_text => {
+			if ((search_text != null) && (search_text.length > 0)) {
+				setSearching(true);
+				sendSearch(search_text);
+			}
+			else {
+				epilogueStorage.remove(keys.currentSearch).then(() => {
+					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+						setSearching(false);
+						setBooks([]);
+					});				
+				});
+			}
+		});
+	}
+
+	function sendSearch(searchText) {
+		let q = encodeURIComponent(searchText);
+	
+		var options = {
+		};
+		
+		fetch("https://www.googleapis.com/books/v1/volumes?q=" + q, options).then(response => response.json()).then(data => {
+			var new_items = [];
+			if (data.items != undefined) {
+				for (let book_item of data.items) {
+					var author_name = "";
+					var description = "";
+					
+					if ((book_item.volumeInfo.authors != undefined) && (book_item.volumeInfo.authors.length > 0)) {
+						author_name = book_item.volumeInfo.authors[0];
+					}
+	
+					if (book_item.volumeInfo.description != undefined) {
+						description = book_item.volumeInfo.description;
+					}
+	
+					var cover_url = "";
+					if (book_item.volumeInfo.imageLinks != undefined) {
+						cover_url = book_item.volumeInfo.imageLinks.smallThumbnail;
+						if (cover_url.includes("http://")) {
+							cover_url = cover_url.replace("http://", "https://");
+						}					
+					}
+	
+					let isbns = book_item.volumeInfo.industryIdentifiers;
+					var best_isbn = "";
+					if (isbns != undefined) {
+						for (let isbn of isbns) {
+							if (isbn.type == "ISBN_13") {
+								best_isbn = isbn.identifier;
+								break;
+							}
+							else if (isbn.type == "ISBN_10") {
+								best_isbn = isbn.identifier;
+							}
+						}
+					}
+	
+					if ((best_isbn.length > 0) && (cover_url.length > 0)) {
+						new_items.push({
+							id: book_item.id,
+							isbn: best_isbn,
+							title: book_item.volumeInfo.title,
+							image: cover_url,
+							author: author_name,
+							description: description,
+							is_search: true
+						});
+					}
+				}
+			}
+			
+			setBooks(new_items);
+		});
+	}
+		
 	const BookCover = ({ url, title, author, id }) => {
 		if (url !== '') {
 			return (
@@ -221,21 +338,47 @@ export function DiscoverScreen({ navigation }) {
 			</ContextMenu>
 		</View>
 	)
+
+
+	const renderSearchItem = ({item}) => (
+		<Pressable onPress={() => { onShowBookPressed(item) }}>
+			<View style={styles.item}>
+				<Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
+				<View style={styles.bookItem}>
+					<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
+					<Text style={styles.bookAuthor}>{item.author}</Text>
+				</View>
+			</View>
+		</Pressable>
+	);
 	
 	return (
 		loaded === true ? (
-			<View style={styles.discoverView}> 
-				<FlatList
-					data={data}
-					// key={columns}
-					keyExtractor={(item) => item.id.toString()}
-					numColumns={columns}
-					refreshControl={
-						<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-					}
-					renderItem={renderItem}
-				/>
-			</View>
+			searching === true ? (
+				<View style={styles.discoverView}> 
+					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
+					<FlatList
+						data = {books}
+						key = "BooksList"
+						renderItem = {renderSearchItem}
+						keyExtractor = { item => item.id }
+					/>
+				</View>
+			) : (
+				<View style={styles.discoverView}> 
+					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
+					<FlatList
+						data={data}
+						// key={columns}
+						keyExtractor={(item) => item.id.toString()}
+						numColumns={columns}
+						refreshControl={
+							<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+						}
+						renderItem={renderItem}
+					/>
+				</View>
+			)
 		) : (
 			<View style={styles.loadingPage}>
 				<ActivityIndicator size='large'/>

@@ -434,7 +434,7 @@ export function HomeScreen({ navigation }) {
 						loadBooks(current_bookshelf.id);
 					});				
 				});
-			}, 1000);
+			}, 500);
 		}
 		else {
 			epilogueStorage.set(keys.currentSearch, text);
