@@ -368,7 +368,7 @@ export function DiscoverScreen({ navigation }) {
 					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
 					<FlatList
 						data={data}
-						// key={columns}
+						key={columns}
 						keyExtractor={(item) => item.id.toString()}
 						numColumns={columns}
 						refreshControl={
