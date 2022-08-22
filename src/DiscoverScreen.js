@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share, Modal } from 'react-native';
+import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share, Modal, useWindowDimensions } from 'react-native';
 import ContextMenu from "react-native-context-menu-view";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -11,7 +11,9 @@ import epilogueStorage from "./Storage";
 
 export function DiscoverScreen({ navigation }) {
 		
-	const styles = useEpilogueStyle()
+	const styles = useEpilogueStyle();
+	const windowSize = useWindowDimensions();
+	console.log(windowSize);
 	
 	const height = Platform.isPad ? 260 : 180 // book cover height
 	
@@ -19,7 +21,7 @@ export function DiscoverScreen({ navigation }) {
 	const [ refreshing , setRefreshing ] = useState(false)
 	const [ loaded, setLoaded ] = useState(false)
 	const [ searching, setSearching ] = useState(false)
-	const [ columns, setColumns ] = useState(Platform.isPad ? 5 : 3)
+	const [ columns, setColumns ] = useState(bestColumnsForWidth(windowSize.width))
 	const [ menuActions, setMenuActions] = useState([])	
 	const [ books, setBooks ] = useState()
 	const [ itemUpdating, setItemUpdating ] = useState('')
@@ -32,12 +34,9 @@ export function DiscoverScreen({ navigation }) {
 	}, [navigation]);	
 	
 	React.useEffect(() => {
-		const subscription = Dimensions.addEventListener(
-			'change',
-			({screen}) => {
-				if (Platform.isPad) setColumns(isPortrait() ? 5 : 6)
-			}
-		)	
+		const subscription = Dimensions.addEventListener("change", ({screen}) => {
+			setColumns(bestColumnsForWidth(Dimensions.get("window").width));
+		});
 		return () => subscription?.remove()
 	})
 	
@@ -84,9 +83,16 @@ export function DiscoverScreen({ navigation }) {
 		}, 1000)
 	}, [])
 	
-	const isPortrait = () => {
-		const dimensions = Dimensions.get('screen')
-		return dimensions.height >= dimensions.width
+	function bestColumnsForWidth(width) {
+		if (width > 600) {
+			return 6;
+		}
+		else if (width > 400) {
+			return 5;
+		}
+		else {
+			return 3;
+		}
 	}
 	
 	function copyToBookshelf(bookshelf_id, isbn, title, author, image, id) {
