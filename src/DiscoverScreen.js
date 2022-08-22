@@ -13,7 +13,6 @@ export function DiscoverScreen({ navigation }) {
 		
 	const styles = useEpilogueStyle();
 	const windowSize = useWindowDimensions();
-	console.log(windowSize);
 	
 	const height = Platform.isPad ? 260 : 180 // book cover height
 	
