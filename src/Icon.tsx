@@ -16,7 +16,8 @@ const IconNames = {
   "close": { ios: "xmark", android: "close" },
   "bookshelf": { ios: "books.vertical", android: "bookshelf" },
   "bookshelves": { ios: "books.vertical", android: "bookshelf" },
-  "discover": { ios: "magnifyingglass", android: "magnify" }
+  "discover": { ios: "magnifyingglass", android: "magnify" },
+  "eyes": { ios: "eyes", android: "magnify" }
 }
 
 export const Icon = (props) => {

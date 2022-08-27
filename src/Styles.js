@@ -357,6 +357,45 @@ export const light = StyleSheet.create({
 		alignItems: 'center', 
 		width: '100%', 
 		height: '100%'
+	},
+	goalsContainer: {
+		flex: 1
+	},
+	goalItem: {
+		paddingLeft: 15,
+		paddingRight: 15,
+		paddingTop: 16,
+		paddingBottom: 16,
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6"
+	},
+	goalName: {
+	},
+	goalProgress: {
+		paddingTop: 5,
+		color: "#777777"		
+	},
+	editGoalTitle: {
+		fontWeight: "bold",
+		paddingTop: 10,
+		paddingLeft: 10,
+		paddingRight: 10,
+		paddingBottom: 10,
+	},
+	editGoalDescription: {
+		paddingTop: 10,
+		paddingLeft: 10,
+		paddingRight: 10,
+		paddingBottom: 10,
+	},
+	editGoalInput: {
+		marginTop: 10,
+		paddingTop: 10,
+		paddingLeft: 10,
+		paddingRight: 10,
+		paddingBottom: 10,
+		height: 44,
+		backgroundColor: "#FFFFFF"
 	}
 });
 

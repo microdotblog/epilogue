@@ -19,6 +19,7 @@ import { SignInScreen } from "./src/SignInScreen";
 import { BlogsScreen } from "./src/BlogsScreen";
 import { ProfileScreen } from "./src/ProfileScreen";
 import { ExternalScreen } from "./src/ExternalScreen";
+import { EditGoalScreen } from "./src/EditGoalScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -115,13 +116,26 @@ const App: () => Node = () => {
               </Pressable>
             )
           })} />
-          </Stack.Group>
-          <Stack.Group>
-            <Stack.Screen name="SignIn" component={SignInScreen} options={({ navigation, route }) => ({
-              title: "Epilogue",
-              headerBackVisible: false
-            })} />
-          </Stack.Group>
+          <Stack.Screen name="EditGoal" component={EditGoalScreen} options={({ navigation, route }) => ({
+            title: "",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+              </Pressable>
+            ),
+            headerRight: () => (
+              <Pressable onPress={() => { }}>
+                <Text style={styles.navbarSubmit}>Update</Text>
+              </Pressable>
+            )
+          })} />
+        </Stack.Group>
+        <Stack.Group>
+          <Stack.Screen name="SignIn" component={SignInScreen} options={({ navigation, route }) => ({
+            title: "Epilogue",
+            headerBackVisible: false
+          })} />
+        </Stack.Group>
   		</Stack.Navigator>
   	</NavigationContainer>
   );

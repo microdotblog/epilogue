@@ -9,6 +9,7 @@ import { Icon } from './Icon';
 import epilogueStorage from "./Storage";
 import { HomeScreen } from "./HomeScreen";
 import { DiscoverScreen } from "./DiscoverScreen";
+import { GoalsScreen } from "./GoalsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -29,6 +30,19 @@ export function TabsScreen({ navigation }) {
 					}
 				},
   				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
+				tabBarInactiveTintColor: "gray"
+			}} />
+			<Tab.Screen name="Goals" component={GoalsScreen} options={{
+				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
+				tabBarIcon: ({ focused, color, size }) => {
+					if (focused) {
+						return <Icon name="eyes" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
+					}
+					else {					
+						return <Icon name="eyes" color={"gray"} size={18} />
+					}
+				},
+				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
 				tabBarInactiveTintColor: "gray"
 			}} />
 			<Tab.Screen name="Discover" component={DiscoverScreen} options={{
