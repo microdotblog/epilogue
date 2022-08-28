@@ -364,15 +364,15 @@ export const light = StyleSheet.create({
 	goalItem: {
 		paddingLeft: 15,
 		paddingRight: 15,
-		paddingTop: 16,
-		paddingBottom: 16,
+		paddingTop: 20,
+		paddingBottom: 20,
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
 	goalName: {
 	},
 	goalProgress: {
-		paddingTop: 5,
+		paddingTop: 7,
 		color: "#777777"		
 	},
 	editGoalTitle: {

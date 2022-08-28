@@ -35,7 +35,12 @@ export function GoalsScreen({ navigation }) {
 	}
 
 	function onSelectGoal(item) {		
-		navigation.navigate("EditGoal");
+		var params = {
+			id: item.id,
+			name: item.name,
+			year: item.year
+		};
+		navigation.navigate("EditGoal", params);
 	}
 
 	return (
