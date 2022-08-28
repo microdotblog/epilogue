@@ -537,5 +537,27 @@ export const dark = StyleSheet.create({
 	},
 	discoverView: {
 		backgroundColor: '#212936',
+	},
+	goalsContainer: {
+		backgroundColor: '#212936'		
+	},
+	goalItem: {
+		borderBottomColor: "#444444"
+	},
+	goalName: {
+		color: "#FFFFFF"		
+	},
+	goalProgress: {
+		color: "#777777"		
+	},
+	editGoalTitle: {
+		color: "#FFFFFF",
+	},
+	editGoalDescription: {
+		color: "#FFFFFF"
+	},
+	editGoalInput: {
+		color: "#FFFFFF",
+		backgroundColor: "#000000"
 	}
 });
