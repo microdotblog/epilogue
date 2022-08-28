@@ -42,6 +42,19 @@ export function GoalsScreen({ navigation }) {
 		};
 		navigation.navigate("EditGoal", params);
 	}
+	
+	const ProgressStatus = ({ progress, value }) => {
+		if (value == 0) {
+			return (
+				<Text style={styles.goalProgress}>No goal set</Text>
+			)
+		}
+		else {
+			return (
+				<Text style={styles.goalProgress}>{progress} of {value} books</Text>
+			)
+		}
+	}
 
 	return (
 		<View style={styles.goalsContainer}>
@@ -50,7 +63,7 @@ export function GoalsScreen({ navigation }) {
 			renderItem = { ({item}) => 
 			<Pressable style={styles.goalItem} onPress={() => { onSelectGoal(item) }}>
 				<Text style={styles.goalName}>{item.name}</Text>
-				<Text style={styles.goalProgress}>{item.progress} of {item.value} books</Text>
+				<ProgressStatus progress={item.progress} value={item.value} />
 			</Pressable>
 			}
 			keyExtractor = { item => item.id }
