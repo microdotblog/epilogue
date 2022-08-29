@@ -29,7 +29,20 @@ export function GoalsScreen({ navigation }) {
 			};
 			
 			fetch("https://micro.blog/books/goals", options).then(response => response.json()).then(data => {
-				setGoals(data);
+				var new_goals = [];
+				for (let item of data) {
+					var g = {
+						id: item.id,
+						name: item.name,
+						year: item.year,
+						value: item.value,
+						progress: item.progress,
+						isbns: [ "9781250852472", "9780857669469" ]
+					};
+					
+					new_goals.push(g);
+				}
+				setGoals(new_goals);
 			});
 		});
 	}
@@ -59,14 +72,25 @@ export function GoalsScreen({ navigation }) {
 	return (
 		<View style={styles.goalsContainer}>
 			<FlatList
-			data = {goals}
-			renderItem = { ({item}) => 
-			<Pressable style={styles.goalItem} onPress={() => { onSelectGoal(item) }}>
-				<Text style={styles.goalName}>{item.name}</Text>
-				<ProgressStatus progress={item.progress} value={item.value} />
-			</Pressable>
-			}
-			keyExtractor = { item => item.id }
+				data = {goals}
+				renderItem = { ({item}) => 
+					<Pressable style={styles.goalItem} onPress={() => { onSelectGoal(item) }}>
+						<View style={styles.goalDetails}>
+							<Text style={styles.goalName}>{item.name}</Text>
+							<ProgressStatus progress={item.progress} value={item.value} />
+						</View>
+						<View style={styles.goalCovers}>
+							<FlatList
+								horizontal = {true}
+								data = {item.isbns}
+								renderItem = { ({isbn}) => 
+									<Image style={styles.goalCoverThumbnail} source={{ uri: "https://micro.blog/books/" + isbn + "/cover.jpg" }} />
+								}
+							/>
+						</View>
+					</Pressable>
+				}
+				keyExtractor = { item => item.id }
 			/>
 		</View>
 	)

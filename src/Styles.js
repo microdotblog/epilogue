@@ -362,12 +362,24 @@ export const light = StyleSheet.create({
 		flex: 1
 	},
 	goalItem: {
+		flexDirection: 'row',
+		alignItems: 'center', 
 		paddingLeft: 15,
 		paddingRight: 15,
 		paddingTop: 20,
 		paddingBottom: 20,
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
+	},
+	goalDetails: {		
+	},
+	goalCovers: {
+		paddingLeft: 20
+	},
+	goalCoverThumbnail: {		
+		width: 50,
+		height: 70,
+		marginRight: 5
 	},
 	goalName: {
 	},
