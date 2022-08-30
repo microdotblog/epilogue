@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, FlatList, Image, View, TouchableOpacity, Text, ActivityIndicator, Platform } from 'react-native';
+import FastImage from "react-native-fast-image";
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -69,6 +70,10 @@ export function GoalsScreen({ navigation }) {
 		}
 	}
 
+	const renderCoverItem =({item}) => (
+		<FastImage style={styles.goalCoverThumbnail} source={{ uri: "https://micro.blog/books/" + item + "/cover.jpg" }} />
+	)
+
 	return (
 		<View style={styles.goalsContainer}>
 			<FlatList
@@ -83,9 +88,7 @@ export function GoalsScreen({ navigation }) {
 							<FlatList
 								horizontal = {true}
 								data = {item.isbns}
-								renderItem = { ({isbn}) => 
-									<Image style={styles.goalCoverThumbnail} source={{ uri: "https://micro.blog/books/" + isbn + "/cover.jpg" }} />
-								}
+								renderItem = {renderCoverItem}
 							/>
 						</View>
 					</Pressable>
