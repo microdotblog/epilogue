@@ -36,10 +36,10 @@ export function TabsScreen({ navigation }) {
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
 				tabBarIcon: ({ focused, color, size }) => {
 					if (focused) {
-						return <Icon name="eyes" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
+						return <Icon name="goals" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
 					}
 					else {					
-						return <Icon name="eyes" color={"gray"} size={18} />
+						return <Icon name="goals" color={"gray"} size={18} />
 					}
 				},
 				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",

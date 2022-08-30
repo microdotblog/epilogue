@@ -17,7 +17,7 @@ const IconNames = {
   "bookshelf": { ios: "books.vertical", android: "bookshelf" },
   "bookshelves": { ios: "books.vertical", android: "bookshelf" },
   "discover": { ios: "magnifyingglass", android: "magnify" },
-  "eyes": { ios: "eyes", android: "magnify" }
+  "goals": { ios: "calendar", android: "calendar" }
 }
 
 export const Icon = (props) => {
