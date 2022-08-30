@@ -76,8 +76,11 @@ export function PostScreen({ navigation }) {
 		epilogueStorage.get("current_text").then(current_text => {
 			epilogueStorage.get("current_blog_id").then(blog_id => {
 				let form = new FormData();
+				form.append("h", "entry");
 				form.append("content", current_text);
-				form.append("mp-destination", blog_id);
+				if (blog_id.length > 0) {
+					form.append("mp-destination", blog_id);
+				}
 								
 				epilogueStorage.get("auth_token").then(auth_token => {
 					var use_token = auth_token;
