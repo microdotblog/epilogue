@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, FlatList, Image, View, TouchableOpacity, Text, ActivityIndicator, Platform } from 'react-native';
+import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform } from 'react-native';
 import FastImage from "react-native-fast-image";
 
 import { keys } from "./Constants";

@@ -364,8 +364,8 @@ export const light = StyleSheet.create({
 	goalItem: {
 		flexDirection: 'row',
 		alignItems: 'center', 
-		paddingLeft: 15,
-		paddingRight: 15,
+		paddingLeft: 20,
+		paddingRight: 20,
 		paddingTop: 20,
 		paddingBottom: 20,
 		borderBottomWidth: 0.5,
@@ -389,25 +389,31 @@ export const light = StyleSheet.create({
 	},
 	editGoalTitle: {
 		fontWeight: "bold",
-		paddingTop: 10,
-		paddingLeft: 10,
-		paddingRight: 10,
+		paddingTop: 20,
+		paddingLeft: 20,
+		paddingRight: 20,
 		paddingBottom: 10,
 	},
 	editGoalDescription: {
 		paddingTop: 10,
-		paddingLeft: 10,
-		paddingRight: 10,
+		paddingLeft: 20,
+		paddingRight: 20,
 		paddingBottom: 10,
 	},
 	editGoalInput: {
 		marginTop: 10,
+		marginLeft: 20,
+		marginRight: 20,
 		paddingTop: 10,
 		paddingLeft: 10,
 		paddingRight: 10,
 		paddingBottom: 10,
 		height: 44,
-		backgroundColor: "#FFFFFF"
+		backgroundColor: "#FFFFFF",
+		borderRadius: 5		
+	},
+	editGoalBooks: {
+		marginTop: 20
 	}
 });
 
