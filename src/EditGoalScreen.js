@@ -32,7 +32,7 @@ export function EditGoalScreen({ route, navigation }) {
 				}
 			};
 						
-			fetch("https://micro.blog/books/goals/1", options).then(response => response.json()).then(data => {
+			fetch("https://micro.blog/books/goals/" + id, options).then(response => response.json()).then(data => {
 				var new_items = [];
 				for (let item of data.items) {
 					var author_name = "";
