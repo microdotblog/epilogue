@@ -7,6 +7,7 @@ import { MenuView } from "@react-native-menu/menu";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
+import FastImage from "react-native-fast-image";
 
 import { keys, errors } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -508,7 +509,7 @@ export function HomeScreen({ navigation }) {
 				<BookSwipeableRow book={item.id}>
 					<Pressable onPress={() => { onShowBookPressed(item) }}>
 						<View style={styles.item}>
-							<Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
+							<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>
 								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
 								<Text style={styles.bookAuthor}>{item.author}</Text>

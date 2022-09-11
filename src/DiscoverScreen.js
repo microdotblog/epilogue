@@ -4,6 +4,7 @@ import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, Re
 import ContextMenu from "react-native-context-menu-view";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
+import FastImage from "react-native-fast-image";
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -83,10 +84,10 @@ export function DiscoverScreen({ navigation }) {
 	}, [])
 	
 	function bestColumnsForWidth(width) {
-		if (width > 600) {
+		if (width > 700) {
 			return 6;
 		}
-		else if (width > 400) {
+		else if (width > 500) {
 			return 5;
 		}
 		else {
@@ -288,7 +289,7 @@ export function DiscoverScreen({ navigation }) {
 	const BookCover = ({ url, title, author, id }) => {
 		if (url !== '') {
 			return (
-				<Image style={styles.bookCovers} source={{ 
+				<FastImage style={styles.bookCovers} source={{ 
 					uri: url
 				}}/>
 			)
@@ -347,7 +348,7 @@ export function DiscoverScreen({ navigation }) {
 	const renderSearchItem = ({item}) => (
 		<Pressable onPress={() => { onShowBookPressed(item) }}>
 			<View style={styles.item}>
-				<Image style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
+				<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 				<View style={styles.bookItem}>
 					<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
 					<Text style={styles.bookAuthor}>{item.author}</Text>
