@@ -94,7 +94,7 @@ export function EditGoalScreen({ route, navigation }) {
 		<View style={styles.container}>
 			<Text style={styles.editGoalTitle}>Set a new reading goal for {year}.</Text>
 			<Text style={styles.editGoalDescription}>Micro.blog will update the progress toward your goal when you blog about a book you finished reading.</Text>
-			<TextInput style={styles.editGoalInput} value={goalValue} onChangeText={onChangeText} multiline={false} autoFocus={true} keyboardType={"number-pad"} ref={inputRef} />
+			<TextInput style={styles.editGoalInput} value={goalValue} onChangeText={onChangeText} multiline={false} autoFocus={true} keyboardType={"number-pad"} ref={inputRef} placeholder="Number of books to read" />
 
 			<FlatList
 				data = {books}
