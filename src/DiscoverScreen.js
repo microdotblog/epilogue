@@ -84,15 +84,12 @@ export function DiscoverScreen({ navigation }) {
 	}, [])
 	
 	function bestColumnsForWidth(width) {
-		if (width > 700) {
-			return 6;
+		var cols = Math.round(width / 150);
+		if (cols < 3) {
+			cols = 3;
 		}
-		else if (width > 500) {
-			return 5;
-		}
-		else {
-			return 3;
-		}
+
+		return cols;
 	}
 	
 	function copyToBookshelf(bookshelf_id, isbn, title, author, image, id) {
