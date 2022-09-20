@@ -9,6 +9,7 @@ import FastImage from "react-native-fast-image";
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
+import { Book } from "./Book";
 
 export function DiscoverScreen({ navigation }) {
 		
@@ -207,7 +208,8 @@ export function DiscoverScreen({ navigation }) {
 	
 	function onRunSearch() {
 		epilogueStorage.get(keys.currentSearch).then(search_text => {
-			if ((search_text != null) && (search_text.length > 0)) {
+			let s = String(search_text);
+			if ((s != "null") && (s.length > 0)) {
 				setSearching(true);
 				sendSearch(search_text);
 			}
@@ -223,66 +225,68 @@ export function DiscoverScreen({ navigation }) {
 	}
 
 	function sendSearch(searchText) {
-		let q = encodeURIComponent(searchText);
+		if (Book.isISBN(searchText)) {
+			Book.searchOpenLibrary(searchText, function(new_books) {				
+				if (new_books.length > 0) {				
+					var new_items = [];
 	
-		var options = {
-		};
-		
-		fetch("https://www.googleapis.com/books/v1/volumes?q=" + q, options).then(response => response.json()).then(data => {
-			var new_items = [];
-			if (data.items != undefined) {
-				for (let book_item of data.items) {
-					var author_name = "";
-					var description = "";
-					
-					if ((book_item.volumeInfo.authors != undefined) && (book_item.volumeInfo.authors.length > 0)) {
-						author_name = book_item.volumeInfo.authors[0];
-					}
-	
-					if (book_item.volumeInfo.description != undefined) {
-						description = book_item.volumeInfo.description;
-					}
-	
-					var cover_url = "";
-					if (book_item.volumeInfo.imageLinks != undefined) {
-						cover_url = book_item.volumeInfo.imageLinks.smallThumbnail;
-						if (cover_url.includes("http://")) {
-							cover_url = cover_url.replace("http://", "https://");
-						}					
-					}
-	
-					let isbns = book_item.volumeInfo.industryIdentifiers;
-					var best_isbn = "";
-					if (isbns != undefined) {
-						for (let isbn of isbns) {
-							if (isbn.type == "ISBN_13") {
-								best_isbn = isbn.identifier;
-								break;
-							}
-							else if (isbn.type == "ISBN_10") {
-								best_isbn = isbn.identifier;
-							}
-						}
-					}
-	
-					if ((best_isbn.length > 0) && (cover_url.length > 0)) {
+					for (b of new_books) {
 						new_items.push({
-							id: book_item.id,
-							isbn: best_isbn,
-							title: book_item.volumeInfo.title,
-							image: cover_url,
-							author: author_name,
-							description: description,
+							id: b.id,
+							isbn: b.isbn,
+							title: b.title,
+							image: b.cover_url,
+							author: b.author,
+							description: b.description,
 							is_search: true
 						});
 					}
+	
+					setBooks(new_items);
 				}
-			}
+				else {
+					Book.searchGoogleBooks(searchText, function(new_books) {
+						var new_items = [];
+					
+						for (b of new_books) {
+							new_items.push({
+								id: b.id,
+								isbn: b.isbn,
+								title: b.title,
+								image: b.cover_url,
+								author: b.author,
+								description: b.description,
+								is_search: true
+							});
+						}
+						
+						setBooks(new_items);
+					});
+				}
+				
+			});
+		}
+		else {		
+			Book.searchGoogleBooks(searchText, function(new_books) {
+				var new_items = [];
 			
-			setBooks(new_items);
-		});
+				for (b of new_books) {
+					new_items.push({
+						id: b.id,
+						isbn: b.isbn,
+						title: b.title,
+						image: b.cover_url,
+						author: b.author,
+						description: b.description,
+						is_search: true
+					});
+				}
+				
+				setBooks(new_items);
+			});
+		}
 	}
-		
+
 	const BookCover = ({ url, title, author, id }) => {
 		if (url !== '') {
 			return (
