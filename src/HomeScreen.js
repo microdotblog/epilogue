@@ -448,7 +448,7 @@ export function HomeScreen({ navigation }) {
 	function onRunSearch() {
 		epilogueStorage.get(keys.currentSearch).then(search_text => {
 			let s = String(search_text);
-			if ((s != null) && (s.length > 0)) {
+			if ((s != "null") && (s.length > 0)) {
 				sendSearch(s);
 			}
 			else {
