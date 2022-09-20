@@ -78,7 +78,9 @@ export function BookDetailsScreen({ route, navigation }) {
 			setProgressAnimating(true);
 		
 			fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
-				navigation.goBack();
+				epilogueStorage.remove(keys.currentSearch).then(() => {
+					navigation.goBack();
+				});
 			});
 		});
 	}

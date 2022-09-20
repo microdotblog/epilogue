@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useRef } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -20,6 +20,7 @@ export function HomeScreen({ navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
+	const searchFieldRef = useRef();
 	var bookRowReferences = [];
     
 	React.useEffect(() => {
@@ -29,7 +30,7 @@ export function HomeScreen({ navigation }) {
 		return unsubscribe;
 	}, [navigation]);
   
-	function onFocus(navigation) {		
+	function onFocus(navigation) {
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			if ((auth_token == null) || (auth_token.length == 0)) {
 				navigation.navigate("SignIn");
@@ -43,10 +44,11 @@ export function HomeScreen({ navigation }) {
 					else {
 						// no search yet, load bookshelves
 						epilogueStorage.get(keys.currentSearch).then(current_search => {
-							if ((current_search == null) || (currentSearch.length == 0)) {
+							if ((current_search == null) || (current_search.length == 0)) {
+								searchFieldRef.current.clear();
 								loadBookshelves(navigation);
 							}
-						});						
+						});
 					}
 				});
 			}
@@ -506,7 +508,7 @@ export function HomeScreen({ navigation }) {
 
 	return (
 		<View style={styles.container}>
-			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" />
+			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" clearButtonMode="always" ref={searchFieldRef} />
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
