@@ -551,10 +551,13 @@ export const dark = StyleSheet.create({
 	},
 	bookContainer: {
 		backgroundColor: '#141723',
-		shadowOpacity: 0.75,
+		shadowOpacity: 0.75
 	},
 	discoverView: {
-		backgroundColor: '#212936',
+		backgroundColor: '#212936'
+	},
+	loadingPage: {
+		backgroundColor: '#212936'		
 	},
 	goalsContainer: {
 		backgroundColor: '#212936'		
