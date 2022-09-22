@@ -4,6 +4,8 @@ import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
+import ContextMenu from "react-native-context-menu-view";
+import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from "./hooks/useEpilogueStyle";
@@ -13,6 +15,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle()
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
+	const [ menuActions, setMenuActions] = useState([])	
 	const { id, isbn, title, image, author, description, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
@@ -26,6 +29,27 @@ export function BookDetailsScreen({ route, navigation }) {
 		let bookshelf_title = current_bookshelf.title;
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
 		epilogueStorage.set("current_text", s);
+
+		var menu_items = [
+			{
+				id: "amazon",
+				title: "Amazon"
+			},
+				{
+				id: "goodreads",
+				title: "Goodreads"
+			},
+				{
+				id: "bookshop",
+				title: "Bookshop.org"
+			},
+				{
+				id: "worldcat",
+				title: "WorldCat"
+			}
+		];
+		setMenuActions(menu_items);
+
 	}
 	
 	function addToBookshelf(bookshelf_id) {
@@ -84,12 +108,43 @@ export function BookDetailsScreen({ route, navigation }) {
 			});
 		});
 	}
+	
+	function viewBookOn(service) {
+		var url;
+		
+		if (service == "Amazon") {
+			url = "https://www.amazon.com/s?field-keywords=" + isbn;
+		}
+		else if (service == "Goodreads") {
+			url = "https://www.goodreads.com/search?q=" + isbn;
+		}
+		else if (service == "Bookshop.org") {
+			url = "https://bookshop.org/books?keywords=" + isbn;
+		}
+		else if (service == "WorldCat") {
+			url = "https://www.worldcat.org/search?q=" + isbn;
+		}
+		
+		if (url != undefined) {
+			InAppBrowser.open(url)
+		}
+	}
 
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={styles.container}>
 				<View style={styles.bookDetails}>
-					<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
+					<ContextMenu
+							title="View on..."
+							onPress={({nativeEvent}) => {
+								viewBookOn(nativeEvent.name);
+							}}
+							actions={menuActions}
+							previewBackgroundColor="rgba(0, 0, 0, 0.0)"
+						>
+						<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
+					</ContextMenu>
+					
 					<Text style={styles.bookDetailsTitle}>{title}</Text>
 					<Text style={styles.bookDetailsAuthor}>{author}</Text>
 				</View>
