@@ -124,8 +124,8 @@ const App: () => Node = () => {
               </Pressable>
             ),
             headerRight: () => (
-              <Pressable onPress={() => { }}>
-                <Text style={styles.navbarSubmit}>Update</Text>
+              <Pressable onPress={() => { navigation.navigate("Post"); }} hitSlop={10}>
+                <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
               </Pressable>
             )
           })} />

@@ -20,7 +20,7 @@ export function EditGoalScreen({ route, navigation }) {
 	}, [navigation]);	
 	
 	function onFocus(navigation) {
-		setupUpdateButton();
+		setupNavTitle();
 		loadBooks();
 	}
 
@@ -53,14 +53,10 @@ export function EditGoalScreen({ route, navigation }) {
 		});
 	}
 
-	function setupUpdateButton() {
+	function setupNavTitle() {
 		navigation.setOptions({
-			headerRight: () => (
-			  <Pressable onPress={() => { onUpdateValue(); }}>
-				<Text style={styles.navbarSubmit}>Update</Text>
-			  </Pressable>
-			)
-		});
+			title: name
+		});		
 	}
 
 	function onUpdateValue() {

@@ -389,7 +389,7 @@ export const light = StyleSheet.create({
 	},
 	editGoalTitle: {
 		fontWeight: "bold",
-		paddingTop: 20,
+		paddingTop: 10,
 		paddingLeft: 20,
 		paddingRight: 20,
 		paddingBottom: 10,
