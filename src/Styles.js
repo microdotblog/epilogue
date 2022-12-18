@@ -401,9 +401,10 @@ export const light = StyleSheet.create({
 		paddingBottom: 10,
 	},
 	editGoalInput: {
+		flexGrow: 1,
 		marginTop: 10,
 		marginLeft: 20,
-		marginRight: 20,
+		marginRight: 10,
 		paddingTop: 10,
 		paddingLeft: 10,
 		paddingRight: 10,
@@ -414,6 +415,23 @@ export const light = StyleSheet.create({
 	},
 	editGoalBooks: {
 		marginTop: 20
+	},
+	editGoalFieldAndButton: {
+		flexDirection: "row",
+	},
+	editGoalButton: {
+		height: 44,
+		marginTop: 10,
+		paddingVertical: 14,
+		paddingHorizontal: 14,
+		borderRadius: 5,
+		marginBottom: 6,
+		backgroundColor: "#DEDEDE"
+	},	
+	editGoalButtonPressed: {
+		backgroundColor: "#BBBBBB",
+	},
+	editGoalButtonTitle: {		
 	}
 });
 
