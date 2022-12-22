@@ -182,7 +182,7 @@ export const light = StyleSheet.create({
 		fontWeight: "600",
 		paddingLeft: 14,
 		paddingRight: 14,
-		paddingTop: 14,
+		paddingTop: 16,
 		paddingBottom: 5
 	},
 	postHostnameBar: {
