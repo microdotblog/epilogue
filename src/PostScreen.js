@@ -147,6 +147,28 @@ export function PostScreen({ navigation }) {
 			}
 		}
 	}
+
+	class PostNoticeField extends Component {
+		constructor(props) {
+			super(props);
+			this.title = props.title;
+		}
+	
+		// we're just going to use title to know whether to show the notice text
+			
+		render() {
+			if ((this.title != undefined) && (this.title.length > 0)) {
+				return (
+					<Text style={styles.postTextNotice}>Publishing this post will also install the Micro.blog plug-in "Book reading goals" on your blog.</Text>
+				);
+			}
+			else {
+				return (
+					<View />					
+				);
+			}
+		}
+	}
 		
 	return (
 		<View style={styles.postTextBox}>
@@ -158,7 +180,7 @@ export function PostScreen({ navigation }) {
 			<PostTitleField title={title} />
 			<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} inputAccessoryViewID={keyboardNoticeID} />
 			<InputAccessoryView nativeID={keyboardNoticeID}>
-				<Text style={styles.postTextNotice}>Publishing this post will also install the Micro.blog plug-in "Book reading goals" on your blog.</Text>
+				<PostNoticeField title={title} />
 			</InputAccessoryView>
 		</View>
 	);
