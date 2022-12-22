@@ -46,7 +46,7 @@ export function PostScreen({ navigation }) {
 	}
 	
 	function setupFields() {
-		epilogueStorage.get("current_text").then(current_text => {
+		epilogueStorage.get(keys.currentText).then(current_text => {
 			if (current_text != null) {
 				setText(current_text);
 			}

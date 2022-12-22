@@ -49,6 +49,7 @@ export function EditGoalScreen({ route, navigation }) {
 				}
 				
 				setBooks(new_items);
+				setupPostDraft();
 			});		
 		});
 	}
@@ -57,6 +58,14 @@ export function EditGoalScreen({ route, navigation }) {
 		navigation.setOptions({
 			title: name
 		});		
+	}
+	
+	function setupPostDraft() {
+		let subject = "Year in books for " + year;
+		var s = "Here are the books I finished reading in " + year;		
+		s = s + "\n\n{{< bookgoals " + year + " >}}";
+		
+		epilogueStorage.set(keys.currentText, s);
 	}
 
 	function onUpdateValue() {
