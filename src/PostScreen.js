@@ -1,6 +1,6 @@
 import React, { Component, useState } from "react";
 import type { Node } from "react";
-import { TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
+import { InputAccessoryView, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { keys } from "./Constants";
@@ -8,7 +8,8 @@ import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
 
 export function PostScreen({ navigation }) {
-	const styles = useEpilogueStyle()
+	const styles = useEpilogueStyle();
+	const keyboardNoticeID = "KeyboardNoticeID";
 	const [ text, setText ] = useState();
 	const [ title, setTitle ] = useState();
 	const [ blogID, setBlogID ] = useState();
@@ -155,7 +156,10 @@ export function PostScreen({ navigation }) {
 				<ActivityIndicator style={styles.postHostnameProgress} size="small" animating={progressAnimating} />
 			</Pressable>
 			<PostTitleField title={title} />
-			<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} />
+			<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} inputAccessoryViewID={keyboardNoticeID} />
+			<InputAccessoryView nativeID={keyboardNoticeID}>
+				<Text style={styles.postTextNotice}>Publishing this post will also install the Micro.blog plug-in "Book reading goals" on your blog.</Text>
+			</InputAccessoryView>
 		</View>
 	);
 }

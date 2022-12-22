@@ -177,6 +177,15 @@ export const light = StyleSheet.create({
 		paddingTop: 14,
 		paddingBottom: 14
 	},
+	postTextNotice: {
+		paddingLeft: 14,
+		paddingRight: 14,
+		paddingTop: 14,
+		paddingBottom: 14,
+		backgroundColor: "#e8e8e8",
+		borderTopWidth: 0.5,
+		borderTopColor: "#d6d6d6"
+	},
 	postTitleField: {
 		fontSize: 16,
 		fontWeight: "600",
@@ -606,5 +615,22 @@ export const dark = StyleSheet.create({
 	editGoalInput: {
 		color: "#FFFFFF",
 		backgroundColor: "#000000"
+	},
+	editGoalButton: {
+		backgroundColor: "#141723"
+	},		
+	editGoalButtonPressed: {
+		backgroundColor: "#000000"
+	},
+	editGoalButtonTitle: {
+		color: "#FFFFFF"
+	},
+	postTitleField: {
+		color: "#FFFFFF"
+	},
+	postTextNotice: {
+		color: "#E5E7EB",
+		backgroundColor: "#000000",
+		borderBottomColor: "#444444"
 	}
 });
