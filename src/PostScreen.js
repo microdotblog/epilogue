@@ -178,10 +178,17 @@ export function PostScreen({ navigation }) {
 				<ActivityIndicator style={styles.postHostnameProgress} size="small" animating={progressAnimating} />
 			</Pressable>
 			<PostTitleField title={title} />
-			<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} inputAccessoryViewID={keyboardNoticeID} />
-			<InputAccessoryView nativeID={keyboardNoticeID}>
+
+			{Platform.OS === "ios" && <>
+				<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} inputAccessoryViewID={keyboardNoticeID} />
+				<InputAccessoryView nativeID={keyboardNoticeID}>
+					<PostNoticeField title={title} />
+				</InputAccessoryView>
+			</>}
+			{Platform.OS === "android" && <>
+				<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} />
 				<PostNoticeField title={title} />
-			</InputAccessoryView>
+			</>}
 		</View>
 	);
 }
