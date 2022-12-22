@@ -85,7 +85,9 @@ export function PostScreen({ navigation }) {
 				epilogueStorage.get("current_blog_id").then(blog_id => {
 					let form = new FormData();
 					form.append("h", "entry");
-					form.append("name", current_title);
+					if (current_title != undefined) {
+						form.append("name", current_title);
+					}
 					form.append("content", current_text);
 					if (blog_id.length > 0) {
 						form.append("mp-destination", blog_id);
