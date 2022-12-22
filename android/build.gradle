@@ -2,9 +2,11 @@
 
 buildscript {
     ext {
+        RNNKotlinVersion = "1.7.10"
+        buildToolsVersion = "30.0.2"
         minSdkVersion = 25
         compileSdkVersion = 33
-        targetSdkVersion = 30
+        targetSdkVersion = 31
         ndkVersion = "21.4.7075529"
         kotlin_version = "1.7.10"
     }
@@ -13,8 +15,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:7.2.2')
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0"
+        classpath("com.android.tools.build:gradle:4.2.2")
+//        classpath('com.android.tools.build:gradle:7.2.2')
+//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
