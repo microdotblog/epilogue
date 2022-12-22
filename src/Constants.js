@@ -5,6 +5,7 @@ export const keys = {
 	currentBlogName: "current_blog_name",
 	currentBookshelf: "current_bookshelf",
 	currentSearch: "current_search",
+	currentTitle: "current_title",
 	currentText: "current_text",
 	allBookshelves: "bookshelves",
 	meURL: "me_url",

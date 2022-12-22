@@ -23,12 +23,13 @@ export function BookDetailsScreen({ route, navigation }) {
 			onFocus(navigation);
 		});
 		return unsubscribe;
-	}, [navigation]);	
+	}, [navigation]);
 	
 	function onFocus(navigation) {
 		let bookshelf_title = current_bookshelf.title;
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
-		epilogueStorage.set("current_text", s);
+		epilogueStorage.set(keys.currentTitle, "");
+		epilogueStorage.set(keys.currentText, s);
 
 		var menu_items = [
 			{

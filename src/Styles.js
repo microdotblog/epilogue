@@ -177,6 +177,14 @@ export const light = StyleSheet.create({
 		paddingTop: 14,
 		paddingBottom: 14
 	},
+	postTitleField: {
+		fontSize: 16,
+		fontWeight: "600",
+		paddingLeft: 14,
+		paddingRight: 14,
+		paddingTop: 14,
+		paddingBottom: 5
+	},
 	postHostnameBar: {
 		flexDirection: "row",
 		backgroundColor: "#e8e8e8",
