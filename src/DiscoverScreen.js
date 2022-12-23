@@ -43,27 +43,47 @@ export function DiscoverScreen({ navigation }) {
 	
 	const onFocus = (navigation) =>  {
 		loadBooks()
-		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
-			var shelf_items = [];
-			for (var item of bookshelves) {
-				shelf_items.push({
-					id: item.id,
-					title: item.title
-				});
-			}
-			var root_items = [
-				{
-					id: 'share',
-					title: 'Share',
-					systemIcon: 'square.and.arrow.up'
-				},
-				{
-					id: 'bookshelves',
-					title: 'Bookshelves',
-					inlineChildren: true,
-					actions: shelf_items
+		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {			
+			var root_items;
+			if (Platform.OS === "ios") {
+				var shelf_items = [];
+				for (var item of bookshelves) {
+					shelf_items.push({
+						id: item.id,
+						title: item.title
+					});
 				}
-			]
+
+				root_items = [
+					{
+						id: 'share',
+						title: 'Share',
+						systemIcon: 'square.and.arrow.up'
+					},
+					{
+						id: 'bookshelves',
+						title: 'Bookshelves',
+						inlineChildren: true,
+						actions: shelf_items
+					}
+				]
+			}
+			else {			
+				root_items = [
+					{
+						id: 'share',
+						title: 'Share'
+					}
+				]
+				
+				for (var item of bookshelves) {
+					root_items.push({
+						id: item.id,
+						title: item.title
+					});
+				}				
+			}
+			
 			setMenuActions(root_items)
 		});
 	}
@@ -328,6 +348,7 @@ export function DiscoverScreen({ navigation }) {
 
 				<TouchableOpacity 
 					onPress={() => { onOpen(item.url) }}
+					onLongPress={() => { return null }}
 					style={ [styles.bookContainer, {height: height}] }>
 					
 					<View style={[styles.addingBookSpinner, {opacity: itemUpdating === item.id.toString() ? 0.5 : 0.0, backgroundColor: itemUpdating === item.id.toString() ? '#111' : null, zIndex: itemUpdating === item.id.toString() ? 5 : 0}]}>
