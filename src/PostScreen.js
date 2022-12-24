@@ -40,7 +40,6 @@ export function PostScreen({ route, navigation }) {
 	}
 	
 	function bestColumnsForWidth(width) {
-		console.log("width " + width);
 		let inset = 14;
 		let cover_width = 50;
 		let spacing = 5 * 2;
@@ -116,14 +115,21 @@ export function PostScreen({ route, navigation }) {
 		
 		epilogueStorage.get(keys.currentText).then(current_text => {
 			epilogueStorage.get(keys.currentTitle).then(current_title => {
-				epilogueStorage.get(keys.currentTitleExtra).then(current_extra => {
+				epilogueStorage.get(keys.currentTextExtra).then(current_extra => {
 					epilogueStorage.get(keys.currentBlogID).then(blog_id => {
 						let form = new FormData();
 						form.append("h", "entry");
 						if (current_title != undefined) {
 							form.append("name", current_title);
 						}
-						form.append("content", current_text + current_extra);
+
+						if (current_extra != undefined) {
+							form.append("content", current_text + current_extra);
+						}
+						else {
+							form.append("content", current_text);
+						}
+
 						if (blog_id.length > 0) {
 							form.append("mp-destination", blog_id);
 						}
@@ -151,7 +157,7 @@ export function PostScreen({ route, navigation }) {
 										use_url = "https://micro.blog/micropub";
 									}
 									
-									if (current_extra.includes("{{< bookgoals") && !use_url.includes("https://micro.blog")) {
+									if ((current_extra != undefined) && current_extra.includes("{{< bookgoals") && !use_url.includes("https://micro.blog")) {
 										// posting book goals only works with Micro.blog
 										alert("Posting your reading goals is only supported on Micro.blog-hosted blogs.");
 										navigation.goBack();
