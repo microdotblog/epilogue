@@ -449,6 +449,10 @@ export const light = StyleSheet.create({
 		backgroundColor: "#BBBBBB",
 	},
 	editGoalButtonTitle: {		
+	},
+	postBooksContainer: {
+		paddingLeft: 14,
+		paddingRight: 14	
 	}
 });
 

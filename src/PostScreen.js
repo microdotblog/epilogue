@@ -1,7 +1,8 @@
 import React, { Component, useState } from "react";
 import type { Node } from "react";
-import { InputAccessoryView, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
+import { InputAccessoryView, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import FastImage from "react-native-fast-image";
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -14,6 +15,7 @@ export function PostScreen({ navigation }) {
 	const [ title, setTitle ] = useState();
 	const [ blogID, setBlogID ] = useState();
 	const [ blogName, setBlogName ] = useState();
+	const [ books, setBooks ] = useState([]);
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 
 	React.useEffect(() => {
@@ -76,6 +78,13 @@ export function PostScreen({ navigation }) {
 		epilogueStorage.get(keys.currentBlogID).then(blog_id => {
 			setBlogID(blog_id);
 		});
+		
+		setBooks([
+			{
+				id: 123,
+				isbn: "9780553573398"
+			}
+		]);
 	}
 	
 	function onSendPost() {
@@ -153,13 +162,54 @@ export function PostScreen({ navigation }) {
 			super(props);
 			this.title = props.title;
 		}
-	
-		// we're just going to use title to know whether to show the notice text
-			
+				
 		render() {
+			// we're just going to use title to know whether to show the notice text
 			if ((this.title != undefined) && (this.title.length > 0)) {
 				return (
 					<Text style={styles.postTextNotice}>Publishing this post will also install the Micro.blog plug-in "Book reading goals" on your blog.</Text>
+				);
+			}
+			else {
+				return (
+					<View />					
+				);
+			}
+		}
+	}
+	
+	class PostBooksGrid extends Component {
+		constructor(props) {
+			super(props);
+
+			// this.styles = props.styles;
+			this.title = props.title;
+			this.data = props.books;
+			this.columns = 4;
+		}
+
+		renderItem({item}) {
+			let cover_url = "https://micro.blog/books/" + item.isbn + "/cover.jpg";
+			return (
+				<FastImage style={{width: 60, height: 100, marginLeft: 2, marginRight: 2}} source={{ 
+					uri: cover_url
+				}}/>
+			)
+		}
+		
+		render() {
+			// we're just going to use title to know whether to show the book list
+			if ((this.title != undefined) && (this.title.length > 0)) {
+				return (
+					<View style={styles.postBooksContainer}>
+						<FlatList
+							data={this.data}
+							key={this.columns}
+							keyExtractor={(item) => item.id.toString()}
+							numColumns={this.columns}
+							renderItem={this.renderItem}
+						/>
+					</View>
 				);
 			}
 			else {
@@ -189,6 +239,8 @@ export function PostScreen({ navigation }) {
 				<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} />
 				<PostNoticeField title={title} />
 			</>}
+			
+			<PostBooksGrid title={title} books={books} />
 		</View>
 	);
 }
