@@ -1,12 +1,14 @@
 import React, { useState, useRef } from "react";
-import { Pressable, FlatList, Image, View, TouchableOpacity, Text, TextInput, ActivityIndicator, Platform, Keyboard } from 'react-native';
+import { Pressable, FlatList, Image, View, TouchableOpacity, Text, TextInput, ActivityIndicator, Platform, Keyboard, useColorScheme } from 'react-native';
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
+import { Icon } from "./Icon";
 
 export function EditGoalScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
+    const is_dark = (useColorScheme() == "dark");
 	const [ goalValue, setGoalValue ] = useState();
 	const [ books, setBooks ] = useState();
 	const inputRef = useRef();
@@ -49,6 +51,7 @@ export function EditGoalScreen({ route, navigation }) {
 				}
 				
 				setBooks(new_items);
+				setupBookParams(new_items);
 				setupPostDraft();
 			});		
 		});
@@ -58,6 +61,20 @@ export function EditGoalScreen({ route, navigation }) {
 		navigation.setOptions({
 			title: name
 		});		
+	}
+	
+	function setupBookParams(books) {
+		let params = {
+			books: books
+		};
+		
+		navigation.setOptions({
+			headerRight: () => (
+		  	<Pressable onPress={() => { navigation.navigate("Post", params); }} hitSlop={10}>
+				<Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+		  	</Pressable>
+			)
+		});				
 	}
 	
 	function setupPostDraft() {

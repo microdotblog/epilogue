@@ -1,6 +1,6 @@
 import React, { Component, useState } from "react";
 import type { Node } from "react";
-import { InputAccessoryView, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList } from "react-native";
+import { InputAccessoryView, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
@@ -8,15 +8,17 @@ import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
 
-export function PostScreen({ navigation }) {
+export function PostScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
+	const windowSize = useWindowDimensions();
 	const keyboardNoticeID = "KeyboardNoticeID";
 	const [ text, setText ] = useState();
 	const [ title, setTitle ] = useState();
 	const [ blogID, setBlogID ] = useState();
 	const [ blogName, setBlogName ] = useState();
-	const [ books, setBooks ] = useState([]);
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
+	const { books } = route.params;
+	const [ bookColumns, setBookColumns ] = useState(bestColumnsForWidth(windowSize.width))
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -24,12 +26,34 @@ export function PostScreen({ navigation }) {
 		});
 		return unsubscribe;
 	}, [navigation]);	
+
+	React.useEffect(() => {
+		const subscription = Dimensions.addEventListener("change", ({screen}) => {
+			setBookColumns(bestColumnsForWidth(Dimensions.get("window").width));
+		});
+		return () => subscription?.remove()
+	})
 	
 	function onFocus(navigation) {
 		setupPostButton();
 		setupFields();
 	}
 	
+	function bestColumnsForWidth(width) {
+		console.log("width " + width);
+		let inset = 14;
+		let cover_width = 50;
+		let spacing = 5 * 2;
+		let adjusted_width = width - (inset * 2);
+		
+		var cols = Math.floor(adjusted_width / (cover_width + spacing));
+		if (cols < 3) {
+			cols = 3;
+		}
+			
+		return cols;
+	}
+
 	function onShowBlogs() {
 		navigation.navigate("Blogs");
 	}
@@ -79,12 +103,12 @@ export function PostScreen({ navigation }) {
 			setBlogID(blog_id);
 		});
 		
-		setBooks([
-			{
-				id: 123,
-				isbn: "9780553573398"
-			}
-		]);
+		// setBooks([
+		// 	{
+		// 		id: 123,
+		// 		isbn: "9780553573398"
+		// 	}
+		// ]);
 	}
 	
 	function onSendPost() {
@@ -191,16 +215,15 @@ export function PostScreen({ navigation }) {
 		constructor(props) {
 			super(props);
 
-			// this.styles = props.styles;
 			this.title = props.title;
 			this.data = props.books;
-			this.columns = 4;
+			this.columns = props.columns;
 		}
 
 		renderItem({item}) {
 			let cover_url = "https://micro.blog/books/" + item.isbn + "/cover.jpg";
 			return (
-				<FastImage style={{width: 60, height: 100, marginLeft: 2, marginRight: 2}} source={{ 
+				<FastImage style={{width: 50, height: 70, marginLeft: 5, marginRight: 5, marginBottom: 5}} source={{ 
 					uri: cover_url
 				}}/>
 			)
@@ -249,7 +272,7 @@ export function PostScreen({ navigation }) {
 				<PostNoticeField title={title} />
 			</>}
 			
-			<PostBooksGrid title={title} books={books} />
+			<PostBooksGrid title={title} books={books} columns={bookColumns} />
 		</View>
 	);
 }

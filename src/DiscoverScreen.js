@@ -11,8 +11,7 @@ import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
 import { Book } from "./Book";
 
-export function DiscoverScreen({ navigation }) {
-		
+export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();
 	const windowSize = useWindowDimensions();
 	

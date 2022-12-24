@@ -434,11 +434,12 @@ export const light = StyleSheet.create({
 		marginTop: 20
 	},
 	editGoalFieldAndButton: {
-		flexDirection: "row",
+		flexDirection: "row"
 	},
 	editGoalButton: {
 		height: 44,
 		marginTop: 10,
+		marginRight: 20,
 		paddingVertical: 14,
 		paddingHorizontal: 14,
 		borderRadius: 5,
@@ -452,8 +453,8 @@ export const light = StyleSheet.create({
 	},
 	postBooksContainer: {
 		paddingTop: 6,
-		paddingLeft: 12,
-		paddingRight: 12	
+		paddingLeft: 9,
+		paddingRight: 9	
 	}
 });
 
