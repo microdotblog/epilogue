@@ -191,8 +191,8 @@ export const light = StyleSheet.create({
 		fontWeight: "600",
 		paddingLeft: 14,
 		paddingRight: 14,
-		paddingTop: 16,
-		paddingBottom: 5
+		paddingTop: 18,
+		paddingBottom: 2
 	},
 	postHostnameBar: {
 		flexDirection: "row",
@@ -451,8 +451,9 @@ export const light = StyleSheet.create({
 	editGoalButtonTitle: {		
 	},
 	postBooksContainer: {
-		paddingLeft: 14,
-		paddingRight: 14	
+		paddingTop: 6,
+		paddingLeft: 12,
+		paddingRight: 12	
 	}
 });
 
