@@ -125,10 +125,17 @@ export function PostScreen({ navigation }) {
 								if (use_url == undefined) {
 									use_url = "https://micro.blog/micropub";
 								}
-		
-								fetch(use_url, options).then(response => response.json()).then(data => {
+								
+								if (current_text.includes("{{< bookgoals") && !use_url.includes("https://micro.blog")) {
+									// posting book goals only works with Micro.blog
+									alert("Posting your reading goals is only supported on Micro.blog-hosted blogs.");
 									navigation.goBack();
-								});
+								}
+								else {
+									fetch(use_url, options).then(response => response.json()).then(data => {
+										navigation.goBack();
+									});
+								}
 							});
 						});
 					});
