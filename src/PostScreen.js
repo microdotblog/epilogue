@@ -223,7 +223,7 @@ export function PostScreen({ route, navigation }) {
 		renderItem({item}) {
 			let cover_url = "https://micro.blog/books/" + item.isbn + "/cover.jpg";
 			return (
-				<FastImage style={{width: 50, height: 70, marginLeft: 5, marginRight: 5, marginBottom: 5}} source={{ 
+				<FastImage style={{width: 50, height: 70, marginLeft: 5, marginRight: 5, marginBottom: 10}} source={{ 
 					uri: cover_url
 				}}/>
 			)
