@@ -62,12 +62,12 @@ export function EditGoalScreen({ route, navigation }) {
 	
 	function setupPostDraft() {
 		let title = "Year in books for " + year;
-
-		var s = "Here are the books I finished reading in " + year + ".";
-		s = s + "\n\n{{< bookgoals " + year + " >}}";
+		let s = "Here are the books I finished reading in " + year + ".";
+		let extra = "\n\n{{< bookgoals " + year + " >}}";
 		
 		epilogueStorage.set(keys.currentTitle, title);
 		epilogueStorage.set(keys.currentText, s);
+		epilogueStorage.set(keys.currentTextExtra, extra);
 	}
 
 	function onUpdateValue() {

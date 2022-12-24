@@ -30,6 +30,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
 		epilogueStorage.set(keys.currentTitle, "");
 		epilogueStorage.set(keys.currentText, s);
+		epilogueStorage.set(keys.currentTextExtra, "");
 
 		var menu_items = [
 			{

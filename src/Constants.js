@@ -7,6 +7,7 @@ export const keys = {
 	currentSearch: "current_search",
 	currentTitle: "current_title",
 	currentText: "current_text",
+	currentTextExtra: "current_extra",
 	allBookshelves: "bookshelves",
 	meURL: "me_url",
 	authState: "auth_state",
