@@ -66,8 +66,8 @@ export function BlogsScreen({ navigation }) {
 	}
 	
 	function onSelectBlog(blog) {	
-		epilogueStorage.set("current_blog_id", blog.id);
-		epilogueStorage.set("current_blog_name", blog.name);
+		epilogueStorage.set(keys.currentBlogID, blog.id);
+		epilogueStorage.set(keys.currentBlogName, blog.name);
 
 		navigation.goBack();
 	}

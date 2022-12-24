@@ -93,7 +93,7 @@ export function PostScreen({ navigation }) {
 		epilogueStorage.get(keys.currentText).then(current_text => {
 			epilogueStorage.get(keys.currentTitle).then(current_title => {
 				epilogueStorage.get(keys.currentTitleExtra).then(current_extra => {
-					epilogueStorage.get("current_blog_id").then(blog_id => {
+					epilogueStorage.get(keys.currentBlogID).then(blog_id => {
 						let form = new FormData();
 						form.append("h", "entry");
 						if (current_title != undefined) {
