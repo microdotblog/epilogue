@@ -5,6 +5,7 @@ import FastImage from "react-native-fast-image";
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
+import { Icon } from "./Icon";
 
 export function GoalsScreen({ navigation }) {
 	const styles = useEpilogueStyle();
@@ -76,6 +77,14 @@ export function GoalsScreen({ navigation }) {
 
 	return (
 		<View style={styles.goalsContainer}>
+			<View style={{ backgroundColor: "#EFEFEF", borderBottomWidth: 0.5,
+			borderBottomColor: "#d6d6d6", paddingLeft: 20, paddingTop: 15, paddingRight: 20, paddingBottom: 15 }}>
+				<Text style={{  }}>You finished X books in 2022. Start a new blog post linking to all of them.</Text>
+				<Pressable onPress={() => {  }} style={{ marginTop: 14, marginBottom: 5, width: 200, padding: 10, backgroundColor: "#DEDEDE", borderRadius: 5, flexDirection: "row"  }}>
+					<Icon name="publish" size={18} color={"#000"} style={{ marginRight: 5, paddingTop: 0, marginTop: 0, paddingBottom: 0, marginBottom: 0 }} />
+					<Text>Year in books for 2022</Text>
+				</Pressable>
+			</View>
 			<FlatList
 				data = {goals}
 				renderItem = { ({item}) => 
