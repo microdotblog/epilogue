@@ -55,9 +55,8 @@ export class Book {
 					var cover_url = "";
 					if (book_item.volumeInfo.imageLinks != undefined) {
 						cover_url = book_item.volumeInfo.imageLinks.smallThumbnail;
-						if (cover_url.includes("http://")) {
-							cover_url = cover_url.replace("http://", "https://");
-						}					
+						cover_url = cover_url.replace("http://", "https://");
+						cover_url = cover_url.replace("&edge=curl", "");
 					}
 		
 					let isbns = book_item.volumeInfo.industryIdentifiers;
