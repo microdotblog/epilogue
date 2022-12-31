@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform } from 'react-native';
+import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, useColorScheme } from 'react-native';
 import FastImage from "react-native-fast-image";
 
 import { keys } from "./Constants";
@@ -9,6 +9,7 @@ import { Icon } from "./Icon";
 
 export function GoalsScreen({ navigation }) {
 	const styles = useEpilogueStyle();
+	const is_dark = (useColorScheme() == "dark");
 	const [ goals, setGoals ] = useState([]);
 	const [ bannerYear, setBannerYear ] = useState();
 	const [ bannerCount, setBannerCount ] = useState();
@@ -131,8 +132,8 @@ export function GoalsScreen({ navigation }) {
 				<View style={styles.goalsBanner}>
 					<Text style={styles.goalsBannerText}>You finished {bannerCount} books in {bannerYear}. Start a new blog post linking to all of them.</Text>
 					<Pressable onPress={() => { navigation.navigate("Post", params); }} style={styles.goalsBannerButton}>
-						<Icon name="publish" size={18} color={"#000"} style={styles.goalsBannerIcon} />
-						<Text>Year in books for {bannerYear}</Text>
+						<Icon name="publish" size={18} color={is_dark ? "#FFFFFF" : "#337AB7"} style={styles.goalsBannerIcon} />
+						<Text style={styles.goalsBannerButtonTitle}>Year in books for {bannerYear}</Text>
 					</Pressable>
 				</View>			
 			)

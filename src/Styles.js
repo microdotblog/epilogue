@@ -665,5 +665,18 @@ export const dark = StyleSheet.create({
 		color: "#E5E7EB",
 		backgroundColor: "#000000",
 		borderBottomColor: "#444444"
+	},
+	goalsBanner: {
+		backgroundColor: "#212936",
+		borderBottomColor: "#444444"
+	},
+	goalsBannerText: {
+		color: "#FFFFFF"
+	},
+	goalsBannerButton: {
+		backgroundColor: "#141723"
+	},
+	goalsBannerButtonTitle: {
+		color: "#FFFFFF"		
 	}
 });
