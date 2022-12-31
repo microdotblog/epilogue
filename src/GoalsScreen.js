@@ -118,7 +118,7 @@ export function GoalsScreen({ navigation }) {
 	}
 
 	const BannerView = ({ year, count }) => {
-		if (year == undefined) {
+		if ((year == undefined) || (count == 0)) {
 			return (
 				<View />
 			)
