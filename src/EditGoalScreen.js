@@ -127,7 +127,6 @@ export function EditGoalScreen({ route, navigation }) {
 				]}>
 					<Text style={styles.editGoalButtonTitle}>Update</Text>
 				</Pressable>
-
 			</View>
 
 			<FlatList

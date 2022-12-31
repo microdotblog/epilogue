@@ -455,6 +455,33 @@ export const light = StyleSheet.create({
 		paddingTop: 6,
 		paddingLeft: 9,
 		paddingRight: 9	
+	},
+	goalsBanner: {
+		backgroundColor: "#EFEFEF",
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6",
+		paddingLeft: 20,
+		paddingTop: 15,
+		paddingRight: 20,
+		paddingBottom: 15
+	},
+	goalsBannerText: {		
+	},
+	goalsBannerButton: {
+		flexDirection: "row",
+		marginTop: 14,
+		marginBottom: 5,
+		width: 200,
+		padding: 10,
+		backgroundColor: "#DEDEDE",
+		borderRadius: 5
+	},
+	goalsBannerIcon: {
+		marginRight: 5,
+		paddingTop: 0,
+		marginTop: 0,
+		paddingBottom: 0,
+		marginBottom: 0
 	}
 });
 
@@ -638,5 +665,18 @@ export const dark = StyleSheet.create({
 		color: "#E5E7EB",
 		backgroundColor: "#000000",
 		borderBottomColor: "#444444"
+	},
+	goalsBanner: {
+		backgroundColor: "#212936",
+		borderBottomColor: "#444444"
+	},
+	goalsBannerText: {
+		color: "#FFFFFF"
+	},
+	goalsBannerButton: {
+		backgroundColor: "#141723"
+	},
+	goalsBannerButtonTitle: {
+		color: "#FFFFFF"		
 	}
 });
