@@ -10,6 +10,9 @@ import { Icon } from "./Icon";
 export function GoalsScreen({ navigation }) {
 	const styles = useEpilogueStyle();
 	const [ goals, setGoals ] = useState([]);
+	const [ bannerYear, setBannerYear ] = useState();
+	const [ bannerCount, setBannerCount ] = useState();
+	const [ bannerBooks, setBannerBooks ] = useState([]);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -19,10 +22,15 @@ export function GoalsScreen({ navigation }) {
 	}, [navigation]);	
 	
 	function onFocus(navigation) {
+		setupPostDraftForBanner();		
 		loadGoals();
 	}
 
-	function loadGoals() {
+	function loadGoals() {		
+		// show banner if goal for previous year
+		let previous_year = new Date().getFullYear() - 1;
+		var has_banner = false;
+		
 		epilogueStorage.get("auth_token").then(auth_token => {
 			var options = {
 				headers: {
@@ -43,8 +51,31 @@ export function GoalsScreen({ navigation }) {
 					};
 					
 					new_goals.push(g);
+					
+					if (g.year == previous_year) {
+						has_banner = true;						
+						var banner_books = [];
+						for (let isbn of g.isbns) {
+							// we don't have all data, just fill in basics
+							banner_books.push({
+								id: isbn,
+								isbn: isbn,
+								title: "",
+								image: "https://cdn.micro.blog/books/" + isbn + "/cover.jpg",
+								author: ""
+							});
+						}
+						
+						setBannerYear(g.year);
+						setBannerCount(g.value);
+						setBannerBooks(banner_books);
+					}
 				}
+				
 				setGoals(new_goals);
+				if (!has_banner) {
+					setBannerYear(undefined);
+				}
 			});
 		});
 	}
@@ -56,6 +87,20 @@ export function GoalsScreen({ navigation }) {
 			year: item.year
 		};
 		navigation.navigate("EditGoal", params);
+	}
+
+	function setupPostDraftForBanner() {
+		if (bannerYear != undefined) {
+			let year = bannerYear;
+			
+			let title = "Year in books for " + year;
+			let s = "Here are the books I finished reading in " + year + ".";
+			let extra = "\n\n{{< bookgoals " + year + " >}}";
+			
+			epilogueStorage.set(keys.currentTitle, title);
+			epilogueStorage.set(keys.currentText, s);
+			epilogueStorage.set(keys.currentTextExtra, extra);
+		}
 	}
 	
 	const ProgressStatus = ({ progress, value }) => {
@@ -71,20 +116,36 @@ export function GoalsScreen({ navigation }) {
 		}
 	}
 
+	const BannerView = ({ year, count }) => {
+		if (year == undefined) {
+			return (
+				<View />
+			)
+		}
+		else {
+			let params = {
+				books: bannerBooks
+			};
+			
+			return (
+				<View style={styles.goalsBanner}>
+					<Text style={styles.goalsBannerText}>You finished {bannerCount} books in {bannerYear}. Start a new blog post linking to all of them.</Text>
+					<Pressable onPress={() => { navigation.navigate("Post", params); }} style={styles.goalsBannerButton}>
+						<Icon name="publish" size={18} color={"#000"} style={styles.goalsBannerIcon} />
+						<Text>Year in books for {bannerYear}</Text>
+					</Pressable>
+				</View>			
+			)
+		}
+	}
+
 	const renderCoverItem =({item}) => (
 		<FastImage style={styles.goalCoverThumbnail} source={{ uri: "https://micro.blog/books/" + item + "/cover.jpg" }} />
 	)
 
 	return (
 		<View style={styles.goalsContainer}>
-			<View style={{ backgroundColor: "#EFEFEF", borderBottomWidth: 0.5,
-			borderBottomColor: "#d6d6d6", paddingLeft: 20, paddingTop: 15, paddingRight: 20, paddingBottom: 15 }}>
-				<Text style={{  }}>You finished X books in 2022. Start a new blog post linking to all of them.</Text>
-				<Pressable onPress={() => {  }} style={{ marginTop: 14, marginBottom: 5, width: 200, padding: 10, backgroundColor: "#DEDEDE", borderRadius: 5, flexDirection: "row"  }}>
-					<Icon name="publish" size={18} color={"#000"} style={{ marginRight: 5, paddingTop: 0, marginTop: 0, paddingBottom: 0, marginBottom: 0 }} />
-					<Text>Year in books for 2022</Text>
-				</Pressable>
-			</View>
+			<BannerView year={bannerYear} count={bannerCount} />
 			<FlatList
 				data = {goals}
 				renderItem = { ({item}) => 
