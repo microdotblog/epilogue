@@ -70,6 +70,7 @@ export function GoalsScreen({ navigation }) {
 						setBannerYear(g.year);
 						setBannerCount(g.value);
 						setBannerBooks(banner_books);
+						setupPostDraftForBanner();
 					}
 				}
 				
