@@ -70,7 +70,7 @@ export function GoalsScreen({ navigation }) {
 						setBannerYear(g.year);
 						setBannerCount(g.progress);
 						setBannerBooks(banner_books);
-						setupPostDraftForBanner();
+						setupPostDraftForYear(g.year);
 					}
 				}
 				
@@ -93,16 +93,18 @@ export function GoalsScreen({ navigation }) {
 
 	function setupPostDraftForBanner() {
 		if (bannerYear != undefined) {
-			let year = bannerYear;
-			
-			let title = "Year in books for " + year;
-			let s = "Here are the books I finished reading in " + year + ".";
-			let extra = "\n\n{{< bookgoals " + year + " >}}";
-			
-			epilogueStorage.set(keys.currentTitle, title);
-			epilogueStorage.set(keys.currentText, s);
-			epilogueStorage.set(keys.currentTextExtra, extra);
+			setupPostDraftForYear(bannerYear);
 		}
+	}
+
+	function setupPostDraftForYear(year) {
+		let title = "Year in books for " + year;
+		let s = "Here are the books I finished reading in " + year + ".";
+		let extra = "\n\n{{< bookgoals " + year + " >}}";
+		
+		epilogueStorage.set(keys.currentTitle, title);
+		epilogueStorage.set(keys.currentText, s);
+		epilogueStorage.set(keys.currentTextExtra, extra);
 	}
 	
 	const ProgressStatus = ({ progress, value }) => {
