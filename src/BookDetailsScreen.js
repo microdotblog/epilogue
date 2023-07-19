@@ -156,15 +156,19 @@ export function BookDetailsScreen({ route, navigation }) {
 					<ActivityIndicator style={styles.BookDetailsProgress} size="small" animating={progressAnimating} />
 				</View>
 				{
-					bookshelves.map((shelf) => (
-						<Pressable key={shelf.id} onPress={() => { addToBookshelf(shelf.id); }} style={({ pressed }) => [
-							styles.bookDetailsButton,
-							(pressed ? styles.bookDetailsButtonPressed : styles.bookDetailsButton)
-						]}>
-							<Text style={styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
-							<Text style={styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
-						</Pressable>
-					))
+					bookshelves.map((shelf) => {
+						if (shelf.type != "loans" && shelf.type != "holds") {
+							return (
+								<Pressable key={shelf.id} onPress={() => { addToBookshelf(shelf.id); }} style={({ pressed }) => [
+									styles.bookDetailsButton,
+									(pressed ? styles.bookDetailsButtonPressed : styles.bookDetailsButton)
+								]}>
+									<Text style={styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
+									<Text style={styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
+								</Pressable>
+							)
+						}
+					})
 				}
 				</View>
 				<View style={

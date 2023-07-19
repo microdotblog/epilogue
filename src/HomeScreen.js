@@ -263,7 +263,8 @@ export function HomeScreen({ navigation }) {
 					new_items.push({
 						id: item.id.toString(),
 						title: item.title,
-						books_count: s
+						books_count: s,
+						type: item._microblog.type
 					});
 				}
 				
