@@ -47,10 +47,13 @@ export function DiscoverScreen({ navigation }) {
 			if (Platform.OS === "ios") {
 				var shelf_items = [];
 				for (var item of bookshelves) {
-					shelf_items.push({
-						id: item.id,
-						title: item.title
-					});
+					if (item.type != "loans" && item.type != "holds") {
+						shelf_items.push({
+							id: item.id,
+							title: item.title
+						});
+					}
+					
 				}
 
 				root_items = [
@@ -76,10 +79,12 @@ export function DiscoverScreen({ navigation }) {
 				]
 				
 				for (var item of bookshelves) {
-					root_items.push({
-						id: item.id,
-						title: item.title
-					});
+					if (item.type != "loans" && item.type != "holds") {
+						root_items.push({
+							id: item.id,
+							title: item.title
+						});
+					}
 				}				
 			}
 			
@@ -100,7 +105,7 @@ export function DiscoverScreen({ navigation }) {
 		
 		setTimeout(() => {
 			setRefreshing(false)
-		}, 1000)
+		}, 750)
 	}, [])
 	
 	function bestColumnsForWidth(width) {
