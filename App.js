@@ -140,6 +140,11 @@ const App: () => Node = () => {
         <Stack.Group>
           <Stack.Screen name="Username" component={CreateAccountScreen} options={({navigation, route}) => ({
             title: "Username",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+              </Pressable>
+            ),
           })}/>
         </Stack.Group>
   		</Stack.Navigator>

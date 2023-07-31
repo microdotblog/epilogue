@@ -220,7 +220,7 @@ export const light = StyleSheet.create({
 		flex: 1,
 		flexDirection: "column",
 		padding: 0,
-		backgroundColor: "white"
+		backgroundColor: "#EFEFEF"
 	},
 	signInContent: {
 		padding: 20	
@@ -231,7 +231,9 @@ export const light = StyleSheet.create({
 		paddingRight: 20,
 		paddingTop: 20,
 		paddingBottom: 20,
-		backgroundColor: "#EFEFEF"
+		backgroundColor: "#FFF",
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6"
 	},
 	signInTextHeader: {
 		flex: 1,
@@ -251,9 +253,10 @@ export const light = StyleSheet.create({
 	signInInput: {
 		borderStyle: 'solid',
 		borderColor: "rgba(0, 0, 0, 0.20)",
-		borderWidth: 1,
+		borderWidth: 0.5,
 		borderRadius: 4,
 		padding: 10,
+		backgroundColor: "#FFF"
 	},
 	signInLink: {
 		color: "#337AB7",
@@ -507,14 +510,15 @@ export const light = StyleSheet.create({
 		flex: 1,
 		flexDirection: "column",
 		padding: 20,
-		backgroundColor: "white"
+		backgroundColor: "#EFEFEF"
 	},
 	signUpInput: {
 		borderStyle: 'solid',
-		borderColor: "rgba(0, 0, 0, 0.20)",
-		borderWidth: 1,
+		borderColor: "rgba(0, 0, 0, 0.1)",
+		borderWidth: 0.5,
 		borderRadius: 4,
 		padding: 10,
+		backgroundColor: "#FFF"
 	},
 	signUpDescription: {
 		fontSize: 14,
@@ -608,10 +612,11 @@ export const dark = StyleSheet.create({
 		color: "#FFFFFF"
 	},
 	signIn: {
-		backgroundColor: "#000000"
+		backgroundColor: "#141723"
 	},
 	signInHeader: {
-		backgroundColor: "#141723"
+		backgroundColor: "#000",
+		borderBottomColor: "#444444"
 	},
 	signInText: {
 		color: "#E5E7EB"
@@ -620,8 +625,9 @@ export const dark = StyleSheet.create({
 		color: "#E5E7EB"
 	},
 	signInInput: {
-		borderColor: "rgba(255, 255, 255, 0.20)",
-		color: "#FFF"
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		color: "#FFF",
+		backgroundColor: "#000"
 	},
 	signInWithAppleIntro: {
 		color: "#FFF"
@@ -720,5 +726,18 @@ export const dark = StyleSheet.create({
 	},
 	goalsBannerButtonTitle: {
 		color: "#FFFFFF"		
+	},
+	signUp: {
+		backgroundColor: "#141723"		
+	},
+	signUpText: {
+		color: "#FFF"	
+	},
+	signUpDescription: {
+		color: "#FFF"	
+	},
+	signUpInput: {
+		backgroundColor: "#000",
+		color: "#FFF"
 	}
 });
