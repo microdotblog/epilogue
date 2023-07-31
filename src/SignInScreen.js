@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput, Pressable, Text, View, Image, Alert, useColorScheme } from "react-native";
+import { TextInput, Pressable, Text, View, Image, Alert, Linking, useColorScheme } from "react-native";
 import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
 import { keys } from "./Constants";
@@ -22,8 +22,7 @@ export function SignInScreen({ navigation }) {
 			  </Pressable>
 			),
 		});
-	}, [navigation, email, emailSent]);
-	
+	}, [navigation, email, emailSent]);	
 	
 	React.useEffect(() => {
 		return appleAuth.onCredentialRevoked(async () => {
@@ -69,8 +68,9 @@ export function SignInScreen({ navigation }) {
 				}
 				else {
 					// user already has an account
-					// data.token
-					Alert.alert("Signed in " + data.token);
+					epilogueStorage.set(keys.authToken, data.token).then(() => {
+						Linking.openURL("epilogue://signin/" + data.token);
+					});
 				}
 			});
 		}
