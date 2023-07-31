@@ -487,6 +487,26 @@ export const light = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 15,
+	},
+	signUpText: {
+		fontSize: 16,
+		marginBottom: 20,
+	},
+	signUp: {
+		flex: 1,
+		flexDirection: "column",
+		padding: 20,
+		backgroundColor: "white"
+	},
+	signUpInput: {
+		borderStyle: 'solid',
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderWidth: 1,
+		borderRadius: 4,
+		padding: 10,
+	},
+	signUpDescription: {
+		fontSize: 14,
 	}
 });
 
