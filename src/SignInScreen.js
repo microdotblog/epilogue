@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput, Pressable, Text, View, Image } from "react-native";
+import { TextInput, Pressable, Text, View, Image, useColorScheme } from "react-native";
 import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
 import { keys } from "./Constants";
@@ -7,7 +7,8 @@ import { useEpilogueStyle } from './hooks/useEpilogueStyle';
 import epilogueStorage from "./Storage";
 
 export function SignInScreen({ navigation }) {
-	const styles = useEpilogueStyle()
+	const styles = useEpilogueStyle();
+	const is_dark = (useColorScheme() == "dark");
 	const [ email, setEmail ] = useState();
 	const [ emailSent, setEmailSent ] = useState(false);
 
@@ -24,7 +25,7 @@ export function SignInScreen({ navigation }) {
 	
 	async function onAppleButtonPress() {
 		console.log("Apple button pressed\n");
-		// https://github.com/invertase/react-native-apple-authentication
+		//
 	}
 	
 	function onSendEmail() {
@@ -70,9 +71,11 @@ export function SignInScreen({ navigation }) {
 			
 				<View style={styles.signInWithAppleButton}>
 					<AppleButton 
-						buttonStyle={AppleButton.Style.BLACK}
+						buttonStyle={
+							is_dark ? AppleButton.Style.WHITE : AppleButton.Style.BLACK
+						}
 						buttonType={AppleButton.Type.SIGN_IN}
-						style={ {width: 200, height: 45 }} // Required
+						style={ {width: 240, height: 45 }} // Required
 						onPress={() => onAppleButtonPress() }
 					/>
 				</View>
