@@ -9,6 +9,7 @@ import epilogueStorage from "./Storage";
 export function SignInScreen({ navigation }) {
 	const styles = useEpilogueStyle();
 	const is_dark = (useColorScheme() == "dark");
+	
 	const [ email, setEmail ] = useState();
 	const [ emailSent, setEmailSent ] = useState(false);
 
@@ -23,9 +24,27 @@ export function SignInScreen({ navigation }) {
 		});
 	}, [navigation, email, emailSent]);
 	
+	
+	React.useEffect(() => {
+		return appleAuth.onCredentialRevoked(async () => {
+			console.warn("Credentials revoked");
+		});
+	}, []);
+	
 	async function onAppleButtonPress() {
-		console.log("Apple button pressed\n");
-		//
+		console.log("Apple button pressed");
+		
+		const appleAuthRequestResponse = await appleAuth.performRequest({
+			requestedOperation: appleAuth.Operation.LOGIN,
+			requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL]
+		});
+		
+		const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user);
+		
+		if (credentialState === appleAuth.State.AUTHORIZED) {
+			// authorized
+			console.log("Signed in with Apple");
+		}
 	}
 	
 	function onSendEmail() {
