@@ -98,13 +98,6 @@ export function SignInScreen({ navigation }) {
 						onPress={() => onAppleButtonPress() }
 					/>
 				</View>
-				
-				<Button
-					onPress={() => {
-						navigation.navigate("Username")
-					}}
-					title="username"
-				/>
 			</View>
 			
 			
