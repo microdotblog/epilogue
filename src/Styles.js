@@ -610,6 +610,9 @@ export const dark = StyleSheet.create({
 	signIn: {
 		backgroundColor: "#000000"
 	},
+	signInHeader: {
+		backgroundColor: "#141723"
+	},
 	signInText: {
 		color: "#E5E7EB"
 	},
@@ -620,7 +623,10 @@ export const dark = StyleSheet.create({
 		borderColor: "rgba(255, 255, 255, 0.20)",
 		color: "#FFF"
 	},
-	profilePane: {
+	signInWithAppleIntro: {
+		color: "#FFF"
+	},
+	profilePane: {		
 		borderBottomColor: "#444444"
 	},
 	profileUsername: {

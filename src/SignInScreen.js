@@ -136,18 +136,17 @@ export function SignInScreen({ navigation }) {
 			
 		) : (
 			<View style={styles.signIn}>
-				<View style={styles.signInHeader}>
-					<Image style={styles.signInImage} source={require("../images/welcome-logo.png")} />
+				<View style={styles.signInContent}>
+					<Text style={styles.signInText}>
+						We sent an email to: <Text style={{ fontWeight: "600" }}>{email}</Text>
+					</Text>
+					<Text style={styles.signInText}>
+						Check your email on this device for a link to finish signing in.
+					</Text>
+					<Pressable onPress={() => { setEmailSent(false); setEmail(undefined); }}>
+						<Text style={styles.signInLink}>Try a different email</Text>
+					</Pressable>
 				</View>
-				<Text style={styles.signInText}>
-					We sent an email to: <Text style={{ fontWeight: "600" }}>{email}</Text>
-				</Text>
-				<Text style={styles.signInText}>
-					Check your email on this device for a link to finish signing in.
-				</Text>
-				<Pressable onPress={() => { setEmailSent(false); setEmail(undefined); }}>
-					<Text style={styles.signInLink}>Try a different email</Text>
-				</Pressable>
 			</View>
 		)
 	);
