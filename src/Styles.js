@@ -219,16 +219,23 @@ export const light = StyleSheet.create({
 	signIn: {
 		flex: 1,
 		flexDirection: "column",
-		padding: 20,
+		padding: 0,
 		backgroundColor: "white"
+	},
+	signInContent: {
+		padding: 20	
 	},
 	signInHeader: {
 		flexDirection: "row",
-		marginBottom: 20,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 20,
+		paddingBottom: 20,
+		backgroundColor: "#EFEFEF"
 	},
 	signInTextHeader: {
 		flex: 1,
-		fontSize: 16,
+		fontSize: 15
 	},
 	signInImage: {
 		width: 50,
@@ -482,6 +489,10 @@ export const light = StyleSheet.create({
 		marginTop: 0,
 		paddingBottom: 0,
 		marginBottom: 0
+	},
+	signInWithAppleIntro: {
+		paddingTop: 20,
+		fontSize: 15
 	},
 	signInWithAppleButton: {
 		justifyContent: "center",

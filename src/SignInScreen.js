@@ -111,21 +111,25 @@ export function SignInScreen({ navigation }) {
 						Epilogue is a companion app for Micro.blog. It uses Micro.blog’s bookshelves to help you track which books you are reading or want to read. You can blog directly from Epilogue.
 					</Text>
 				</View>
-				<Text style={[styles.signInText, { fontWeight: "500" }]}>
-					Enter your Micro.blog account email address and you'll receive a link to sign in:
-				</Text>
-				<TextInput style={styles.signInInput} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="email@email.com" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
-			
-			
-				<View style={styles.signInWithAppleButton}>
-					<AppleButton 
-						buttonStyle={
-							is_dark ? AppleButton.Style.WHITE : AppleButton.Style.BLACK
-						}
-						buttonType={AppleButton.Type.SIGN_IN}
-						style={ {width: 240, height: 45 }} // Required
-						onPress={() => onAppleButtonPress() }
-					/>
+				
+				<View style={styles.signInContent}>
+					<Text style={[styles.signInText, { fontWeight: "500" }]}>
+						Enter your Micro.blog account email address and you'll receive a link to sign in:
+					</Text>
+					<TextInput style={styles.signInInput} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="email@email.com" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
+				
+					<Text style={styles.signInWithAppleIntro}>Don't have an account? Sign in with your Apple ID:</Text>
+							
+					<View style={styles.signInWithAppleButton}>
+						<AppleButton 
+							buttonStyle={
+								is_dark ? AppleButton.Style.WHITE : AppleButton.Style.BLACK
+							}
+							buttonType={AppleButton.Type.SIGN_IN}
+							style={{ width: 200, height: 40 }} // Required
+							onPress={() => onAppleButtonPress() }
+						/>
+					</View>
 				</View>
 			</View>
 			
