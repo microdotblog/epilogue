@@ -241,7 +241,7 @@ export const light = StyleSheet.create({
 		width: 50,
 		height: 50,
 		marginTop: 15,
-		marginLeft: 5,
+		marginLeft: 0,
 		marginRight: 15,
 	},
 	signInText: {
