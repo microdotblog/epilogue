@@ -37,8 +37,11 @@ export function CreateAccountScreen({ navigation }) {
 			fetch("https://micro.blog/account/apple", options).then(response => response.json()).then(data => {
 				if (data.error != undefined) {
 					console.warn(data.error);
-				} else {
-					console.log("good");
+				}
+				else {
+					epilogueStorage.set(keys.authToken, data.token).then(() => {
+						Linking.openURL("epilogue://signin/" + data.token);
+					});
 				}
 			});
 		}
