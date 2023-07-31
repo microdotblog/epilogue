@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput, Pressable, Text, View, Image, useColorScheme } from "react-native";
+import { TextInput, Pressable, Text, View, Image, Alert, useColorScheme } from "react-native";
 import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
 import { keys } from "./Constants";
@@ -32,8 +32,6 @@ export function SignInScreen({ navigation }) {
 	}, []);
 	
 	async function onAppleButtonPress() {
-		console.log("Apple button pressed");
-		
 		const appleAuthRequestResponse = await appleAuth.performRequest({
 			requestedOperation: appleAuth.Operation.LOGIN,
 			requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL]
@@ -43,7 +41,38 @@ export function SignInScreen({ navigation }) {
 		
 		if (credentialState === appleAuth.State.AUTHORIZED) {
 			// authorized
-			console.log("Signed in with Apple");
+			const user_id = appleAuthRequestResponse.user;
+			const identity_token = appleAuthRequestResponse.identityToken;
+			const email = appleAuthRequestResponse.email;
+			const full_name = appleAuthRequestResponse.fullName.givenName + " " + appleAuthRequestResponse.fullName.familyName;
+
+			let form = new FormData();
+			form.append("user_id", user_id);
+			form.append("identity_token", identity_token);
+			form.append("email", email);
+			form.append("full_name", full_name);
+			
+			var options = {
+				method: "POST",
+				body: form
+			};
+			
+			fetch("https://micro.blog/account/apple", options).then(response => response.json()).then(data => {
+				console.log("data:", data);
+				if (data.error != undefined) {
+					// error signing in
+					Alert.alert(data.error);
+				}
+				else if (data.username.length == 0) {
+					// created an account, now pick a username
+					navigation.navitate("Username");
+				}
+				else {
+					// user already has an account
+					// data.token
+					Alert.alert("Signed in " + data.token);
+				}
+			});
 		}
 	}
 	
