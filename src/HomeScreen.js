@@ -500,9 +500,9 @@ export function HomeScreen({ navigation }) {
 		
 		render() {
 			return (
-				<Swipeable renderRightActions={this.renderRightActions} ref={collectRowRefs}>
+				<View renderRightActions={this.renderRightActions} ref={collectRowRefs}>
 					{this.props.children}
-				</Swipeable>
+				</View>
 			);
 		}
 	}

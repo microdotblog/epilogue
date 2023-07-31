@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TextInput, Pressable, Text, View, Image } from "react-native";
+import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -20,6 +21,11 @@ export function SignInScreen({ navigation }) {
 			),
 		});
 	}, [navigation, email, emailSent]);
+	
+	async function onAppleButtonPress() {
+		console.log("Apple button pressed\n");
+		// https://github.com/invertase/react-native-apple-authentication
+	}
 	
 	function onSendEmail() {
 		if ((email != undefined) && (email.length > 0)) {
@@ -60,7 +66,19 @@ export function SignInScreen({ navigation }) {
 					Enter your Micro.blog account email address and you'll receive a link to sign in:
 				</Text>
 				<TextInput style={styles.signInInput} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="email@email.com" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
+			
+			
+				<View style={styles.signInWithAppleButton}>
+					<AppleButton 
+						buttonStyle={AppleButton.Style.BLACK}
+						buttonType={AppleButton.Type.SIGN_IN}
+						style={ {width: 200, height: 45 }} // Required
+						onPress={() => onAppleButtonPress() }
+					/>
+				</View>
 			</View>
+			
+			
 		) : (
 			<View style={styles.signIn}>
 				<View style={styles.signInHeader}>
