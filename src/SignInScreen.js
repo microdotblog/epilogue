@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput, Pressable, Text, View, Image, useColorScheme } from "react-native";
+import { TextInput, Pressable, Text, View, Image, useColorScheme, Button } from "react-native";
 import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
 import { keys } from "./Constants";
@@ -98,6 +98,13 @@ export function SignInScreen({ navigation }) {
 						onPress={() => onAppleButtonPress() }
 					/>
 				</View>
+				
+				<Button
+					onPress={() => {
+						navigation.navigate("Username")
+					}}
+					title="username"
+				/>
 			</View>
 			
 			

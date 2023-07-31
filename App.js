@@ -20,6 +20,7 @@ import { BlogsScreen } from "./src/BlogsScreen";
 import { ProfileScreen } from "./src/ProfileScreen";
 import { ExternalScreen } from "./src/ExternalScreen";
 import { EditGoalScreen } from "./src/EditGoalScreen";
+import { CreateAccountScreen } from "./src/CreateAccountScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -135,6 +136,11 @@ const App: () => Node = () => {
             title: "Epilogue",
             headerBackVisible: false
           })} />
+        </Stack.Group>
+        <Stack.Group>
+          <Stack.Screen name="Username" component={CreateAccountScreen} options={({navigation, route}) => ({
+            title: "Username",
+          })}/>
         </Stack.Group>
   		</Stack.Navigator>
   	</NavigationContainer>
