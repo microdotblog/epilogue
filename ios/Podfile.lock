@@ -293,7 +293,7 @@ PODS:
   - React-jsinspector (0.69.5)
   - React-logger (0.69.5):
     - glog
-  - react-native-context-menu-view (1.10.0):
+  - react-native-context-menu-view (1.8.0):
     - React
   - react-native-cookies (6.2.1):
     - React-Core
@@ -371,19 +371,19 @@ PODS:
     - React-perflogger (= 0.69.5)
   - RNAppleAuthentication (2.2.2):
     - React-Core
-  - RNCAsyncStorage (1.19.1):
+  - RNCAsyncStorage (1.17.11):
     - React-Core
-  - RNCClipboard (1.11.2):
+  - RNCClipboard (1.11.1):
     - React-Core
   - RNFastImage (8.6.3):
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNGestureHandler (2.12.0):
+  - RNGestureHandler (2.8.0):
     - React-Core
   - RNInAppBrowser (3.7.0):
     - React-Core
-  - RNScreens (3.22.1):
+  - RNScreens (3.18.2):
     - React-Core
     - React-RCTImage
   - RNVectorIcons (9.2.0):
@@ -616,7 +616,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: e42f0b46de293a026c2fb20e524d4fe09f81f575
   React-jsinspector: e385fb7a1440ae3f3b2cd1a139ca5aadaab43c10
   React-logger: 15c734997c06fe9c9b88e528fb7757601e7a56df
-  react-native-context-menu-view: 4cd5ecaabd2cbb420018b3242ca1eef5efa0a629
+  react-native-context-menu-view: b65e4d004d7a8fba336277d6281c57540074bf79
   react-native-cookies: f54fcded06bb0cda05c11d86788020b43528a26c
   react-native-menu: 8e172cfcf0e42e92f028e7781eddf84d430cae24
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
@@ -634,12 +634,12 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: c778439c3c430a5719d027d3c67423b390a221fe
   ReactCommon: ab1003b81be740fecd82509c370a45b1a7dda0c1
   RNAppleAuthentication: 0571c08da8c327ae2afc0261b48b4a515b0286a6
-  RNCAsyncStorage: f47fe18526970a69c34b548883e1aeceb115e3e1
-  RNCClipboard: 3f0451a8100393908bea5c5c5b16f96d45f30bfc
+  RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
+  RNCClipboard: 2834e1c4af68697089cdd455ee4a4cdd198fa7dd
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
-  RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
+  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
-  RNScreens: 50ffe2fa2342eabb2d0afbe19f7c1af286bc7fb3
+  RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
