@@ -13,14 +13,20 @@ export const light = StyleSheet.create({
 	},
 	navbarBookshelf: {
 		flexDirection: "row",
-		marginRight: 20
+		alignItems: "center"
 	},
 	navbarBookshelfIcon: {
 		color: "#337AB7"
 	},
+	navbarBookshelfTriangle: {
+		marginLeft: 5,
+		marginRight: 14
+	},
 	navbarBookshelfTitle: {
 		color: "#337AB7",
-		marginLeft: 8
+		marginLeft: 15,
+		fontSize: 16,
+		fontWeight: "bold"
 	},
 	item: {
 		flexDirection: "row",

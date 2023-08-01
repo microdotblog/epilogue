@@ -290,7 +290,7 @@ export function HomeScreen({ navigation }) {
 
 	function setupBookshelves(navigation, items, currentTitle) {
 		navigation.setOptions({
-			headerRight: () => (
+			headerTitle: () => (
 				<MenuView accessibilityLabel={currentTitle}
 				onPressAction = {({ nativeEvent }) => {
 					let shelf_id = nativeEvent.event;
@@ -308,8 +308,8 @@ export function HomeScreen({ navigation }) {
 				actions = {items}
 				>
 					<View style={styles.navbarBookshelf}>
-						<Icon name="bookshelf" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBookshelfIcon} />
 						<Text style={styles.navbarBookshelfTitle}>{currentTitle}</Text>
+						<Icon name="popup-triangle" color={is_dark ? "#FFFFFF" : "#337AB7"} size={10} style={styles.navbarBookshelfTriangle} />
 					</View>
 				</MenuView>
 			)

@@ -51,14 +51,7 @@ const App: () => Node = () => {
   					title: "",
   					headerLeft: () => (
   						<Image style={styles.profileIcon} source={{ uri: "https://micro.blog/images/blank_avatar.png" }} />
-  					),
-  					headerRight: () => (
-  						<MenuView
-  							actions = {[]}
-  							>
-  							<Text></Text>
-  						</MenuView>
-  					)					
+  					)
   				}} />
   				<Stack.Screen name="Details" component={BookDetailsScreen} options={({ navigation, route }) => ({
   					title: "",
