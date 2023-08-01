@@ -484,12 +484,13 @@ export const light = StyleSheet.create({
 		width: 200,
 		padding: 10,
 		backgroundColor: "#DEDEDE",
-		borderRadius: 5
+		borderRadius: 5,
+		alignItems: "center",
 	},
 	goalsBannerIcon: {
-		marginRight: 5,
+		marginRight: 6,
 		paddingTop: 0,
-		marginTop: 0,
+		marginTop: -1,
 		paddingBottom: 0,
 		marginBottom: 0
 	},

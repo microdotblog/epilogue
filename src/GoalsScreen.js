@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, useColorScheme } from 'react-native';
+import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, useColorScheme, useWindowDimensions } from 'react-native';
 import FastImage from "react-native-fast-image";
 
 import { keys } from "./Constants";
@@ -8,6 +8,7 @@ import epilogueStorage from "./Storage";
 import { Icon } from "./Icon";
 
 export function GoalsScreen({ navigation }) {
+	const windowSize = useWindowDimensions();
 	const styles = useEpilogueStyle();
 	const is_dark = (useColorScheme() == "dark");
 	const [ goals, setGoals ] = useState([]);
@@ -131,10 +132,14 @@ export function GoalsScreen({ navigation }) {
 				books: bannerBooks
 			};
 			
+			// adjust button size based on scale
+			// won't be perfect at larger scales but won't clip
+			var button_width = 190 * windowSize.fontScale;
+			
 			return (
 				<View style={styles.goalsBanner}>
 					<Text style={styles.goalsBannerText}>You finished {bannerCount} books in {bannerYear}. Start a new blog post linking to all of them.</Text>
-					<Pressable onPress={() => { navigation.navigate("Post", params); }} style={styles.goalsBannerButton}>
+					<Pressable onPress={() => { navigation.navigate("Post", params); }} style={[styles.goalsBannerButton, { width: button_width }]}>
 						<Icon name="publish" size={18} color={is_dark ? "#FFFFFF" : "#337AB7"} style={styles.goalsBannerIcon} />
 						<Text style={styles.goalsBannerButtonTitle}>Year in books for {bannerYear}</Text>
 					</Pressable>
