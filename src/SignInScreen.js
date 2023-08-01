@@ -64,7 +64,7 @@ export function SignInScreen({ navigation }) {
 				}
 				else if (data.username.length == 0) {
 					// created an account, now pick a username
-					navigation.navitate("Username");
+					navigation.navigate("Username");
 				}
 				else {
 					// user already has an account
