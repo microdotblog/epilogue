@@ -15,7 +15,9 @@ export const keys = {
 	tokenURL: "token_url",
 	micropubURL: "micropub_url",
 	micropubToken: "micropub_token",
-	lastMicropubToken: "last_micropub"
+	lastMicropubToken: "last_micropub",
+	appleUserID: "apple_user_id",
+	appleIdentityToken: "apple_identity_token"
 };
 
 export const errors = {

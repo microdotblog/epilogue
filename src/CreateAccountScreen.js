@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { View, TextInput, Text, Pressable } from 'react-native';
+import { View, TextInput, Text, Pressable, Alert, Linking } from 'react-native';
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -23,26 +23,32 @@ export function CreateAccountScreen({ navigation }) {
 	}, [navigation, username]);
 	
 	function onSendUsername() {
-		console.log("onSendUsername")
 		if ((username != undefined) && (username.length > 0)) {
-			let form = new FormData();
-			form.append("username", username);
-			form.append("app_name", "Epilogue");
-		
-			var options = {
-				method: "POST",
-				body: form
-			};
-		
-			fetch("https://micro.blog/account/apple", options).then(response => response.json()).then(data => {
-				if (data.error != undefined) {
-					console.warn(data.error);
-				}
-				else {
-					epilogueStorage.set(keys.authToken, data.token).then(() => {
-						Linking.openURL("epilogue://signin/" + data.token);
+			epilogueStorage.get(keys.appleUserID).then(user_id => {
+				epilogueStorage.get(keys.appleIdentityToken).then(identity_token => {
+					// save new username for the account
+					let form = new FormData();
+					form.append("username", username);
+					form.append("user_id", user_id);
+					form.append("identity_token", identity_token);
+					form.append("app_name", "Epilogue");
+					
+					var options = {
+						method: "POST",
+						body: form
+					};
+					
+					fetch("https://micro.blog/account/apple", options).then(response => response.json()).then(data => {
+						if (data.error != undefined) {
+							Alert.alert(data.error);
+						}
+						else {
+							epilogueStorage.set(keys.authToken, data.token).then(() => {
+								Linking.openURL("epilogue://signin/" + data.token);
+							});
+						}
 					});
-				}
+				});
 			});
 		}
 	}

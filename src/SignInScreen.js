@@ -50,6 +50,7 @@ export function SignInScreen({ navigation }) {
 			form.append("identity_token", identity_token);
 			form.append("email", email);
 			form.append("full_name", full_name);
+			form.append("app_name", "Epilogue");
 			
 			var options = {
 				method: "POST",
@@ -64,7 +65,11 @@ export function SignInScreen({ navigation }) {
 				}
 				else if (data.username.length == 0) {
 					// created an account, now pick a username
-					navigation.navigate("Username");
+					epilogueStorage.set(keys.appleUserID, user_id).then(() => {
+						epilogueStorage.set(keys.appleIdentityToken, identity_token).then(() => {
+							navigation.navigate("Username");
+						});
+					});
 				}
 				else {
 					// user already has an account
