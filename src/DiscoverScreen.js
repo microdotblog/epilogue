@@ -41,7 +41,8 @@ export function DiscoverScreen({ navigation }) {
 	})
 	
 	const onFocus = (navigation) =>  {
-		loadBooks()
+		setupProfileIcon();
+		loadBooks();
 		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {			
 			var root_items;
 			if (Platform.OS === "ios") {
@@ -90,6 +91,23 @@ export function DiscoverScreen({ navigation }) {
 			
 			setMenuActions(root_items)
 		});
+	}
+
+	function setupProfileIcon() {
+		epilogueStorage.get(keys.currentUsername).then(username => {
+			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
+			navigation.setOptions({
+				headerLeft: () => (
+					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
+						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
+					</Pressable>
+				)
+			});		
+		});
+	}	
+
+	function onShowProfile() {
+		navigation.navigate("Profile");
 	}
 	
 	async function loadBooks() {

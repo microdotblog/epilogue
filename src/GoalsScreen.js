@@ -25,6 +25,7 @@ export function GoalsScreen({ navigation }) {
 	
 	function onFocus(navigation) {
 		setupPostDraftForBanner();		
+		setupProfileIcon();
 		loadGoals();
 	}
 
@@ -106,6 +107,23 @@ export function GoalsScreen({ navigation }) {
 		epilogueStorage.set(keys.currentTitle, title);
 		epilogueStorage.set(keys.currentText, s);
 		epilogueStorage.set(keys.currentTextExtra, extra);
+	}
+
+	function setupProfileIcon() {
+		epilogueStorage.get(keys.currentUsername).then(username => {
+			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
+			navigation.setOptions({
+				headerLeft: () => (
+					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
+						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
+					</Pressable>
+				)
+			});		
+		});
+	}	
+
+	function onShowProfile() {
+		navigation.navigate("Profile");
 	}
 	
 	const ProgressStatus = ({ progress, value }) => {
