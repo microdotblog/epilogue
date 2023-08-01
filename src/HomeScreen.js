@@ -309,7 +309,7 @@ export function HomeScreen({ navigation }) {
 				>
 					<View style={styles.navbarBookshelf}>
 						<Text style={styles.navbarBookshelfTitle}>{currentTitle}</Text>
-						<Icon name="popup-triangle" color={is_dark ? "#FFFFFF" : "#337AB7"} size={10} style={styles.navbarBookshelfTriangle} />
+						<Icon name="popup-triangle" color={is_dark ? "#FFFFFF" : "#000000"} size={10} style={styles.navbarBookshelfTriangle} />
 					</View>
 				</MenuView>
 			)
