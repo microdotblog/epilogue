@@ -54,7 +54,7 @@ export function CreateAccountScreen({ navigation }) {
 			<TextInput style={styles.signUpInput} value={username} onChangeText={setUsername} returnKeyType="done" placeholder="username" autoCorrect={false} autoFocus={true} autoCapitalize={false} />
 			
 			<Text style={ [styles.signUpText, { paddingTop: 20}] }>Micro.blog will create a new hosted microblog for you to try.</Text>
-			<Text style={ styles.signUpDescription}>Your new microblog includes photo storage, cross-posting to Twitter, a custom domain name, themes, pages, and more. (You can also use Micro.blog for free with an existing blog.)</Text>	
+			<Text style={ styles.signUpDescription}>Your new microblog includes photo storage, cross-posting to other platforms, a custom domain name, themes, pages, and more. (You can also use Micro.blog for free with an existing blog.)</Text>	
 
 		</View>
 	)
