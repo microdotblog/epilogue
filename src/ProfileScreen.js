@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
+import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { keys } from "./Constants";
@@ -11,6 +11,7 @@ export function ProfileScreen({ navigation }) {
 	const styles = useEpilogueStyle()
 	const [ username, setUsername ] = useState("");
 	const [ hostname, setHostname ] = useState("Micro.blog");
+	const [ posts, setPosts ] = useState([]);
 	
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -21,6 +22,7 @@ export function ProfileScreen({ navigation }) {
 	
 	function onFocus(navigation) {
 		setupSignOutButton();
+		loadPosts();
 		
 		epilogueStorage.get(keys.currentUsername).then(current_username => {
 			setUsername(current_username);
@@ -35,6 +37,53 @@ export function ProfileScreen({ navigation }) {
 				let hostname = pieces[2];
 				setHostname(hostname);
 			}
+		});
+	}
+
+	function loadPosts() {
+		epilogueStorage.get(keys.authToken).then(auth_token => {
+			var use_token = auth_token;
+			epilogueStorage.get(keys.micropubToken).then(micropub_token => {
+				if (micropub_token != undefined) {
+					use_token = micropub_token;
+				}
+	
+				var options = {
+					headers: {
+						"Authorization": "Bearer " + use_token
+					}
+				};
+	
+				epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+					var use_url = micropub_url;
+					if (use_url == undefined) {
+						use_url = "https://micro.blog/micropub";
+					}
+					
+					if (use_url.includes("?")) {
+						use_url = use_url + "&q=source";
+					}
+					else {
+						use_url = use_url + "?q=source";
+					}
+					
+					fetch(use_url, options).then(response => response.json()).then(data => {
+						var new_items = [];
+
+						for (let item of data.items) {
+							const text = item.properties.content[0];
+							if (text.includes("micro.blog/books/")) {
+								new_items.push({
+									id: item.properties.uid[0],
+									text: item.properties.content[0]
+								});
+							}
+						}
+
+						setPosts(new_items);
+					});
+				});
+			});
 		});
 	}
 	
@@ -85,6 +134,9 @@ export function ProfileScreen({ navigation }) {
 		});		
 	}
 	
+	function onEditPost(item) {		
+	}
+	
 	return (
 		<View style={styles.container}>
 			<View style={styles.profilePane}>
@@ -97,6 +149,18 @@ export function ProfileScreen({ navigation }) {
 					<Text style={styles.micropubButtonTitle} accessibilityLabel="change posting blog">Change...</Text>
 				</Pressable>
 			</View>
+			<FlatList
+				style={styles.profilePosts}
+				data = {posts}
+				renderItem = { ({item}) => 
+				<Pressable onPress={() => { onEditPost(item) }}>
+					<View style={styles.profilePost}>
+						<Text ellipsizeMode="tail" numberOfLines={3}>{item.text}</Text>
+					</View>
+				</Pressable>
+				}
+				keyExtractor = { item => item.id }
+			/>
 		</View>
 	);
 }

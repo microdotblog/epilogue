@@ -292,17 +292,31 @@ export const light = StyleSheet.create({
 		width: 34,
 		height: 34,
 		borderRadius: 17,
-		marginLeft: 10,
+		marginLeft: 15,
 		backgroundColor: "#DEDEDE"
 	},
 	profileUsername: {
 		marginLeft: 10
 	},
+	profilePosts: {		
+	},
+	profilePost: {
+		paddingTop: 15,
+		paddingBottom: 15,
+		paddingLeft: 15,
+		paddingRight: 15,
+		borderBottomColor: "#DEDEDE",
+		borderBottomWidth: 0.5
+	},
 	micropubPane: {
 		flexDirection: "row",
 		alignItems: "center",
-		marginLeft: 10,
-		marginTop: 12
+		paddingLeft: 15,
+		paddingTop: 15,
+		paddingBottom: 15,
+		borderBottomColor: "#DEDEDE",
+		borderBottomWidth: 0.5,
+		backgroundColor: "#e1e1e1"
 	},
 	micropubButton: {
 		marginLeft: 12,
@@ -311,7 +325,7 @@ export const light = StyleSheet.create({
 		paddingTop: 4,
 		paddingBottom: 4,
 		borderRadius: 5,
-		backgroundColor: "#DEDEDE"
+		backgroundColor: "#c9c9c9"
 	},
 	micropubButtonTitle: {		
 	},
