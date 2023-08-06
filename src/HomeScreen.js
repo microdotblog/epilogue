@@ -181,7 +181,7 @@ export function HomeScreen({ navigation }) {
 						use_url = use_url + "?q=config";
 					}
 					
-					fetch("https://micro.blog/micropub?q=config", options).then(response => response.json()).then(data => {
+					fetch(use_url, options).then(response => response.json()).then(data => {
 						var blog_id = "";
 						var blog_name = "";
 						
