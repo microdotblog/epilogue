@@ -309,7 +309,9 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 0.5
 	},
 	profilePostDate: {
-		color: "#777777"
+		marginTop: 10,
+		color: "#777777",
+		fontSize: 12
 	},
 	profileExtras: {
 		flexGrow: 1,

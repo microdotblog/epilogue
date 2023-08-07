@@ -82,9 +82,11 @@ export function ProfileScreen({ navigation }) {
 								const html = md_parser.makeHtml(markdown);
 								const doc = html_parser.parseFromString(html, "text/html");
 								const text = doc.documentElement.textContent;
+								const date_s = item.properties.published[0].slice(0, 10);
 								new_items.push({
 									id: item.properties.uid[0],
-									text: text
+									text: text,
+									posted_at: date_s
 								});
 							}
 						}
@@ -187,6 +189,7 @@ export function ProfileScreen({ navigation }) {
 				<Pressable onPress={() => { onEditPost(item) }}>
 					<View style={styles.profilePost}>
 						<Text ellipsizeMode="tail" numberOfLines={4}>{item.text}</Text>
+						<Text style={styles.profilePostDate}>{item.posted_at}</Text>
 					</View>
 				</Pressable>
 				}
