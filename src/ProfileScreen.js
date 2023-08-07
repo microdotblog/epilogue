@@ -71,59 +71,65 @@ export function ProfileScreen({ navigation }) {
 				};
 	
 				epilogueStorage.get(keys.micropubURL).then(micropub_url => {
-					var use_url = micropub_url;
-					if (use_url == undefined) {
-						use_url = "https://micro.blog/micropub";
-					}
-					
-					if (use_url.includes("?")) {
-						use_url = use_url + "&q=source&offset=" + offset;
-					}
-					else {
-						use_url = use_url + "?q=source&offset=" + offset;
-					}
-										
-					fetch(use_url, options).then(response => response.json()).then(data => {
-						var new_items = previous_posts;
-						const html_parser = new DOMParser();
-						const md_parser = new showdown.Converter();
-						const num_posts = data.items.length;
+					epilogueStorage.get(keys.currentBlogID).then(blog_id => {
+						var use_url = micropub_url;
+						if (use_url == undefined) {
+							use_url = "https://micro.blog/micropub";
+						}
 						
-						for (let item of data.items) {
-							const markdown = item.properties.content[0];
-							if (markdown.includes("micro.blog/books/")) {
-								const html = md_parser.makeHtml(markdown);
-								const doc = html_parser.parseFromString(html, "text/html");
-								const text = doc.documentElement.textContent;
-								const display_text = text.replace("📚", "");
-								const date_s = item.properties.published[0].slice(0, 10);
-								new_items.push({
-									id: item.properties.uid[0],
-									url: item.properties.url[0],
-									text: text,
-									display_text: display_text,
-									posted_at: date_s
-								});
-							}
-						}
-
-						if (offset == 0) {
-							// if first hit, show recent posts right away
-							setPosts(new_items);
-						}
-
-						if (num_posts == 0) {
-							// got all the posts, refresh list
-							setPosts(new_items);
-							setDownloading(false);
+						if (use_url.includes("?")) {
+							use_url = use_url + "&q=source&offset=" + offset;
 						}
 						else {
-							// keep paging through more posts
-							setTimeout(function() {
-								const new_offset = offset + num_posts;
-								loadPosts(new_offset, new_items);
-							}, 500);
+							use_url = use_url + "?q=source&offset=" + offset;
 						}
+						
+						if ((blog_id != null) && (blog_id.length > 0)) {							
+							use_url = use_url + "&mp-destination=" + encodeURIComponent(blog_id);
+						}
+											
+						fetch(use_url, options).then(response => response.json()).then(data => {
+							var new_items = previous_posts;
+							const html_parser = new DOMParser();
+							const md_parser = new showdown.Converter();
+							const num_posts = data.items.length;
+							
+							for (let item of data.items) {
+								const markdown = item.properties.content[0];
+								if (markdown.includes("micro.blog/books/")) {
+									const html = md_parser.makeHtml(markdown);
+									const doc = html_parser.parseFromString(html, "text/html");
+									const text = doc.documentElement.textContent;
+									const display_text = text.replace("📚", "");
+									const date_s = item.properties.published[0].slice(0, 10);
+									new_items.push({
+										id: item.properties.uid[0],
+										url: item.properties.url[0],
+										text: text,
+										display_text: display_text,
+										posted_at: date_s
+									});
+								}
+							}
+	
+							if (offset == 0) {
+								// if first hit, show recent posts right away
+								setPosts(new_items);
+							}
+	
+							if (num_posts == 0) {
+								// got all the posts, refresh list
+								setPosts(new_items);
+								setDownloading(false);
+							}
+							else {
+								// keep paging through more posts
+								setTimeout(function() {
+									const new_offset = offset + num_posts;
+									loadPosts(new_offset, new_items);
+								}, 500);
+							}
+						});
 					});
 				});
 			});
