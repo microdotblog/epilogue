@@ -164,6 +164,8 @@ export function ProfileScreen({ navigation }) {
 		epilogueStorage.remove(keys.micropubURL);
 		epilogueStorage.remove(keys.micropubToken);
 		epilogueStorage.remove(keys.lastMicropubToken);
+		epilogueStorage.remove(keys.appleUserID);
+		epilogueStorage.remove(keys.appleIdentityToken);
 	}
 
 	function setupSignOutButton() {
@@ -176,7 +178,11 @@ export function ProfileScreen({ navigation }) {
 		});		
 	}
 	
-	function onEditPost(item) {		
+	function onEditPost(item) {
+		const params = {
+			books: []	
+		};
+		navigation.navigate("Post", params);
 	}
 	
 	return (
