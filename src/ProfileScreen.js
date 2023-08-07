@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import type { Node } from "react";
 import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { DOMParser } from "@xmldom/xmldom";
+var showdown  = require("showdown");
 
 import { keys } from "./Constants";
 import { useEpilogueStyle } from './hooks/useEpilogueStyle';
@@ -69,13 +71,18 @@ export function ProfileScreen({ navigation }) {
 					
 					fetch(use_url, options).then(response => response.json()).then(data => {
 						var new_items = [];
+						const html_parser = new DOMParser();
+						const md_parser = new showdown.Converter();
 
 						for (let item of data.items) {
-							const text = item.properties.content[0];
-							if (text.includes("micro.blog/books/")) {
+							const markdown = item.properties.content[0];
+							if (markdown.includes("micro.blog/books/")) {
+								const html = md_parser.makeHtml(markdown);
+								const doc = html_parser.parseFromString(html, "text/html");
+								const text = doc.documentElement.textContent;
 								new_items.push({
 									id: item.properties.uid[0],
-									text: item.properties.content[0]
+									text: text
 								});
 							}
 						}
@@ -155,7 +162,7 @@ export function ProfileScreen({ navigation }) {
 				renderItem = { ({item}) => 
 				<Pressable onPress={() => { onEditPost(item) }}>
 					<View style={styles.profilePost}>
-						<Text ellipsizeMode="tail" numberOfLines={3}>{item.text}</Text>
+						<Text ellipsizeMode="tail" numberOfLines={4}>{item.text}</Text>
 					</View>
 				</Pressable>
 				}
