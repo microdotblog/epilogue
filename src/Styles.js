@@ -301,12 +301,22 @@ export const light = StyleSheet.create({
 	profilePosts: {		
 	},
 	profilePost: {
+		flexDirection: "row",
 		paddingTop: 15,
 		paddingBottom: 15,
 		paddingLeft: 15,
 		paddingRight: 15,
 		borderBottomColor: "#DEDEDE",
 		borderBottomWidth: 0.5
+	},
+	profilePostCover: {
+		width: 50,
+		height: 70
+	},
+	profilePostContent: {
+		flex: 1,
+		marginLeft: 15,
+		marginRight: 10
 	},
 	profilePostDate: {
 		marginTop: 10,

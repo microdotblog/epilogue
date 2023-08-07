@@ -3,6 +3,7 @@ import type { Node } from "react";
 import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList } from "react-native";
 import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
+import FastImage from "react-native-fast-image";
 var showdown  = require("showdown");
 
 import { keys } from "./Constants";
@@ -97,17 +98,34 @@ export function ProfileScreen({ navigation }) {
 							for (let item of data.items) {
 								const markdown = item.properties.content[0];
 								if (markdown.includes("micro.blog/books/")) {
+									// convert from Markdown and parse HTML
 									const html = md_parser.makeHtml(markdown);
 									const doc = html_parser.parseFromString(html, "text/html");
 									const text = doc.documentElement.textContent;
 									const display_text = text.replace("📚", "");
 									const date_s = item.properties.published[0].slice(0, 10);
+									
+									// try to get the book ISBN
+									var isbn = "";
+									var cover_url = "";
+									const a_tag = doc.getElementsByTagName("a")[0];
+									if (a_tag != undefined) {
+										const href = a_tag.getAttribute("href");
+										if (href.includes("micro.blog/books/")) {
+											const pieces = href.split("/");
+											isbn = pieces[pieces.length - 1];
+											cover_url = `https://micro.blog/books/${isbn}/cover.jpg`;
+										}
+									}
+									
 									new_items.push({
 										id: item.properties.uid[0],
 										url: item.properties.url[0],
 										text: text,
 										display_text: display_text,
-										posted_at: date_s
+										posted_at: date_s,
+										isbn: isbn,
+										cover_url: cover_url
 									});
 								}
 							}
@@ -223,8 +241,11 @@ export function ProfileScreen({ navigation }) {
 				renderItem = { ({item}) => 
 				<Pressable onPress={() => { onEditPost(item) }}>
 					<View style={styles.profilePost}>
-						<Text style={styles.profilePostText} ellipsizeMode="tail" numberOfLines={4}>{item.display_text}</Text>
-						<Text style={styles.profilePostDate}>{item.posted_at}</Text>
+						<FastImage style={styles.profilePostCover} source={{ uri: item.cover_url }} />
+						<View style={styles.profilePostContent}>
+							<Text style={styles.profilePostText} ellipsizeMode="tail" numberOfLines={4}>{item.display_text}</Text>
+							<Text style={styles.profilePostDate}>{item.posted_at}</Text>
+						</View>
 					</View>
 				</Pressable>
 				}
