@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Node } from "react";
 import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 var showdown  = require("showdown");
 
@@ -15,14 +15,19 @@ export function ProfileScreen({ navigation }) {
 	const [ hostname, setHostname ] = useState("Micro.blog");
 	const [ posts, setPosts ] = useState([]);
 	const [ isDownloading, setDownloading ] = useState(true);
-	
-	React.useEffect(() => {
-		const unsubscribe = navigation.addListener("focus", () => {
+
+	var isCancelDownload = false;
+
+    useFocusEffect(
+		React.useCallback(() => {
 			onFocus(navigation);
-		});
-		return unsubscribe;
-	}, [navigation]);	
-	
+			
+			return () => {
+				onBlur(navigation);
+			};
+		}, [])
+	);
+		
 	function onFocus(navigation) {
 		setupSignOutButton();
 		loadPosts();
@@ -43,7 +48,15 @@ export function ProfileScreen({ navigation }) {
 		});
 	}
 
+	function onBlur(navigation) {
+		isCancelDownload = true;
+	}
+
 	function loadPosts(offset = 0, previous_posts = []) {
+		if (isCancelDownload) {
+			return;
+		}
+		
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			var use_token = auth_token;
 			epilogueStorage.get(keys.micropubToken).then(micropub_token => {
@@ -92,8 +105,6 @@ export function ProfileScreen({ navigation }) {
 								});
 							}
 						}
-
-						// console.log("got batch results", num_posts);
 
 						if (offset == 0) {
 							// if first hit, show recent posts right away
