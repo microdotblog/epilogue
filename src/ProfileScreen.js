@@ -223,7 +223,7 @@ export function ProfileScreen({ navigation }) {
 				renderItem = { ({item}) => 
 				<Pressable onPress={() => { onEditPost(item) }}>
 					<View style={styles.profilePost}>
-						<Text ellipsizeMode="tail" numberOfLines={4}>{item.display_text}</Text>
+						<Text style={styles.profilePostText} ellipsizeMode="tail" numberOfLines={4}>{item.display_text}</Text>
 						<Text style={styles.profilePostDate}>{item.posted_at}</Text>
 					</View>
 				</Pressable>

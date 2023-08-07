@@ -678,6 +678,16 @@ export const dark = StyleSheet.create({
 	profileUsername: {
 		color: "#E5E7EB"
 	},
+	profilePost: {
+		borderBottomColor: "#444444"
+	},
+	profilePostText: {
+		color: "#FFF"	
+	},
+	micropubPane: {
+		borderBottomColor: "#444444",
+		backgroundColor: "#272f3d"
+	},
 	micropubHostname: {
 		color: "#E5E7EB"
 	},
