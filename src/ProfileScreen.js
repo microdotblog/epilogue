@@ -14,6 +14,7 @@ export function ProfileScreen({ navigation }) {
 	const [ username, setUsername ] = useState("");
 	const [ hostname, setHostname ] = useState("Micro.blog");
 	const [ posts, setPosts ] = useState([]);
+	const [ isDownloading, setDownloading ] = useState(true);
 	
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -88,6 +89,7 @@ export function ProfileScreen({ navigation }) {
 						}
 
 						setPosts(new_items);
+						setDownloading(false);
 					});
 				});
 			});
@@ -155,6 +157,9 @@ export function ProfileScreen({ navigation }) {
 				<Pressable style={styles.micropubButton} onPress={() => { onChangePressed(); }}>
 					<Text style={styles.micropubButtonTitle} accessibilityLabel="change posting blog">Change...</Text>
 				</Pressable>
+				<View style={styles.profileExtras}>
+					<ActivityIndicator style={styles.profileSpinner} animating={isDownloading} hidesWhenStopped={true} />
+				</View>
 			</View>
 			<FlatList
 				style={styles.profilePosts}

@@ -308,6 +308,13 @@ export const light = StyleSheet.create({
 		borderBottomColor: "#DEDEDE",
 		borderBottomWidth: 0.5
 	},
+	profileExtras: {
+		flexGrow: 1,
+		marginRight: 15
+	},
+	profileSpinner: {
+		alignItems: "flex-end"
+	},
 	micropubPane: {
 		flexDirection: "row",
 		alignItems: "center",
