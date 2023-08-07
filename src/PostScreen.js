@@ -203,7 +203,7 @@ export function PostScreen({ route, navigation }) {
 											navigation.goBack();
 										}
 										else {
-											fetch(use_url, options).then(response => response.json()).then(data => {
+											fetch(use_url, options).then(response => {
 												navigation.goBack();
 											});
 										}
