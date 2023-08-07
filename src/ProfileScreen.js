@@ -170,6 +170,7 @@ export function ProfileScreen({ navigation }) {
 				<Image style={styles.profilePhoto} source={{ uri: "https://micro.blog/" + username + "/avatar.jpg" }} />
 				<Text style={styles.profileUsername}>@{username}</Text>
 				<View style={styles.profileExtras}>
+					{ isDownloading && <Text style={styles.profileStatus}>Downloading posts</Text> }
 					<ActivityIndicator style={styles.profileSpinner} animating={isDownloading} hidesWhenStopped={true} />
 				</View>
 			</View>

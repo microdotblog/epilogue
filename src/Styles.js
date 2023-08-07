@@ -308,9 +308,19 @@ export const light = StyleSheet.create({
 		borderBottomColor: "#DEDEDE",
 		borderBottomWidth: 0.5
 	},
+	profilePostDate: {
+		color: "#777777"
+	},
 	profileExtras: {
 		flexGrow: 1,
-		marginRight: 15
+		marginRight: 15,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "flex-end"
+	},
+	profileStatus: {
+		marginRight: 5,
+		color: "#777777"
 	},
 	profileSpinner: {
 		alignItems: "flex-end"
