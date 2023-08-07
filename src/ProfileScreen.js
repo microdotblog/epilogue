@@ -121,7 +121,7 @@ export function ProfileScreen({ navigation }) {
 									new_items.push({
 										id: item.properties.uid[0],
 										url: item.properties.url[0],
-										text: text,
+										text: markdown,
 										display_text: display_text,
 										posted_at: date_s,
 										isbn: isbn,
