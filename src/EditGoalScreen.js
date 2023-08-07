@@ -85,6 +85,7 @@ export function EditGoalScreen({ route, navigation }) {
 		epilogueStorage.set(keys.currentTitle, title);
 		epilogueStorage.set(keys.currentText, s);
 		epilogueStorage.set(keys.currentTextExtra, extra);
+		epilogueStorage.remove(keys.currentPostURL);
 	}
 
 	function onUpdateValue() {

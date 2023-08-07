@@ -16,6 +16,7 @@ export function PostScreen({ route, navigation }) {
 	const [ title, setTitle ] = useState();
 	const [ blogID, setBlogID ] = useState();
 	const [ blogName, setBlogName ] = useState();
+	const [ postURL, setPostURL ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 	const { books } = route.params;
 	const [ bookColumns, setBookColumns ] = useState(bestColumnsForWidth(windowSize.width))
@@ -71,6 +72,16 @@ export function PostScreen({ route, navigation }) {
 			)
 		});		
 	}
+
+	function setupUpdateButton() {
+		navigation.setOptions({
+			headerRight: () => (
+			  <Pressable onPress={() => { onSendPost(); }}>
+				<Text style={styles.navbarSubmit}>Update</Text>
+			  </Pressable>
+			)
+		});		
+	}
 	
 	function setupFields() {
 		epilogueStorage.get(keys.currentText).then(current_text => {
@@ -101,13 +112,13 @@ export function PostScreen({ route, navigation }) {
 		epilogueStorage.get(keys.currentBlogID).then(blog_id => {
 			setBlogID(blog_id);
 		});
-		
-		// setBooks([
-		// 	{
-		// 		id: 123,
-		// 		isbn: "9780553573398"
-		// 	}
-		// ]);
+
+		epilogueStorage.get(keys.currentPostURL).then(post_url => {
+			if (post_url != undefined) {
+				setPostURL(post_url);
+				setupUpdateButton();
+			}
+		});
 	}
 	
 	function onSendPost() {
@@ -117,56 +128,86 @@ export function PostScreen({ route, navigation }) {
 			epilogueStorage.get(keys.currentTitle).then(current_title => {
 				epilogueStorage.get(keys.currentTextExtra).then(current_extra => {
 					epilogueStorage.get(keys.currentBlogID).then(blog_id => {
-						let form = new FormData();
-						form.append("h", "entry");
-						if (current_title != undefined) {
-							form.append("name", current_title);
-						}
-
-						if (current_extra != undefined) {
-							form.append("content", current_text + current_extra);
-						}
-						else {
-							form.append("content", current_text);
-						}
-
-						if (blog_id.length > 0) {
-							form.append("mp-destination", blog_id);
-						}
-										
-						epilogueStorage.get("auth_token").then(auth_token => {
-							var use_token = auth_token;
-							epilogueStorage.get(keys.micropubToken).then(micropub_token => {
-								if (micropub_token != undefined) {
-									use_token = micropub_token;
-								}
-								
-								var options = {
-									method: "POST",
-									body: form,
-									headers: {
-										"Authorization": "Bearer " + use_token
-									}
-								};
+						epilogueStorage.get(keys.currentPostURL).then(post_url => {
+							var options = {};
 							
-								// setProgressAnimating(true);
-							
-								epilogueStorage.get(keys.micropubURL).then(micropub_url => {
-									var use_url = micropub_url;
-									if (use_url == undefined) {
-										use_url = "https://micro.blog/micropub";
+							epilogueStorage.get("auth_token").then(auth_token => {
+								var use_token = auth_token;
+								epilogueStorage.get(keys.micropubToken).then(micropub_token => {
+									if (micropub_token != undefined) {
+										use_token = micropub_token;
 									}
+
+									// if we're editing a post, need to send as JSON
+									if (post_url != undefined) {
+										var fields = {
+											action: "update",
+											url: post_url,
+											replace: {
+												content: current_text
+											}
+										};
+
+										if (blog_id.length > 0) {
+											fields["mp-destination"] = blog_id;
+										}
 									
-									if ((current_extra != undefined) && current_extra.includes("{{< bookgoals") && !use_url.includes("https://micro.blog")) {
-										// posting book goals only works with Micro.blog
-										alert("Posting your reading goals is only supported on Micro.blog-hosted blogs.");
-										navigation.goBack();
+										options = {
+											method: "POST",
+											headers: {
+												"Authorization": "Bearer " + use_token,
+												"Content-Type": "application/json"
+											},
+											body: JSON.stringify(fields)
+										};
 									}
 									else {
-										fetch(use_url, options).then(response => response.json()).then(data => {
-											navigation.goBack();
-										});
+										// new posts go as form-encoded
+										let form = new FormData();
+										form.append("h", "entry");							
+										if (current_title != undefined) {
+											form.append("name", current_title);
+										}
+									
+										if (current_extra != undefined) {
+											form.append("content", current_text + current_extra);
+										}
+										else {
+											form.append("content", current_text);
+										}
+									
+										if (blog_id.length > 0) {
+											form.append("mp-destination", blog_id);
+										}
+
+										options = {
+											method: "POST",
+											body: form,
+											headers: {
+												"Authorization": "Bearer " + use_token
+											}
+										};
 									}
+								
+									// setProgressAnimating(true);
+								
+									epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+										var use_url = micropub_url;
+										if (use_url == undefined) {
+											use_url = "https://micro.blog/micropub";
+										}
+										
+										if ((current_extra != undefined) && current_extra.includes("{{< bookgoals") && !use_url.includes("https://micro.blog")) {
+											// posting book goals only works with Micro.blog
+											alert("Posting your reading goals is only supported on Micro.blog-hosted blogs.");
+											navigation.goBack();
+										}
+										else {
+											fetch(use_url, options).then(response => response.json()).then(data => {
+												navigation.goBack();
+											});
+										}
+									});
 								});
 							});
 						});

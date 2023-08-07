@@ -8,6 +8,7 @@ export const keys = {
 	currentTitle: "current_title",
 	currentText: "current_text",
 	currentTextExtra: "current_extra",
+	currentPostURL: "current_post_url",
 	allBookshelves: "bookshelves",
 	meURL: "me_url",
 	authState: "auth_state",

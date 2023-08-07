@@ -82,7 +82,7 @@ export function ProfileScreen({ navigation }) {
 					else {
 						use_url = use_url + "?q=source&offset=" + offset;
 					}
-					
+										
 					fetch(use_url, options).then(response => response.json()).then(data => {
 						var new_items = previous_posts;
 						const html_parser = new DOMParser();
@@ -99,6 +99,7 @@ export function ProfileScreen({ navigation }) {
 								const date_s = item.properties.published[0].slice(0, 10);
 								new_items.push({
 									id: item.properties.uid[0],
+									url: item.properties.url[0],
 									text: text,
 									display_text: display_text,
 									posted_at: date_s
@@ -156,6 +157,8 @@ export function ProfileScreen({ navigation }) {
 		epilogueStorage.remove(keys.currentBlogName);
 		epilogueStorage.remove(keys.currentBookshelf);
 		epilogueStorage.remove(keys.currentSearch);
+		epilogueStorage.remove(keys.currentText);
+		epilogueStorage.remove(keys.currentPostURL);
 		epilogueStorage.remove(keys.allBookshelves);
 		epilogueStorage.remove(keys.meURL);
 		epilogueStorage.remove(keys.authState);
@@ -179,10 +182,17 @@ export function ProfileScreen({ navigation }) {
 	}
 	
 	function onEditPost(item) {
-		const params = {
-			books: []	
-		};
-		navigation.navigate("Post", params);
+		const s = item.text;
+		const url = item.url;
+
+		epilogueStorage.set(keys.currentPostURL, url).then(() => {
+			epilogueStorage.set(keys.currentText, s).then(() => {
+				const params = {
+					books: []
+				};
+				navigation.navigate("Post", params);
+			});
+		});
 	}
 	
 	return (

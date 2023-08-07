@@ -31,6 +31,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		epilogueStorage.set(keys.currentTitle, "");
 		epilogueStorage.set(keys.currentText, s);
 		epilogueStorage.set(keys.currentTextExtra, "");
+		epilogueStorage.remove(keys.currentPostURL);
 
 		var menu_items = [
 			{
