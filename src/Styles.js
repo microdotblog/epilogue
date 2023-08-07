@@ -321,7 +321,7 @@ export const light = StyleSheet.create({
 		paddingLeft: 15,
 		paddingTop: 15,
 		paddingBottom: 15,
-		borderBottomColor: "#DEDEDE",
+		borderBottomColor: "#d6d6d6",
 		borderBottomWidth: 0.5,
 		backgroundColor: "#e1e1e1"
 	},
