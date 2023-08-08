@@ -30,6 +30,7 @@ export function ProfileScreen({ navigation }) {
 	);
 		
 	function onFocus(navigation) {
+		clearDraft();		
 		setupSignOutButton();
 		loadPosts();
 		
@@ -51,6 +52,12 @@ export function ProfileScreen({ navigation }) {
 
 	function onBlur(navigation) {
 		isCancelDownload = true;
+	}
+
+	function clearDraft() {
+		epilogueStorage.set(keys.currentTitle, "");
+		epilogueStorage.set(keys.currentText, "");
+		epilogueStorage.set(keys.currentTextExtra, "");				
 	}
 
 	function loadPosts(offset = 0, previous_posts = []) {
@@ -84,6 +91,8 @@ export function ProfileScreen({ navigation }) {
 						else {
 							use_url = use_url + "?q=source&offset=" + offset;
 						}
+						
+						use_url = use_url + "&filter=" + encodeURIComponent("micro.blog/books/")
 						
 						if ((blog_id != null) && (blog_id.length > 0)) {							
 							use_url = use_url + "&mp-destination=" + encodeURIComponent(blog_id);
