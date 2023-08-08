@@ -474,12 +474,13 @@ export function HomeScreen({ navigation }) {
 			this.bookID = props.book;
 		}
 
-		renderRightActions = (progress, dragX) => {
-			const trans = dragX.interpolate({
-				inputRange: [0, 50, 100, 101],
-				outputRange: [0, 0, 0, 1],
+		renderRightActions = (progress) => {
+			const x = 60;
+			const trans = progress.interpolate({
+				inputRange: [0, 1],
+				outputRange: [x, 0]
 			});
-		
+					
 			return (
 				<RectButton style={styles.removeAction} onPress={() => {
 					removeFromBookshelf(this.bookID);
@@ -500,7 +501,7 @@ export function HomeScreen({ navigation }) {
 		
 		render() {
 			return (
-				<Swipeable renderRightActions={this.renderRightActions} ref={collectRowRefs}>
+				<Swipeable friction={1} overshootFriction={8} renderRightActions={this.renderRightActions} ref={collectRowRefs}>
 					{this.props.children}
 				</Swipeable>
 			);
