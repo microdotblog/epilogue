@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Alert, LogBox, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { Alert, LogBox, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Platform } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
-import "react-native-gesture-handler"
+import "react-native-gesture-handler";
+import changeNavigationBarColor from "react-native-navigation-bar-color";
 
 import { keys } from "./src/Constants";
 import { useEpilogueStyle } from './src/hooks/useEpilogueStyle';
@@ -37,6 +38,10 @@ const App: () => Node = () => {
 
   LogBox.ignoreAllLogs();
   epilogueStorage.remove(keys.currentSearch);
+  
+  if (Platform.OS == "android") {
+    changeNavigationBarColor(is_dark ? "#141723" : "#FFFFFF");
+  }
 
   return (
   	<NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
