@@ -16,6 +16,7 @@ export function ProfileScreen({ navigation }) {
 	const [ hostname, setHostname ] = useState("Micro.blog");
 	const [ posts, setPosts ] = useState([]);
 	const [ isDownloading, setDownloading ] = useState(true);
+	const [ blogName, setBlogName ] = useState();
 
 	var isCancelDownload = false;
 
@@ -30,12 +31,23 @@ export function ProfileScreen({ navigation }) {
 	);
 		
 	function onFocus(navigation) {
+		isCancelDownload = false;
+
 		clearDraft();		
 		setupSignOutButton();
 		loadPosts();
 		
 		epilogueStorage.get(keys.currentUsername).then(current_username => {
 			setUsername(current_username);
+		});
+
+		epilogueStorage.get(keys.currentBlogName).then(blog_name => {
+			if ((blog_name != undefined) && (blog_name.length > 0)) {
+				setBlogName(blog_name);
+			}
+			else {
+				setBlogName("");
+			}
 		});
 
 		epilogueStorage.get(keys.micropubURL).then(micropub_url => {
@@ -214,6 +226,10 @@ export function ProfileScreen({ navigation }) {
 		});		
 	}
 	
+	function onShowBlogs() {
+		navigation.navigate("Blogs");
+	}
+	
 	function onEditPost(item) {
 		const s = item.text;
 		const url = item.url;
@@ -234,8 +250,17 @@ export function ProfileScreen({ navigation }) {
 				<Image style={styles.profilePhoto} source={{ uri: "https://micro.blog/" + username + "/avatar.jpg" }} />
 				<Text style={styles.profileUsername}>@{username}</Text>
 				<View style={styles.profileExtras}>
-					{ isDownloading && <Text style={styles.profileStatus}>Downloading posts</Text> }
-					<ActivityIndicator style={styles.profileSpinner} animating={isDownloading} hidesWhenStopped={true} />
+					{ !isDownloading &&
+						<Pressable onPress={() => { onShowBlogs(); }}>
+							<Text style={styles.profileStatus}>{blogName}</Text>
+						</Pressable>
+					}
+					{ isDownloading && 
+						<Text style={styles.profileStatus}>Downloading posts</Text>
+					}
+					{ isDownloading &&
+						<ActivityIndicator style={styles.profileSpinner} animating={isDownloading} hidesWhenStopped={true} />						
+					}
 				</View>
 			</View>
 			<View style={styles.micropubPane}>
