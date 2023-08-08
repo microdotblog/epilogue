@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput, Pressable, Text, View, Image, Alert, Linking, useColorScheme } from "react-native";
+import { TextInput, Pressable, Text, View, Image, Alert, Linking, Platform, useColorScheme } from "react-native";
 import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
 import { keys } from "./Constants";
@@ -26,11 +26,13 @@ export function SignInScreen({ navigation }) {
 		});
 	}, [navigation, email, emailSent]);	
 	
-	React.useEffect(() => {
-		return appleAuth.onCredentialRevoked(async () => {
-			console.warn("Credentials revoked");
-		});
-	}, []);
+	if (Platform.OS == "ios") {
+		React.useEffect(() => {
+			return appleAuth.onCredentialRevoked(async () => {
+				console.warn("Credentials revoked");
+			});
+		}, []);
+	}
 	
 	async function onAppleButtonPress() {
 		const appleAuthRequestResponse = await appleAuth.performRequest({
@@ -125,18 +127,21 @@ export function SignInScreen({ navigation }) {
 					</Text>
 					<TextInput style={styles.signInInput} value={email} onChangeText={setEmail} onEndEditing={onSendEmail} returnKeyType="done" placeholder="email@email.com" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
 				
-					<Text style={styles.signInWithAppleIntro}>Don't have an account? Sign in with your Apple ID:</Text>
-							
-					<View style={styles.signInWithAppleButton}>
-						<AppleButton 
-							buttonStyle={
-								is_dark ? AppleButton.Style.WHITE : AppleButton.Style.BLACK
-							}
-							buttonType={AppleButton.Type.SIGN_IN}
-							style={{ width: 200, height: 40 }} // Required
-							onPress={() => onAppleButtonPress() }
-						/>
-					</View>
+					{ Platform.OS == "ios" &&
+						<Text style={styles.signInWithAppleIntro}>Don't have an account? Sign in with your Apple ID:</Text>
+					}
+					{ Platform.OS == "ios" &&
+						<View style={styles.signInWithAppleButton}>
+							<AppleButton 
+								buttonStyle={
+									is_dark ? AppleButton.Style.WHITE : AppleButton.Style.BLACK
+								}
+								buttonType={AppleButton.Type.SIGN_IN}
+								style={{ width: 200, height: 40 }} // Required
+								onPress={() => onAppleButtonPress() }
+							/>
+						</View>
+					}
 				</View>
 			</View>
 			
