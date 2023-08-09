@@ -24,7 +24,7 @@ export const light = StyleSheet.create({
 	},
 	navbarBookshelfTitle: {
 		color: "#000",
-		marginLeft: 15,
+		marginLeft: 0,
 		fontSize: 16,
 		fontWeight: "bold"
 	},
