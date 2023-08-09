@@ -18,7 +18,8 @@ const IconNames = {
   "bookshelves": { ios: "books.vertical", android: "bookshelf" },
   "discover": { ios: "magnifyingglass", android: "magnify" },
   "goals": { ios: "calendar", android: "calendar" },
-  "popup-triangle": { ios: "chevron.down", android: "chevron-down" }
+  "popup-triangle": { ios: "chevron.down", android: "chevron-down" },
+  "trash": { ios: "trash", android: "trash-can" }  
 }
 
 export const Icon = (props) => {

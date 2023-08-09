@@ -57,6 +57,7 @@ export function HomeScreen({ navigation }) {
 		
 		setupLinking();
 		setupProfileIcon();
+		clearSelection();
 	}
   
   	function setupLinking() {
@@ -67,6 +68,10 @@ export function HomeScreen({ navigation }) {
 		Linking.addEventListener("url", (event) => {
 			loadURL(event.url);
 		});
+	}
+  
+	function clearSelection() {
+		setSelectedRow(0);
 	}
   
 	function loadURL(url) {
@@ -519,7 +524,6 @@ export function HomeScreen({ navigation }) {
 					<Pressable onPress={() => {
 						onShowBookPressed(item);
 					}} onLongPress={() => {
-						console.log("select row", item.id);
 						setSelectedRow(item.id);
 					}}>
 						<View style={selectedRow == item.id ? styles.selectedItem : styles.item}>
@@ -528,6 +532,13 @@ export function HomeScreen({ navigation }) {
 								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
 								<Text style={styles.bookAuthor}>{item.author}</Text>
 							</View>
+							{ selectedRow == item.id && 
+								<Pressable onPress={() => {
+									removeFromBookshelf(item.id);
+								}} style={styles.itemTrash}>
+									<Icon name="trash" color={is_dark ? "#FFFFFF" : "#000000"} size={25} />
+								</Pressable>
+							}
 						</View>
 					</Pressable>
 				</BookSwipeableRow>
