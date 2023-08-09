@@ -411,6 +411,7 @@ export function DiscoverScreen({ navigation }) {
 						key = "BooksList"
 						renderItem = {renderSearchItem}
 						keyExtractor = { item => item.id }
+						style={styles.discoverResults}
 					/>
 				</View>
 			) : (
@@ -425,6 +426,7 @@ export function DiscoverScreen({ navigation }) {
 							<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
 						}
 						renderItem={renderItem}
+						style={styles.discoverResults}
 					/>
 				</View>
 			)

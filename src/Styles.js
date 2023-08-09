@@ -31,9 +31,21 @@ export const light = StyleSheet.create({
 	item: {
 		flexDirection: "row",
 		height: 90,
-		marginLeft: 20,
-		marginRight: 20,
-		paddingBottom: 10
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 5,
+		paddingBottom: 5,
+		marginBottom: 5
+	},
+	selectedItem: {
+		flexDirection: "row",
+		height: 90,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 5,
+		paddingBottom: 5,
+		marginBottom: 5,
+		backgroundColor: "gray"
 	},
 	bookItem: {
 		flex: 1
@@ -48,6 +60,7 @@ export const light = StyleSheet.create({
 		color: "#777777"
 	},
 	bookCover: {
+		marginTop: 5,
 		width: 50,
 		height: 70
 	},
@@ -133,7 +146,7 @@ export const light = StyleSheet.create({
 	searchField: {
 		height: 36,
 		marginTop: 1,
-		marginBottom: 15,
+		marginBottom: 5,
 		marginLeft: 20,
 		marginRight: 20,
 		paddingTop: 7,
@@ -159,6 +172,9 @@ export const light = StyleSheet.create({
 		borderColor: "#ced3d8",
 		borderWidth: 0.5,
 		backgroundColor: "#FFFFFF"
+	},
+	discoverResults: {
+		marginTop: 10	
 	},
 	navbarCloseIcon: {
 		marginTop: 3,

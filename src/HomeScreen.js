@@ -20,6 +20,7 @@ export function HomeScreen({ navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
+	const [ selectedRow, setSelectedRow ] = useState();
 	const searchFieldRef = useRef();
 	var bookRowReferences = [];
     
@@ -515,8 +516,13 @@ export function HomeScreen({ navigation }) {
 				data = {books}
 				renderItem = { ({item}) => 
 				<BookSwipeableRow book={item.id}>
-					<Pressable onPress={() => { onShowBookPressed(item) }}>
-						<View style={styles.item}>
+					<Pressable onPress={() => {
+						onShowBookPressed(item);
+					}} onLongPress={() => {
+						console.log("select row", item.id);
+						setSelectedRow(item.id);
+					}}>
+						<View style={selectedRow == item.id ? styles.selectedItem : styles.item}>
 							<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>
 								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
