@@ -10,6 +10,7 @@ import epilogueStorage from "./Storage";
 import { HomeScreen } from "./HomeScreen";
 import { DiscoverScreen } from "./DiscoverScreen";
 import { GoalsScreen } from "./GoalsScreen";
+import { OpenLibraryScreen } from "./screens/OpenLibraryScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -53,6 +54,19 @@ export function TabsScreen({ navigation }) {
 					}
 					else {					
 						return <Icon name="discover" color={"gray"} size={18} />
+					}
+				},
+				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
+				tabBarInactiveTintColor: "gray"
+			}} />
+			<Tab.Screen name="Open Library" component={OpenLibraryScreen} options={{
+				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
+				tabBarIcon: ({ focused, color, size }) => {
+					if (focused) {
+						return <Icon name="openlibrary" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
+					}
+					else {					
+						return <Icon name="openlibrary" color={"gray"} size={18} />
 					}
 				},
 				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",

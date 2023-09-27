@@ -539,8 +539,8 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6",
 		paddingLeft: 20,
-		paddingTop: 15,
 		paddingRight: 20,
+		paddingTop: 15,
 		paddingBottom: 15
 	},
 	goalsBannerText: {		
@@ -591,6 +591,17 @@ export const light = StyleSheet.create({
 	},
 	signUpDescription: {
 		fontSize: 14,
+	},
+	openLibraryBanner: {
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6"
+	},
+	openLibraryIntro: {
+		color: "#000000",
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 5,
+		paddingBottom: 15
 	}
 });
 
@@ -822,4 +833,10 @@ export const dark = StyleSheet.create({
 	selectedItem: {
 		backgroundColor: "#141723"
 	},
+	openLibraryBanner: {
+		borderBottomColor: "#444444"
+	},
+	openLibraryIntro: {
+		color: "#FFFFFF"
+	}
 });
