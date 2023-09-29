@@ -602,6 +602,34 @@ export const light = StyleSheet.create({
 		paddingRight: 20,
 		paddingTop: 5,
 		paddingBottom: 15
+	},
+	openLibrarySignin: {		
+		marginLeft: 20,
+		marginRight: 20,
+		marginTop: 15,
+		marginBottom: 15
+	},
+	openLibraryUsername: {
+		borderStyle: 'solid',
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderWidth: 0.5,
+		borderRadius: 4,
+		padding: 10,
+		backgroundColor: "#FFF",
+		marginBottom: 15
+	},
+	openLibraryPassword: {		
+		borderStyle: 'solid',
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderWidth: 0.5,
+		borderRadius: 4,
+		padding: 10,
+		backgroundColor: "#FFF"
+	},
+	openLibrarySigninSpinner: {
+		flex: 1,
+		alignItems: "flex-start",
+		marginTop: 25
 	}
 });
 
@@ -838,5 +866,15 @@ export const dark = StyleSheet.create({
 	},
 	openLibraryIntro: {
 		color: "#FFFFFF"
-	}
+	},
+	openLibraryUsername: {
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		color: "#FFF",
+		backgroundColor: "#000"
+	},
+	openLibraryPassword: {
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		color: "#FFF",
+		backgroundColor: "#000"
+	}	
 });
