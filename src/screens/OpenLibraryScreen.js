@@ -8,10 +8,11 @@ import epilogueStorage from "../Storage";
 
 export function OpenLibraryScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
-	const [ username, setUsername ] = useState();
-	const [ password, setPassword ] = useState();
+	const [ username, setUsername ] = useState("");
+	const [ password, setPassword ] = useState("");
 	const [ hasSession, setHasSession ] = useState(false);
 	const [ isSigningIn, setIsSigningIn ] = useState(false);
+	const [ sessionToken, setSessionToken ] = useState("");
     const passwordRef = useRef();
 
 	React.useEffect(() => {
@@ -56,22 +57,18 @@ export function OpenLibraryScreen({ route, navigation }) {
 		
 		var options = {
 			method: "POST",
-			body: form,
-			cache: "no-cache",
-			redirect: "manual",
-			credentials: "omit"
+			body: form
 		};
-		fetch("https://openlibrary.org/account/login", options).then(response => {
-			console.log("got response", response.status, response.headers);
-			response.text().then(html => {
-				console.log(html);
-			});
-			if (response.headers.has("Set-Cookie")) {
-				const value = response.headers.get("Set-Cookie");
-				console.log("cookie", value);
-			}
+		fetch("https://micro.blog/books/openlibrary/signin", options).then(response => response.json()).then(data => {
+			var new_session = data["session"];
+			console.log("Got session", new_session);
 			
 			setIsSigningIn(false);
+			
+			if (new_session.length > 0) {
+				setSessionToken(new_session);
+				setHasSession(true);
+			}
 		});
 	}
 	
@@ -90,6 +87,17 @@ export function OpenLibraryScreen({ route, navigation }) {
 					{ isSigningIn &&
 						<ActivityIndicator style={styles.openLibrarySigninSpinner} animating={isSigningIn} hidesWhenStopped={true} />
 					}				
+				</View>
+			}
+			{ hasSession && 
+				<View style={styles.openLibrarySession}>
+					<View style={styles.openLibraryStatusBar}>
+						<Text style={styles.openLibraryStatusUsername}>Signed in as: {username}</Text>
+						<Pressable style={styles.micropubButton} onPress={() => { console.log("sign out") }}>
+							<Text style={styles.micropubButtonTitle}>Sign Out</Text>
+						</Pressable>
+					</View>
+					<TextInput style={[ styles.searchField, styles.openLibrarySearch ]} placeholder="Search for books to edit" />
 				</View>
 			}
 		</View>

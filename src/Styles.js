@@ -630,6 +630,28 @@ export const light = StyleSheet.create({
 		flex: 1,
 		alignItems: "flex-start",
 		marginTop: 25
+	},
+	openLibrarySession: {
+		marginLeft: 20,
+		marginRight: 20,
+		marginTop: 15,
+		marginBottom: 15		
+	},
+	openLibraryStatusBar: {
+		flexDirection: "row",
+		alignItems: "center"
+	},
+	openLibraryStatusUsername: {
+		color: "#000000"
+	},
+	openLibraryStatusButton: {
+		marginLeft: 15
+	},
+	openLibrarySearch: {
+		marginLeft: 0,
+		marginRight: 0,
+		marginTop: 15,
+		marginBottom: 15
 	}
 });
 
@@ -763,7 +785,8 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#141723"
 	},
 	micropubButtonTitle: {
-		color: "#E5E7EB"
+		color: "#E5E7EB",
+		fontSize: 13
 	},
 	micropubIntro: {
 		color: "#E5E7EB"
@@ -876,5 +899,12 @@ export const dark = StyleSheet.create({
 		borderColor: "rgba(255, 255, 255, 0.1)",
 		color: "#FFF",
 		backgroundColor: "#000"
-	}	
+	},
+	openLibraryStatusUsername: {
+		color: "#FFFFFF"
+	},
+	openLibraryStatusButton: {
+		color: "#FFFFFF",
+		borderRadius: 20
+	}
 });
