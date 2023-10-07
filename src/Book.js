@@ -14,8 +14,8 @@ export class Book {
 		return ((s.length == 13) && s.includes("97"));
 	}
 
-	static searchOpenLibrary(isbn, handler = function(books) {}) {
-		url = "https://openlibrary.org/search.json?q=" + encodeURIComponent(isbn);
+	static searchOpenLibrary(query, handler = function(books) {}) {
+		url = "https://openlibrary.org/search.json?q=" + encodeURIComponent(query);
 		fetch(url).then(response => response.json()).then(data => {
 			var results = [];
 			
@@ -25,9 +25,13 @@ export class Book {
 				if (doc.author_name != undefined) {
 					author = doc.author_name[0];
 				}
+				var isbn = "";
+				if (doc.isbn != undefined) {
+					isbn = doc.isbn[0];
+				}
 				let size = "M";
 				let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";
-								
+
 				let b = new Book(isbn, title, author, cover_url);
 				b.id = doc.key;
 				results.push(b);
