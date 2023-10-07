@@ -136,7 +136,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 						image: b.cover_url,
 						author: b.author,
 						description: b.description,
-						is_search: true
+						work_key: b.work_key
 					});
 				}
 			
@@ -149,7 +149,10 @@ export function OpenLibraryScreen({ route, navigation }) {
 	}
 
 	function onShowBookPressed(item) {
-		var params = {};
+		var params = {
+			title: item.title,
+			work_key: item.work_key
+		};
 		navigation.navigate("Editions", params);
 	}
 	

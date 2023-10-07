@@ -10,6 +10,8 @@ import { Book } from "../Book";
 
 export function OpenEditionsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
+	const [ editions, setEditions ] = useState([]);	
+	const { title, work_key } = route.params;
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -19,10 +21,52 @@ export function OpenEditionsScreen({ route, navigation }) {
 	}, [navigation]);	
 	
 	const onFocus = (navigation) =>  {
+		loadEditions();
+	}
+	
+	function loadEditions() {
+		Book.downloadOpenLibraryEditions(work_key, function(new_editions) {
+			if (new_editions.length > 0) {				
+				var new_items = [];
+			
+				for (e of new_editions) {
+					new_items.push({
+						id: e.id,
+						isbn: e.isbn,
+						title: e.title,
+						image: e.cover_url
+					});
+				}
+			
+				setEditions(new_items);
+			}
+			else {
+				setEditions([]);
+			}			
+		});
+	}
+
+	function onShowEditionPressed(edition) {		
 	}
 
 	return (
 		<View style={styles.container}>
+			<FlatList
+				data = {editions}
+				renderItem = { ({item}) => 						
+				<Pressable onPress={() => {
+						onShowEditionPressed(item);
+					}}>
+					<View style={styles.item}>
+						<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
+						<View style={styles.bookItem}>
+							<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
+						</View>
+					</View>
+				</Pressable>
+				}
+				keyExtractor = { item => item.id }
+			/>
 		</View>
 	);
 }

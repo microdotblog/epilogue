@@ -1,7 +1,10 @@
+import { Edition } from "./models/Edition";
+
 export class Book {	
 	constructor(isbn, title, author, cover_url) {
 		this.id = "";
 		this.description = "";
+		this.work_key = "";
 		
 		this.isbn = isbn;
 		this.title = title;
@@ -14,12 +17,41 @@ export class Book {
 		return ((s.length == 13) && s.includes("97"));
 	}
 
+	static downloadOpenLibraryEditions(work_key, handler = function(editions) {}) {
+		let url = `https://openlibrary.org/works/${work_key}/editions.json`;
+		fetch(url).then(response => response.json()).then(data => {
+			var results = [];
+			
+			for (entry of data.entries) {
+				let title = entry.title;
+				var isbn = "";
+				if (entry.isbn_13 != undefined) {
+					isbn = entry.isbn_13[0];
+				}
+				let size = "M";
+				let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";
+		
+				if (isbn.length > 0) {
+					let e = new Edition();
+					e.id = entry.key;
+					e.isbn = isbn;
+					e.title = title;
+					e.cover_url = cover_url;
+					results.push(e);
+				}
+			}
+		
+			handler(results);
+		});
+	}
+
 	static searchOpenLibrary(query, handler = function(books) {}) {
-		url = "https://openlibrary.org/search.json?q=" + encodeURIComponent(query);
+		let url = "https://openlibrary.org/search.json?q=" + encodeURIComponent(query);
 		fetch(url).then(response => response.json()).then(data => {
 			var results = [];
 			
 			for (doc of data.docs) {
+				let work_key = doc.key.replace("/works/", "");
 				let title = doc.title;
 				var author = "";
 				if (doc.author_name != undefined) {
@@ -34,6 +66,7 @@ export class Book {
 
 				let b = new Book(isbn, title, author, cover_url);
 				b.id = doc.key;
+				b.work_key = work_key;
 				results.push(b);
 			}
 
