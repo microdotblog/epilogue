@@ -21,7 +21,10 @@ export class Book {
 			
 			for (doc of data.docs) {
 				let title = doc.title;
-				let author = doc.author_name[0];				
+				var author = "";
+				if (doc.author_name != undefined) {
+					author = doc.author_name[0];
+				}
 				let size = "M";
 				let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";
 								

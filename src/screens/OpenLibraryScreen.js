@@ -1,10 +1,12 @@
 import React, { useState, useRef } from "react";
 import type { Node } from "react";
 import { ActivityIndicator, Pressable, Image, FlatList, StyleSheet, Text, View, TextInput } from "react-native";
+import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
+import { Book } from "../Book";
 
 export function OpenLibraryScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
@@ -13,6 +15,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 	const [ hasSession, setHasSession ] = useState(false);
 	const [ isSigningIn, setIsSigningIn ] = useState(false);
 	const [ sessionToken, setSessionToken ] = useState("");
+	const [ books, setBooks ] = useState([]);
     const passwordRef = useRef();
 
 	React.useEffect(() => {
@@ -48,7 +51,6 @@ export function OpenLibraryScreen({ route, navigation }) {
 			return;
 		}
 
-		console.log("signing in");		
 		setIsSigningIn(true);
 		
 		let form = new FormData();
@@ -74,7 +76,67 @@ export function OpenLibraryScreen({ route, navigation }) {
 	
 	function onShowProfile() {
 		navigation.navigate("Profile");
-	}	
+	}
+	
+	function onChangeSearch(text) {		
+		// if we're clearing the text, wait a second and then send it
+		// otherwise the user is still typing
+		if (text.length == 0) {
+			setTimeout(function() {
+				epilogueStorage.remove(keys.currentSearch).then(() => {
+					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+						setBooks([]);
+					});
+				});
+			}, 500);
+		}
+		else {
+			epilogueStorage.set(keys.currentSearch, text);
+		}
+	}
+	
+	function onRunSearch() {
+		epilogueStorage.get(keys.currentSearch).then(search_text => {
+			let s = String(search_text);
+			if ((s != "null") && (s.length > 0)) {
+				sendSearch(s);
+			}
+			else {
+				epilogueStorage.remove(keys.currentSearch).then(() => {
+					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+						setBooks([]);
+					});				
+				});
+			}
+		});
+	}
+	
+	function sendSearch(searchText) {
+		console.log("Search", searchText);
+		Book.searchOpenLibrary(searchText, function(new_books) {				
+			if (new_books.length > 0) {				
+				var new_items = [];
+			
+				for (b of new_books) {
+					new_items.push({
+						id: b.id,
+						isbn: b.isbn,
+						title: b.title,
+						image: b.cover_url,
+						author: b.author,
+						description: b.description,
+						is_search: true
+					});
+				}
+			
+				setBooks(new_items);
+			}
+			else {
+				setBooks([]);
+			}
+		});
+	}
+	
 	return (
 		<View style={styles.container}>		
 			<View style={styles.openLibraryBanner}>
@@ -83,7 +145,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 			{ !hasSession && 
 				<View style={styles.openLibrarySignin}>
 					<TextInput style={styles.openLibraryUsername} value={username} onChangeText={setUsername} onEndEditing={onNextField} returnKeyType="next" placeholder="Username" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
-					<TextInput style={styles.openLibraryPassword} value={password} onChangeText={setPassword} onEndEditing={onSubmitSignin} returnKeyType="done" placeholder="Password" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} secureTextEntry={true} ref={passwordRef} />
+					<TextInput style={styles.openLibraryPassword} value={password} onChangeText={setPassword} onEndEditing={onSubmitSignin} returnKeyType="done" placeholder="Password" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} secureTextEntry={true} ref={passwordRef} />
 					{ isSigningIn &&
 						<ActivityIndicator style={styles.openLibrarySigninSpinner} animating={isSigningIn} hidesWhenStopped={true} />
 					}				
@@ -97,7 +159,24 @@ export function OpenLibraryScreen({ route, navigation }) {
 							<Text style={styles.micropubButtonTitle}>Sign Out</Text>
 						</Pressable>
 					</View>
-					<TextInput style={[ styles.searchField, styles.openLibrarySearch ]} placeholder="Search for books to edit" />
+					<TextInput style={[ styles.searchField, styles.openLibrarySearch ]} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to edit" placeholderTextColor="#6d6d72" clearButtonMode="always" />
+					
+					<FlatList
+						data = {books}
+						renderItem = { ({item}) => 						
+						<Pressable onPress={() => {
+							}}>
+							<View style={styles.item}>
+								<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
+								<View style={styles.bookItem}>
+									<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
+									<Text style={styles.bookAuthor}>{item.author}</Text>
+								</View>
+							</View>
+						</Pressable>
+						}
+						keyExtractor = { item => item.id }
+					/>
 				</View>
 			}
 		</View>
