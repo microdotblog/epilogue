@@ -22,6 +22,7 @@ import { ProfileScreen } from "./src/ProfileScreen";
 import { ExternalScreen } from "./src/ExternalScreen";
 import { EditGoalScreen } from "./src/EditGoalScreen";
 import { CreateAccountScreen } from "./src/CreateAccountScreen";
+import { OpenEditionsScreen } from "./src/screens/OpenEditionsScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +72,14 @@ const App: () => Node = () => {
               </Pressable>
   					)
   				})} />
+          <Stack.Screen name="Editions" component={OpenEditionsScreen} options={({ navigation, route }) => ({
+            title: "Editions",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                          <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+              </Pressable>
+            )
+          })} />
   			</Stack.Group>
   			<Stack.Group screenOptions={{ presentation: "modal" }}>
   				<Stack.Screen name="Post" component={PostScreen} options={({ navigation, route }) => ({

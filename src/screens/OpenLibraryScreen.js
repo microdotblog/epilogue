@@ -147,6 +147,11 @@ export function OpenLibraryScreen({ route, navigation }) {
 			}
 		});
 	}
+
+	function onShowBookPressed(item) {
+		var params = {};
+		navigation.navigate("Editions", params);
+	}
 	
 	return (
 		<View style={styles.container}>		
@@ -176,6 +181,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 						data = {books}
 						renderItem = { ({item}) => 						
 						<Pressable onPress={() => {
+								onShowBookPressed(item);
 							}}>
 							<View style={styles.item}>
 								<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
