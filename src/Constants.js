@@ -18,7 +18,8 @@ export const keys = {
 	micropubToken: "micropub_token",
 	lastMicropubToken: "last_micropub",
 	appleUserID: "apple_user_id",
-	appleIdentityToken: "apple_identity_token"
+	appleIdentityToken: "apple_identity_token",
+	openLibrarySession: "openlibrary_session"
 };
 
 export const errors = {

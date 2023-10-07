@@ -27,6 +27,10 @@ export function OpenLibraryScreen({ route, navigation }) {
 
 	const onFocus = (navigation) =>  {
 		setupProfileIcon();
+		epilogueStorage.get(keys.openLibrarySession).then(saved_session => {
+			setSessionToken(saved_session);
+			setHasSession(true);
+		});
 	}
 
 	function setupProfileIcon() {
@@ -70,12 +74,21 @@ export function OpenLibraryScreen({ route, navigation }) {
 			if (new_session.length > 0) {
 				setSessionToken(new_session);
 				setHasSession(true);
+				epilogueStorage.set(keys.openLibrarySession, new_session);
 			}
 		});
 	}
 	
 	function onShowProfile() {
 		navigation.navigate("Profile");
+	}
+
+	function onSignOut() {
+		setUsername("");
+		setPassword("");
+		setSessionToken("");
+		setHasSession(false);
+		epilogueStorage.remove(keys.openLibrarySession);
 	}
 	
 	function onChangeSearch(text) {		
@@ -155,7 +168,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 				<View style={styles.openLibrarySession}>
 					<View style={styles.openLibraryStatusBar}>
 						<Text style={styles.openLibraryStatusUsername}>Signed in as: {username}</Text>
-						<Pressable style={styles.micropubButton} onPress={() => { console.log("sign out") }}>
+						<Pressable style={styles.micropubButton} onPress={() => { onSignOut(); }}>
 							<Text style={styles.micropubButtonTitle}>Sign Out</Text>
 						</Pressable>
 					</View>
