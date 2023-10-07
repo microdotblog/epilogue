@@ -67,8 +67,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 		};
 		fetch("https://micro.blog/books/openlibrary/signin", options).then(response => response.json()).then(data => {
 			var new_session = data["session"];
-			console.log("Got session", new_session);
-			
+
 			setIsSigningIn(false);
 			
 			if (new_session.length > 0) {
@@ -125,7 +124,6 @@ export function OpenLibraryScreen({ route, navigation }) {
 	}
 	
 	function sendSearch(searchText) {
-		console.log("Search", searchText);
 		Book.searchOpenLibrary(searchText, function(new_books) {				
 			if (new_books.length > 0) {				
 				var new_items = [];
