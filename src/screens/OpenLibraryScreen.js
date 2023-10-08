@@ -31,6 +31,9 @@ export function OpenLibraryScreen({ route, navigation }) {
 			setSessionToken(saved_session);
 			setHasSession(true);
 		});
+		epilogueStorage.get(keys.openLibraryUsername).then(saved_username => {
+			setUsername(saved_username);
+		});
 	}
 
 	function setupProfileIcon() {
@@ -74,6 +77,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 				setSessionToken(new_session);
 				setHasSession(true);
 				epilogueStorage.set(keys.openLibrarySession, new_session);
+				epilogueStorage.set(keys.openLibraryUsername, username);
 			}
 		});
 	}
@@ -87,7 +91,9 @@ export function OpenLibraryScreen({ route, navigation }) {
 		setPassword("");
 		setSessionToken("");
 		setHasSession(false);
+
 		epilogueStorage.remove(keys.openLibrarySession);
+		epilogueStorage.remove(keys.openLibraryUsername);
 	}
 	
 	function onChangeSearch(text) {		
