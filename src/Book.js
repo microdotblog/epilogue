@@ -86,8 +86,6 @@ export class Book {
 				b.id = doc.key;
 				b.work_key = work_key;
 				results.push(b);
-				
-				console.log(doc.key);
 			}
 
 			handler(results);

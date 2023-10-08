@@ -445,11 +445,6 @@ export const light = StyleSheet.create({
 		alignItems: 'center',
 		flex: 1,
 	},
-	bookCoverModal: {
-		height: 300,
-		width: 200,
-		resizeMode: 'contain'
-	},
 	addingBookSpinner: {
 		flex: 1, 
 		position: 'absolute', 
@@ -675,6 +670,21 @@ export const light = StyleSheet.create({
 		backgroundColor: "#e1e1e1"
 	},
 	openLibraryEditionsTitle: {		
+		fontSize: 13
+	},
+	openLibraryEditionsExtras: {
+		marginLeft: 5,
+		fontSize: 13,
+		color: "#777777"
+	},
+	openLibraryEditionsDetails: {
+		alignItems: "center",
+		marginTop: 20
+	},
+	openLibraryEditionsCover: {
+		width: 200,
+		height: 350,
+		resizeMode: "contain"
 	}
 });
 
@@ -935,7 +945,9 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#272f3d"
 	},
 	openLibraryEditionsTitle: {
-		color: "#E5E7EB",
-		fontSize: 13
+		color: "#E5E7EB"
 	},
+	openLibraryEditionsExtras: {		
+		color: "#777777"
+	}
 });

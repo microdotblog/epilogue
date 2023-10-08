@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, Pressable, Image, FlatList, StyleSheet, Text, View, TextInput } from "react-native";
+import { ActivityIndicator, Pressable, Image, FlatList, StyleSheet, Text, View } from "react-native";
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
@@ -35,7 +35,7 @@ export function OpenEditionsScreen({ route, navigation }) {
 						isbn: e.isbn,
 						title: e.title,
 						image: e.cover_url,
-						language: e.language						
+						language: e.language
 					});
 				}
 			
@@ -47,13 +47,20 @@ export function OpenEditionsScreen({ route, navigation }) {
 		});
 	}
 
-	function onShowEditionPressed(edition) {		
+	function onShowEditionPressed(edition) {
+		var params = {
+			title: edition.title,
+			isbn: edition.isbn,
+			image: edition.image
+		};
+		navigation.navigate("OLDetails", params);
 	}
 
 	return (
 		<View style={[styles.container, styles.openLibraryEditionsScreen]}>
 			<View style={styles.openLibraryEditionsBar}>
-				<Text style={styles.openLibraryEditionsTitle}>{title} by {author}</Text>
+				<Text style={styles.openLibraryEditionsTitle}>{title}</Text>
+				<Text style={styles.openLibraryEditionsExtras}>by {author}</Text>
 			</View>
 			<FlatList
 				data = {editions}
