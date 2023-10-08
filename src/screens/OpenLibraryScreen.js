@@ -193,7 +193,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 						<Pressable onPress={() => {
 								onShowBookPressed(item);
 							}}>
-							<View style={styles.item}>
+							<View style={[styles.item, styles.openLibraryItem]}>
 								<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 								<View style={styles.bookItem}>
 									<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>

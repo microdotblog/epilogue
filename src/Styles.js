@@ -652,6 +652,9 @@ export const light = StyleSheet.create({
 	openLibraryStatusButton: {
 		marginLeft: 15
 	},
+	openLibraryItem: {
+		paddingLeft: 0
+	},
 	openLibrarySearch: {
 		marginLeft: 0,
 		marginRight: 0,

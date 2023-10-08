@@ -37,18 +37,27 @@ export class Book {
 					language = Book.languageFromOpenLibrary(entry.languages[0].key);
 				}
 				
-				let size = "M";
-				let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";
-		
-				if (isbn.length > 0) {
-					let e = new Edition();
-					e.id = entry.key;
-					e.isbn = isbn;
-					e.title = title;
-					e.cover_url = cover_url;
-					e.language = language;
-					results.push(e);
+				var cover_id = 0;
+				if (entry.covers != undefined) {
+					cover_id = entry.covers[0];
 				}
+				
+				var cover_url = "";
+				if (cover_id > 0) {
+					cover_url = Book.coverFromOpenLibraryID(cover_id);
+				}
+				else {
+					cover_url = Book.coverFromOpenLibraryISBN(isbn);
+				}
+		
+				let e = new Edition();
+				e.id = entry.key;
+				e.isbn = isbn;
+				e.title = title;
+				e.cover_url = cover_url;
+				e.cover_id = cover_id;
+				e.language = language;
+				results.push(e);
 			}
 		
 			handler(results);
@@ -71,13 +80,14 @@ export class Book {
 				if (doc.isbn != undefined) {
 					isbn = doc.isbn[0];
 				}
-				let size = "M";
-				let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";
+				let cover_url = Book.coverFromOpenLibraryISBN(isbn);
 
 				let b = new Book(isbn, title, author, cover_url);
 				b.id = doc.key;
 				b.work_key = work_key;
 				results.push(b);
+				
+				console.log(doc.key);
 			}
 
 			handler(results);
@@ -139,5 +149,17 @@ export class Book {
 	static languageFromOpenLibrary(key) {
 		let languages = require("../config/languages.json");
 		return languages[key];
+	}
+
+	static coverFromOpenLibraryISBN(isbn) {
+		let size = "M";
+		let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";		
+		return cover_url;
+	}
+	
+	static coverFromOpenLibraryID(cover_id) {
+		let size = "M";
+		let cover_url = "https://covers.openlibrary.org/b/id/" + cover_id + "-" + size + ".jpg";		
+		return cover_url;
 	}
 }
