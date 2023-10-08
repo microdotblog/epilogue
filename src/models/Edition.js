@@ -4,5 +4,6 @@ export class Edition {
 		this.isbn = "";
 		this.title = "";
 		this.cover_url = "";
+		this.language = "";
 	}
 }

@@ -28,6 +28,15 @@ export class Book {
 				if (entry.isbn_13 != undefined) {
 					isbn = entry.isbn_13[0];
 				}
+				else if (entry.isbn_10 != undefined) {
+					isbn = entry.isbn_10[0];
+				}
+				
+				var language = "";
+				if (entry.languages != undefined) {
+					language = Book.languageFromOpenLibrary(entry.languages[0].key);
+				}
+				
 				let size = "M";
 				let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";
 		
@@ -37,6 +46,7 @@ export class Book {
 					e.isbn = isbn;
 					e.title = title;
 					e.cover_url = cover_url;
+					e.language = language;
 					results.push(e);
 				}
 			}
@@ -125,5 +135,9 @@ export class Book {
 			handler(results);
 		});		
 	}
+	
+	static languageFromOpenLibrary(key) {
+		let languages = require("../config/languages.json");
+		return languages[key];
+	}
 }
-

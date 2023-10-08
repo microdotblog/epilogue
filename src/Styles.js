@@ -62,6 +62,11 @@ export const light = StyleSheet.create({
 		paddingLeft: 7,
 		color: "#777777"
 	},
+	bookSecondary: {
+		paddingTop: 4,
+		paddingLeft: 7,
+		color: "#777777"
+	},
 	bookCover: {
 		marginTop: 5,
 		width: 50,

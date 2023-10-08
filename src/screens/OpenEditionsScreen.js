@@ -34,7 +34,8 @@ export function OpenEditionsScreen({ route, navigation }) {
 						id: e.id,
 						isbn: e.isbn,
 						title: e.title,
-						image: e.cover_url
+						image: e.cover_url,
+						language: e.language						
 					});
 				}
 			
@@ -61,6 +62,8 @@ export function OpenEditionsScreen({ route, navigation }) {
 						<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 						<View style={styles.bookItem}>
 							<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
+							<Text style={styles.bookSecondary}>{item.isbn}</Text>
+							<Text style={styles.bookSecondary}>{item.language}</Text>
 						</View>
 					</View>
 				</Pressable>
