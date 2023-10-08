@@ -657,6 +657,21 @@ export const light = StyleSheet.create({
 		marginRight: 0,
 		marginTop: 15,
 		marginBottom: 15
+	},
+	openLibraryEditionsScreen: {
+		paddingTop: 0,
+	},
+	openLibraryEditionsBar: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingLeft: 15,
+		paddingTop: 15,
+		paddingBottom: 15,
+		borderBottomColor: "#d6d6d6",
+		borderBottomWidth: 0.5,
+		backgroundColor: "#e1e1e1"
+	},
+	openLibraryEditionsTitle: {		
 	}
 });
 
@@ -911,5 +926,13 @@ export const dark = StyleSheet.create({
 	openLibraryStatusButton: {
 		color: "#FFFFFF",
 		borderRadius: 20
-	}
+	},
+	openLibraryEditionsBar: {
+		borderBottomColor: "#444444",
+		backgroundColor: "#272f3d"
+	},
+	openLibraryEditionsTitle: {
+		color: "#E5E7EB",
+		fontSize: 13
+	},
 });

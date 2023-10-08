@@ -157,6 +157,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 	function onShowBookPressed(item) {
 		var params = {
 			title: item.title,
+			author: item.author,
 			work_key: item.work_key
 		};
 		navigation.navigate("Editions", params);

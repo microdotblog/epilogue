@@ -11,7 +11,7 @@ import { Book } from "../Book";
 export function OpenEditionsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
 	const [ editions, setEditions ] = useState([]);	
-	const { title, work_key } = route.params;
+	const { title, author, work_key } = route.params;
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -51,7 +51,10 @@ export function OpenEditionsScreen({ route, navigation }) {
 	}
 
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, styles.openLibraryEditionsScreen]}>
+			<View style={styles.openLibraryEditionsBar}>
+				<Text style={styles.openLibraryEditionsTitle}>{title} by {author}</Text>
+			</View>
 			<FlatList
 				data = {editions}
 				renderItem = { ({item}) => 						
