@@ -25,7 +25,6 @@ export function OpenDetailsScreen({ route, navigation }) {
 	}, [navigation]);	
 	
 	const onFocus = (navigation) =>  {
-		console.log("Edition key", edition_key)
 	}
 	
 	function onPromptNewCover() {
@@ -68,6 +67,7 @@ export function OpenDetailsScreen({ route, navigation }) {
 						fetch(url, options).then(response => {							
 							RNFS.unlink(new_path);
 							setIsUploading(false);
+							navigation.goBack();
 						});
 					});
 				})
