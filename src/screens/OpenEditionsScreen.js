@@ -51,7 +51,9 @@ export function OpenEditionsScreen({ route, navigation }) {
 		var params = {
 			title: edition.title,
 			isbn: edition.isbn,
-			image: edition.image
+			image: edition.image,
+			work_key: "",
+			edition_key: edition.id.replace("/books/", "")
 		};
 		navigation.navigate("OLDetails", params);
 	}

@@ -677,6 +677,9 @@ export const light = StyleSheet.create({
 		fontSize: 13,
 		color: "#777777"
 	},
+	openLibraryEditionsProgress: {
+		marginLeft: 8
+	},
 	openLibraryEditionsDetails: {
 		alignItems: "center",
 		marginTop: 20
@@ -684,7 +687,20 @@ export const light = StyleSheet.create({
 	openLibraryEditionsCover: {
 		width: 200,
 		height: 350,
-		resizeMode: "contain"
+		resizeMode: "contain",
+		marginBottom: 20
+	},
+	openLibraryEditionsButton: {
+		flexDirection: "row",
+		marginLeft: 12,
+		paddingLeft: 12,
+		paddingRight: 12,
+		paddingTop: 8,
+		paddingBottom: 8,
+		borderRadius: 5,
+		backgroundColor: "#c9c9c9"
+	},
+	openLibraryEditionsButtonTitle: {		
 	}
 });
 
@@ -949,5 +965,12 @@ export const dark = StyleSheet.create({
 	},
 	openLibraryEditionsExtras: {		
 		color: "#777777"
-	}
+	},
+	openLibraryEditionsButton: {
+		backgroundColor: "#141723"
+	},
+	openLibraryEditionsButtonTitle: {
+		color: "#E5E7EB",
+		fontSize: 13
+	},
 });

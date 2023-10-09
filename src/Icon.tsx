@@ -21,7 +21,8 @@ const IconNames = {
   "popup-triangle": { ios: "chevron.down", android: "chevron-down" },
   "trash": { ios: "trash", android: "trash-can" },
   "book": { ios: "book.closed", android: "book" },
-  "openlibrary": { ios: "building.columns", android: "archive" }
+  "openlibrary": { ios: "building.columns", android: "archive" },
+  "photo": { ios: "photo", android: "image" }
 }
 
 export const Icon = (props) => {
