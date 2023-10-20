@@ -14,6 +14,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 	const [ password, setPassword ] = useState("");
 	const [ hasSession, setHasSession ] = useState(false);
 	const [ isSigningIn, setIsSigningIn ] = useState(false);
+	const [ isSearching , setIsSearching ] = useState(false)
 	const [ sessionToken, setSessionToken ] = useState("");
 	const [ books, setBooks ] = useState([]);
     const passwordRef = useRef();
@@ -117,12 +118,14 @@ export function OpenLibraryScreen({ route, navigation }) {
 		epilogueStorage.get(keys.currentSearch).then(search_text => {
 			let s = String(search_text);
 			if ((s != "null") && (s.length > 0)) {
+				setIsSearching(true);
 				sendSearch(s);
 			}
 			else {
 				epilogueStorage.remove(keys.currentSearch).then(() => {
 					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 						setBooks([]);
+						setIsSearching(false);
 					});				
 				});
 			}
@@ -147,9 +150,11 @@ export function OpenLibraryScreen({ route, navigation }) {
 				}
 			
 				setBooks(new_items);
+				setIsSearching(false);
 			}
 			else {
 				setBooks([]);
+				setIsSearching(false);
 			}
 		});
 	}
@@ -186,6 +191,10 @@ export function OpenLibraryScreen({ route, navigation }) {
 						</Pressable>
 					</View>
 					<TextInput style={[ styles.searchField, styles.openLibrarySearch ]} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to edit" placeholderTextColor="#6d6d72" clearButtonMode="always" />
+					
+				{ isSearching && 
+					<ActivityIndicator style={styles.openLibrarySearchSpinner} animating={true} hidesWhenStopped={true} />						
+				}
 					
 					<FlatList
 						data = {books}

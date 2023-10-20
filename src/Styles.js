@@ -656,6 +656,9 @@ export const light = StyleSheet.create({
 		marginTop: 15,
 		marginBottom: 15
 	},
+	openLibrarySearchSpinner: {
+		marginTop: 10,
+	},
 	openLibraryEditionsScreen: {
 		paddingTop: 0,
 	},
