@@ -11,6 +11,7 @@ import { Book } from "../Book";
 export function OpenEditionsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
 	const [ editions, setEditions ] = useState([]);	
+	const [ isDownloading, setIsDownloading ] = useState(false);
 	const { title, author, work_key } = route.params;
 
 	React.useEffect(() => {
@@ -25,6 +26,8 @@ export function OpenEditionsScreen({ route, navigation }) {
 	}
 	
 	function loadEditions() {
+		setIsDownloading(true);
+		
 		Book.downloadOpenLibraryEditions(work_key, function(new_editions) {
 			if (new_editions.length > 0) {				
 				var new_items = [];
@@ -40,9 +43,11 @@ export function OpenEditionsScreen({ route, navigation }) {
 				}
 			
 				setEditions(new_items);
+				setIsDownloading(false);
 			}
 			else {
 				setEditions([]);
+				setIsDownloading(false);
 			}			
 		});
 	}
@@ -63,6 +68,7 @@ export function OpenEditionsScreen({ route, navigation }) {
 			<View style={styles.openLibraryEditionsBar}>
 				<Text style={styles.openLibraryEditionsTitle}>{title}</Text>
 				<Text style={styles.openLibraryEditionsExtras}>by {author}</Text>
+				<ActivityIndicator style={styles.openLibraryEditionsProgress} size="small" animating={isDownloading} />
 			</View>
 			<FlatList
 				data = {editions}
