@@ -13,6 +13,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 	const [ username, setUsername ] = useState("");
 	const [ password, setPassword ] = useState("");
 	const [ hasSession, setHasSession ] = useState(false);
+	const [ isLoading, setIsLoading ] = useState(true);
 	const [ isSigningIn, setIsSigningIn ] = useState(false);
 	const [ isSearching , setIsSearching ] = useState(false)
 	const [ sessionToken, setSessionToken ] = useState("");
@@ -31,6 +32,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 		epilogueStorage.get(keys.openLibrarySession).then(saved_session => {
 			setSessionToken(saved_session);
 			setHasSession(true);
+			setIsLoading(false);
 		});
 		epilogueStorage.get(keys.openLibraryUsername).then(saved_username => {
 			setUsername(saved_username);
@@ -173,7 +175,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 			<View style={styles.openLibraryBanner}>
 				<Text style={styles.openLibraryIntro}>Sign in with an account on the Internet Archive's Open Library to update book info and covers. Everyone using Open Library or Epilogue will be able to use your book covers.</Text>
 			</View>
-			{ !hasSession && 
+			{ !isLoading && !hasSession && 
 				<View style={styles.openLibrarySignin}>
 					<TextInput style={styles.openLibraryUsername} value={username} onChangeText={setUsername} onEndEditing={onNextField} returnKeyType="next" placeholder="Username" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
 					<TextInput style={styles.openLibraryPassword} value={password} onChangeText={setPassword} onEndEditing={onSubmitSignin} returnKeyType="done" placeholder="Password" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} secureTextEntry={true} ref={passwordRef} />
