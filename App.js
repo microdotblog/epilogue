@@ -24,6 +24,7 @@ import { EditGoalScreen } from "./src/EditGoalScreen";
 import { CreateAccountScreen } from "./src/CreateAccountScreen";
 import { OpenEditionsScreen } from "./src/screens/OpenEditionsScreen";
 import { OpenDetailsScreen } from "./src/screens/OpenDetailsScreen";
+import { OpenCoversScreen } from "./src/screens/OpenCoversScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -143,6 +144,14 @@ const App: () => Node = () => {
             headerRight: () => (
               <Pressable onPress={() => { navigation.navigate("Post", { books: [] }); }} hitSlop={10}>
                 <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+              </Pressable>
+            )
+          })} />
+          <Stack.Screen name="Covers" component={OpenCoversScreen} options={({ navigation, route }) => ({
+            title: "Covers",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
               </Pressable>
             )
           })} />
