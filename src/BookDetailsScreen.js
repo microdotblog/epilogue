@@ -128,7 +128,8 @@ export function BookDetailsScreen({ route, navigation }) {
 	}
 	
 	function showCovers() {		
-		let params = {			
+		let params = {
+			isbn: isbn
 		};
 		navigation.navigate("Covers", params);
 	}

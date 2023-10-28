@@ -704,6 +704,12 @@ export const light = StyleSheet.create({
 		backgroundColor: "#c9c9c9"
 	},
 	openLibraryEditionsButtonTitle: {		
+	},
+	openLibraryCoverSearch: {		
+		marginLeft: 20,
+		marginRight: 20,
+		marginTop: 0,
+		marginBottom: 15		
 	}
 });
 
@@ -975,5 +981,5 @@ export const dark = StyleSheet.create({
 	openLibraryEditionsButtonTitle: {
 		color: "#E5E7EB",
 		fontSize: 13
-	},
+	}
 });
