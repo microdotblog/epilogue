@@ -16,7 +16,7 @@ export function OpenCoversScreen({ route, navigation }) {
 	const [ isSearching , setIsSearching ] = useState(false);
 	const [ books, setBooks ] = useState([]);
 	const [ searchText , setSearchText ] = useState("");
-	const { title, isbn, image, work_key, edition_key } = route.params;
+	const { id, bookshelf_id, isbn } = route.params;
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -81,6 +81,29 @@ export function OpenCoversScreen({ route, navigation }) {
 	}
 
 	function onSelectBookPressed(item) {
+		sendCover(bookshelf_id,id, item.image);
+	}
+	
+	function sendCover(bookshelf_id, book_id, cover_url) {
+		setIsUploading(true);
+
+		epilogueStorage.get("auth_token").then(auth_token => {
+			let form = new FormData();
+			form.append("cover_url", cover_url);
+
+			var options = {
+				method: "POST",
+				body: form,
+				headers: {
+					"Authorization": "Bearer " + auth_token
+				}
+			};
+
+			let url = `https://micro.blog/books/bookshelves/${bookshelf_id}/cover/${book_id}`;
+			fetch(url, options).then(response => response.json()).then(data => {
+				navigation.pop();
+			});
+		});
 	}
 	
 	return (
@@ -102,11 +125,16 @@ export function OpenCoversScreen({ route, navigation }) {
 						<View style={styles.coverResults}>
 							<FastImage style={styles.mediumBookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.coverResultsOptions}>
-								<Pressable style={styles.useThisCoverButton} onPress={() => {
-									onSelectBookPressed(item);
-								}}>
-									<Text style={styles.useThisCoverTitle}>Use This Cover</Text>
-								</Pressable>
+								<View style={styles.coverResultsButtonProgress}>
+									<Pressable style={styles.useThisCoverButton} onPress={() => {
+										onSelectBookPressed(item);
+									}}>
+										<Text style={styles.useThisCoverTitle}>Use This Cover</Text>
+									</Pressable>
+									{ isUploading && 
+										<ActivityIndicator animating={true} hidesWhenStopped={true} />				
+									}
+								</View>
 							</View>
 						</View>
 					}

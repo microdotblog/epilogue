@@ -129,6 +129,8 @@ export function BookDetailsScreen({ route, navigation }) {
 	
 	function showCovers() {		
 		let params = {
+			id: id,
+			bookshelf_id: current_bookshelf.id,
 			isbn: isbn
 		};
 		navigation.navigate("Covers", params);

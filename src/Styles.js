@@ -722,10 +722,14 @@ export const light = StyleSheet.create({
 	coverResultsOptions: {
 		justifyContent: "center"
 	},
+	coverResultsButtonProgress: {
+		flexDirection: "row",	
+	},
 	useThisCoverButton: {
 		justifyContent: "center",
 		height: 34,
 		marginLeft: 12,
+		marginRight: 12,
 		paddingLeft: 12,
 		paddingRight: 12,
 		paddingTop: 8,
