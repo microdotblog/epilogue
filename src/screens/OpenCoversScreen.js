@@ -48,13 +48,13 @@ export function OpenCoversScreen({ route, navigation }) {
 			setIsSearching(false);			
 		}
 		else {
-			setIsSearching(true);
 			sendSearch(searchText);
 		}
 	}
 
 	function sendSearch(searchText) {
-		Book.searchOpenLibrary(searchText, function(new_books) {				
+		setIsSearching(true);
+		Book.searchOpenLibrary(searchText, function(new_books) {
 			if (new_books.length > 0) {				
 				var new_items = [];
 			

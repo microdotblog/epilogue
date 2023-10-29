@@ -80,7 +80,19 @@ export class Book {
 				if (doc.isbn != undefined) {
 					isbn = doc.isbn[0];
 				}
-				let cover_url = Book.coverFromOpenLibraryISBN(isbn);
+
+				var cover_id = 0;
+				if (doc.cover_i != undefined) {
+					cover_id = doc.cover_i;
+				}
+								
+				var cover_url = "";
+				if (cover_id > 0) {
+					cover_url = Book.coverFromOpenLibraryID(cover_id);
+				}
+				else {
+					cover_url = Book.coverFromOpenLibraryISBN(isbn);
+				}
 
 				let b = new Book(isbn, title, author, cover_url);
 				b.id = doc.key;
