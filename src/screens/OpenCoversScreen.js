@@ -16,7 +16,6 @@ export function OpenCoversScreen({ route, navigation }) {
 	const [ isSearching , setIsSearching ] = useState(false);
 	const [ books, setBooks ] = useState([]);
 	const [ searchText , setSearchText ] = useState("");
-	const [ columns, setColumns ] = useState(3);
 	const { title, isbn, image, work_key, edition_key } = route.params;
 
 	React.useEffect(() => {
@@ -44,6 +43,7 @@ export function OpenCoversScreen({ route, navigation }) {
 	}
 	
 	function onRunSearch() {
+		setBooks([]);
 		if (searchText.length == 0) {
 			setIsSearching(false);			
 		}
@@ -98,13 +98,17 @@ export function OpenCoversScreen({ route, navigation }) {
 					
 				<FlatList
 					data = {books}
-					numColumns = {columns}
-					renderItem = { ({item}) => 						
-					<Pressable onPress={() => {
-							onSelectBookPressed(item);
-						}}>
-						<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
-					</Pressable>
+					renderItem = { ({item}) =>
+						<View style={styles.coverResults}>
+							<FastImage style={styles.mediumBookCover} source={{ uri: item.image.replace("http://", "https://") }} />
+							<View style={styles.coverResultsOptions}>
+								<Pressable style={styles.useThisCoverButton} onPress={() => {
+									onSelectBookPressed(item);
+								}}>
+									<Text style={styles.useThisCoverTitle}>Use This Cover</Text>
+								</Pressable>
+							</View>
+						</View>
 					}
 					keyExtractor = { item => item.id }
 				/>

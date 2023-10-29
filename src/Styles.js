@@ -710,6 +710,31 @@ export const light = StyleSheet.create({
 		marginRight: 20,
 		marginTop: 0,
 		marginBottom: 15		
+	},
+	mediumBookCover: {
+		width: 100,
+		height: 140,
+		backgroundColor: "#c9c9c9"
+	},
+	coverResults: {
+		flexDirection: "row"
+	},
+	coverResultsOptions: {
+		justifyContent: "center"
+	},
+	useThisCoverButton: {
+		justifyContent: "center",
+		height: 34,
+		marginLeft: 12,
+		paddingLeft: 12,
+		paddingRight: 12,
+		paddingTop: 8,
+		paddingBottom: 8,
+		borderRadius: 5,
+		backgroundColor: "#c9c9c9"
+	},
+	useThisCoverTitle: {
+		color: "#000000"
 	}
 });
 
@@ -981,5 +1006,11 @@ export const dark = StyleSheet.create({
 	openLibraryEditionsButtonTitle: {
 		color: "#E5E7EB",
 		fontSize: 13
+	},
+	useThisCoverButton: {
+		backgroundColor: "#141723"
+	},
+	useThisCoverTitle: {
+		color: "#FFFFFF"
 	}
 });
