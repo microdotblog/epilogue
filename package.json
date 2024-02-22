@@ -15,6 +15,7 @@
     "@react-native-clipboard/clipboard": "^1.10.0",
     "@react-native-cookies/cookies": "^6.2.1",
     "@react-native-menu/menu": "https://github.com/react-native-menu/menu#11a60059ee59a58c8e67f50f81011db32952cb52",
+    "@react-native/metro-config": "^0.73.5",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.0",
