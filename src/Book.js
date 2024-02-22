@@ -1,7 +1,10 @@
+import { Edition } from "./models/Edition";
+
 export class Book {	
 	constructor(isbn, title, author, cover_url) {
 		this.id = "";
 		this.description = "";
+		this.work_key = "";
 		
 		this.isbn = isbn;
 		this.title = title;
@@ -14,19 +17,86 @@ export class Book {
 		return ((s.length == 13) && s.includes("97"));
 	}
 
-	static searchOpenLibrary(isbn, handler = function(books) {}) {
-		url = "https://openlibrary.org/search.json?q=" + encodeURIComponent(isbn);
+	static downloadOpenLibraryEditions(work_key, handler = function(editions) {}) {
+		let url = `https://openlibrary.org/works/${work_key}/editions.json`;
+		fetch(url).then(response => response.json()).then(data => {
+			var results = [];
+			
+			for (entry of data.entries) {
+				let title = entry.title;
+				var isbn = "";
+				if (entry.isbn_13 != undefined) {
+					isbn = entry.isbn_13[0];
+				}
+				else if (entry.isbn_10 != undefined) {
+					isbn = entry.isbn_10[0];
+				}
+				
+				var language = "";
+				if (entry.languages != undefined) {
+					language = Book.languageFromOpenLibrary(entry.languages[0].key);
+				}
+				
+				var cover_id = 0;
+				if (entry.covers != undefined) {
+					cover_id = entry.covers[0];
+				}
+				
+				var cover_url = "";
+				if (cover_id > 0) {
+					cover_url = Book.coverFromOpenLibraryID(cover_id);
+				}
+				else {
+					cover_url = Book.coverFromOpenLibraryISBN(isbn);
+				}
+		
+				let e = new Edition();
+				e.id = entry.key;
+				e.isbn = isbn;
+				e.title = title;
+				e.cover_url = cover_url;
+				e.cover_id = cover_id;
+				e.language = language;
+				results.push(e);
+			}
+		
+			handler(results);
+		});
+	}
+
+	static searchOpenLibrary(query, handler = function(books) {}) {
+		let url = "https://openlibrary.org/search.json?q=" + encodeURIComponent(query);
 		fetch(url).then(response => response.json()).then(data => {
 			var results = [];
 			
 			for (doc of data.docs) {
+				let work_key = doc.key.replace("/works/", "");
 				let title = doc.title;
-				let author = doc.author_name[0];				
-				let size = "M";
-				let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";
+				var author = "";
+				if (doc.author_name != undefined) {
+					author = doc.author_name[0];
+				}
+				var isbn = "";
+				if (doc.isbn != undefined) {
+					isbn = doc.isbn[0];
+				}
+
+				var cover_id = 0;
+				if (doc.cover_i != undefined) {
+					cover_id = doc.cover_i;
+				}
 								
+				var cover_url = "";
+				if (cover_id > 0) {
+					cover_url = Book.coverFromOpenLibraryID(cover_id);
+				}
+				else {
+					cover_url = Book.coverFromOpenLibraryISBN(isbn);
+				}
+
 				let b = new Book(isbn, title, author, cover_url);
 				b.id = doc.key;
+				b.work_key = work_key;
 				results.push(b);
 			}
 
@@ -85,5 +155,21 @@ export class Book {
 			handler(results);
 		});		
 	}
-}
+	
+	static languageFromOpenLibrary(key) {
+		let languages = require("../config/languages.json");
+		return languages[key];
+	}
 
+	static coverFromOpenLibraryISBN(isbn) {
+		let size = "M";
+		let cover_url = "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg";		
+		return cover_url;
+	}
+	
+	static coverFromOpenLibraryID(cover_id) {
+		let size = "M";
+		let cover_url = "https://covers.openlibrary.org/b/id/" + cover_id + "-" + size + ".jpg";		
+		return cover_url;
+	}
+}

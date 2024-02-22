@@ -19,7 +19,10 @@ const IconNames = {
   "discover": { ios: "magnifyingglass", android: "magnify" },
   "goals": { ios: "calendar", android: "calendar" },
   "popup-triangle": { ios: "chevron.down", android: "chevron-down" },
-  "trash": { ios: "trash", android: "trash-can" }  
+  "trash": { ios: "trash", android: "trash-can" },
+  "book": { ios: "book.closed", android: "book" },
+  "openlibrary": { ios: "building.columns", android: "archive" },
+  "photo": { ios: "photo", android: "image" }
 }
 
 export const Icon = (props) => {

@@ -46,11 +46,26 @@ export function BookDetailsScreen({ route, navigation }) {
 				id: "bookshop",
 				title: "Bookshop.org"
 			},
-				{
+			{
 				id: "worldcat",
 				title: "WorldCat"
 			}
 		];
+		
+		if (Platform.OS === "ios") {
+			menu_items.push({
+				id: "cover",
+				title: "Change Cover...",
+				inlineChildren: true,
+				actions: [
+					{
+						id: "setopenlibrary",
+						title: "Set from Open Library"
+					}
+				]
+			})
+		}
+		
 		setMenuActions(menu_items);
 
 	}
@@ -112,6 +127,15 @@ export function BookDetailsScreen({ route, navigation }) {
 		});
 	}
 	
+	function showCovers() {		
+		let params = {
+			id: id,
+			bookshelf_id: current_bookshelf.id,
+			isbn: isbn
+		};
+		navigation.navigate("Covers", params);
+	}
+	
 	function viewBookOn(service) {
 		var url;
 		
@@ -126,6 +150,9 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 		else if (service == "WorldCat") {
 			url = "https://www.worldcat.org/search?q=" + isbn;
+		}
+		else if (service == "Set from Open Library") {
+			showCovers();
 		}
 		
 		if (url != undefined) {

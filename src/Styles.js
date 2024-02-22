@@ -62,6 +62,11 @@ export const light = StyleSheet.create({
 		paddingLeft: 7,
 		color: "#777777"
 	},
+	bookSecondary: {
+		paddingTop: 4,
+		paddingLeft: 7,
+		color: "#777777"
+	},
 	bookCover: {
 		marginTop: 5,
 		width: 50,
@@ -440,11 +445,6 @@ export const light = StyleSheet.create({
 		alignItems: 'center',
 		flex: 1,
 	},
-	bookCoverModal: {
-		height: 300,
-		width: 200,
-		resizeMode: 'contain'
-	},
 	addingBookSpinner: {
 		flex: 1, 
 		position: 'absolute', 
@@ -539,8 +539,8 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6",
 		paddingLeft: 20,
-		paddingTop: 15,
 		paddingRight: 20,
+		paddingTop: 15,
 		paddingBottom: 15
 	},
 	goalsBannerText: {		
@@ -591,6 +591,154 @@ export const light = StyleSheet.create({
 	},
 	signUpDescription: {
 		fontSize: 14,
+	},
+	openLibraryBanner: {
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6"
+	},
+	openLibraryIntro: {
+		color: "#000000",
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 5,
+		paddingBottom: 15
+	},
+	openLibrarySignin: {		
+		marginLeft: 20,
+		marginRight: 20,
+		marginTop: 15,
+		marginBottom: 15
+	},
+	openLibraryUsername: {
+		borderStyle: 'solid',
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderWidth: 0.5,
+		borderRadius: 4,
+		padding: 10,
+		backgroundColor: "#FFF",
+		marginBottom: 15
+	},
+	openLibraryPassword: {		
+		borderStyle: 'solid',
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderWidth: 0.5,
+		borderRadius: 4,
+		padding: 10,
+		backgroundColor: "#FFF"
+	},
+	openLibrarySigninSpinner: {
+		flex: 1,
+		alignItems: "flex-start",
+		marginTop: 25
+	},
+	openLibrarySession: {
+		marginLeft: 20,
+		marginRight: 20,
+		marginTop: 15,
+		marginBottom: 15		
+	},
+	openLibraryStatusBar: {
+		flexDirection: "row",
+		alignItems: "center"
+	},
+	openLibraryStatusUsername: {
+		color: "#000000"
+	},
+	openLibraryStatusButton: {
+		marginLeft: 15
+	},
+	openLibraryItem: {
+		paddingLeft: 0
+	},
+	openLibrarySearch: {
+		marginLeft: 0,
+		marginRight: 0,
+		marginTop: 15,
+		marginBottom: 15
+	},
+	openLibrarySearchSpinner: {
+		marginTop: 10,
+	},
+	openLibraryEditionsScreen: {
+		paddingTop: 0,
+	},
+	openLibraryEditionsBar: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingLeft: 15,
+		paddingTop: 15,
+		paddingBottom: 15,
+		borderBottomColor: "#d6d6d6",
+		borderBottomWidth: 0.5,
+		backgroundColor: "#e1e1e1"
+	},
+	openLibraryEditionsTitle: {		
+		fontSize: 13
+	},
+	openLibraryEditionsExtras: {
+		marginLeft: 5,
+		fontSize: 13,
+		color: "#777777"
+	},
+	openLibraryEditionsProgress: {
+		marginLeft: 8
+	},
+	openLibraryEditionsDetails: {
+		alignItems: "center",
+		marginTop: 20
+	},
+	openLibraryEditionsCover: {
+		width: 200,
+		height: 350,
+		resizeMode: "contain",
+		marginBottom: 20
+	},
+	openLibraryEditionsButton: {
+		flexDirection: "row",
+		marginLeft: 12,
+		paddingLeft: 12,
+		paddingRight: 12,
+		paddingTop: 8,
+		paddingBottom: 8,
+		borderRadius: 5,
+		backgroundColor: "#c9c9c9"
+	},
+	openLibraryEditionsButtonTitle: {		
+	},
+	openLibraryCoverSearch: {		
+		marginLeft: 20,
+		marginRight: 20,
+		marginTop: 0,
+		marginBottom: 15		
+	},
+	mediumBookCover: {
+		width: 100,
+		height: 140,
+		backgroundColor: "#c9c9c9"
+	},
+	coverResults: {
+		flexDirection: "row"
+	},
+	coverResultsOptions: {
+		justifyContent: "center"
+	},
+	coverResultsButtonProgress: {
+		flexDirection: "row",	
+	},
+	useThisCoverButton: {
+		justifyContent: "center",
+		height: 34,
+		marginLeft: 12,
+		marginRight: 12,
+		paddingLeft: 12,
+		paddingRight: 12,
+		paddingTop: 8,
+		paddingBottom: 8,
+		borderRadius: 5,
+		backgroundColor: "#c9c9c9"
+	},
+	useThisCoverTitle: {
+		color: "#000000"
 	}
 });
 
@@ -724,7 +872,8 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#141723"
 	},
 	micropubButtonTitle: {
-		color: "#E5E7EB"
+		color: "#E5E7EB",
+		fontSize: 13
 	},
 	micropubIntro: {
 		color: "#E5E7EB"
@@ -822,4 +971,50 @@ export const dark = StyleSheet.create({
 	selectedItem: {
 		backgroundColor: "#141723"
 	},
+	openLibraryBanner: {
+		borderBottomColor: "#444444"
+	},
+	openLibraryIntro: {
+		color: "#FFFFFF"
+	},
+	openLibraryUsername: {
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		color: "#FFF",
+		backgroundColor: "#000"
+	},
+	openLibraryPassword: {
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		color: "#FFF",
+		backgroundColor: "#000"
+	},
+	openLibraryStatusUsername: {
+		color: "#FFFFFF"
+	},
+	openLibraryStatusButton: {
+		color: "#FFFFFF",
+		borderRadius: 20
+	},
+	openLibraryEditionsBar: {
+		borderBottomColor: "#444444",
+		backgroundColor: "#272f3d"
+	},
+	openLibraryEditionsTitle: {
+		color: "#E5E7EB"
+	},
+	openLibraryEditionsExtras: {		
+		color: "#777777"
+	},
+	openLibraryEditionsButton: {
+		backgroundColor: "#141723"
+	},
+	openLibraryEditionsButtonTitle: {
+		color: "#E5E7EB",
+		fontSize: 13
+	},
+	useThisCoverButton: {
+		backgroundColor: "#141723"
+	},
+	useThisCoverTitle: {
+		color: "#FFFFFF"
+	}
 });

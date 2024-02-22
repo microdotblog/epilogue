@@ -22,6 +22,9 @@ import { ProfileScreen } from "./src/ProfileScreen";
 import { ExternalScreen } from "./src/ExternalScreen";
 import { EditGoalScreen } from "./src/EditGoalScreen";
 import { CreateAccountScreen } from "./src/CreateAccountScreen";
+import { OpenEditionsScreen } from "./src/screens/OpenEditionsScreen";
+import { OpenDetailsScreen } from "./src/screens/OpenDetailsScreen";
+import { OpenCoversScreen } from "./src/screens/OpenCoversScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +74,22 @@ const App: () => Node = () => {
               </Pressable>
   					)
   				})} />
+          <Stack.Screen name="Editions" component={OpenEditionsScreen} options={({ navigation, route }) => ({
+            title: "Editions",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                          <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+              </Pressable>
+            )
+          })} />
+          <Stack.Screen name="OLDetails" component={OpenDetailsScreen} options={({ navigation, route }) => ({
+            title: "Details",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                          <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+              </Pressable>
+            )
+          })} />
   			</Stack.Group>
   			<Stack.Group screenOptions={{ presentation: "modal" }}>
   				<Stack.Screen name="Post" component={PostScreen} options={({ navigation, route }) => ({
@@ -125,6 +144,14 @@ const App: () => Node = () => {
             headerRight: () => (
               <Pressable onPress={() => { navigation.navigate("Post", { books: [] }); }} hitSlop={10}>
                 <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+              </Pressable>
+            )
+          })} />
+          <Stack.Screen name="Covers" component={OpenCoversScreen} options={({ navigation, route }) => ({
+            title: "Covers",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
               </Pressable>
             )
           })} />
