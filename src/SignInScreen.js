@@ -9,8 +9,6 @@ import epilogueStorage from "./Storage";
 export function SignInScreen({ navigation }) {
 	const styles = useEpilogueStyle();
 	const is_dark = (useColorScheme() == "dark");
-	const welcomeLogo = require("../images/welcome-logo.png");
-	const welcomeLogoDark = require("../images/welcome-logo-dark.png");
 	
 	const [ email, setEmail ] = useState();
 	const [ emailSent, setEmailSent ] = useState(false);
@@ -115,7 +113,6 @@ export function SignInScreen({ navigation }) {
 		emailSent === false ? (
 			<View style={styles.signIn}>
 				<View style={styles.signInHeader}>
-					<Image style={styles.signInImage} source={is_dark ? welcomeLogoDark : welcomeLogo} />
 					<Text style={styles.signInTextHeader}>
 						Epilogue is a companion app for Micro.blog. It uses Micro.blog’s bookshelves to help you track which books you are reading or want to read. You can blog directly from Epilogue.
 					</Text>
