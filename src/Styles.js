@@ -182,7 +182,12 @@ export const light = StyleSheet.create({
 		backgroundColor: "#FFFFFF"
 	},
 	discoverResults: {
-		marginTop: 10	
+		marginTop: 10,
+		marginLeft: 8,
+		marginRight: 8
+	},
+	discoverSearchResults: {
+		marginTop: 10
 	},
 	navbarCloseIcon: {
 		marginTop: 3,
@@ -419,9 +424,9 @@ export const light = StyleSheet.create({
 		height: 160,
 		justifyContent: 'center',
 		backgroundColor: '#DEDEDE',
-		marginLeft: 6,
-		marginRight: 6,
-		marginBottom: 11,
+		marginLeft: 8,
+		marginRight: 8,
+		marginBottom: 14,
 		shadowColor: '#000',
 		shadowOffset: {
 			height: 2

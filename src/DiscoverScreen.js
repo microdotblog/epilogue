@@ -367,7 +367,6 @@ export function DiscoverScreen({ navigation }) {
 				actions={menuActions}
 				dropdownMenuMode={false}
 			>
-
 				<TouchableOpacity 
 					onPress={() => { onOpen(item.url) }}
 					onLongPress={() => { return null }}
@@ -411,7 +410,7 @@ export function DiscoverScreen({ navigation }) {
 						key = "BooksList"
 						renderItem = {renderSearchItem}
 						keyExtractor = { item => item.id }
-						style={styles.discoverResults}
+						style={styles.discoverSearchResults}
 					/>
 				</View>
 			) : (
