@@ -740,7 +740,7 @@ export const light = StyleSheet.create({
 		paddingTop: 8,
 		paddingBottom: 8,
 		borderRadius: 5,
-		backgroundColor: "#c9c9c9"
+		backgroundColor: "#DEDEDE"
 	},
 	useThisCoverTitle: {
 		color: "#000000"

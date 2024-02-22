@@ -109,7 +109,7 @@ export function OpenCoversScreen({ route, navigation }) {
 	return (
 		<View style={[styles.container]}>
 			<View style={styles.openLibraryBanner}>
-				<Text style={styles.openLibraryIntro}>Set your book cover from images hosted on the Internet Archive's Open Library. Use the Open Library tab in Epilogue to manage covers that everyone has access to.</Text>
+				<Text style={styles.openLibraryIntro}>Set your book cover from images hosted on the Internet Archive's Open Library.</Text>
 			</View>
 
 			<View style={styles.openLibraryCoverSearch}>
