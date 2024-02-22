@@ -17,6 +17,7 @@ const Tab = createBottomTabNavigator();
 export function TabsScreen({ navigation }) {
 	const styles = useEpilogueStyle()
     const is_dark = (useColorScheme() == "dark");
+	const enable_open_library = false;
 
 	return (
 		<Tab.Navigator>
@@ -59,6 +60,7 @@ export function TabsScreen({ navigation }) {
 				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
 				tabBarInactiveTintColor: "gray"
 			}} />
+			{ enable_open_library ? 
 			<Tab.Screen name="Open Library" component={OpenLibraryScreen} options={{
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
 				tabBarIcon: ({ focused, color, size }) => {
@@ -72,6 +74,7 @@ export function TabsScreen({ navigation }) {
 				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
 				tabBarInactiveTintColor: "gray"
 			}} />
+			: null }
 		</Tab.Navigator>
 	);
 }
