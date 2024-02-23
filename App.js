@@ -25,6 +25,7 @@ import { CreateAccountScreen } from "./src/CreateAccountScreen";
 import { OpenEditionsScreen } from "./src/screens/OpenEditionsScreen";
 import { OpenDetailsScreen } from "./src/screens/OpenDetailsScreen";
 import { OpenCoversScreen } from "./src/screens/OpenCoversScreen";
+import { DateScreen } from "./src/screens/DateScreen";
 	
 const Stack = createNativeStackNavigator();
 
@@ -152,6 +153,19 @@ const App: () => Node = () => {
             headerLeft: () => (
               <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                 <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+              </Pressable>
+            )
+          })} />
+          <Stack.Screen name="DatePicker" component={DateScreen} options={({ navigation, route }) => ({
+            title: "Finished Date",
+            headerLeft: () => (
+              <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+              </Pressable>
+            ),
+            headerRight: () => (
+              <Pressable onPress={() => { }}>
+                <Text style={styles.navbarSubmit}>Update</Text>
               </Pressable>
             )
           })} />

@@ -54,16 +54,20 @@ export function BookDetailsScreen({ route, navigation }) {
 		
 		if (Platform.OS === "ios") {
 			menu_items.push({
-				id: "cover",
-				title: "Change Cover...",
+				id: "edit",
+				title: "Edit Book...",
 				inlineChildren: true,
 				actions: [
 					{
+						id: "setfinisheddate",
+						title: "Set Finished Date"
+					},
+					{
 						id: "setopenlibrary",
-						title: "Set from Open Library"
+						title: "Set Cover from Open Library"
 					}
 				]
-			})
+			});
 		}
 		
 		setMenuActions(menu_items);
@@ -127,6 +131,15 @@ export function BookDetailsScreen({ route, navigation }) {
 		});
 	}
 	
+	function showDatePicker() {
+		let params = {
+			id: id,
+			bookshelf_id: current_bookshelf.id,
+			isbn: isbn
+		};
+		navigation.navigate("DatePicker", params);
+	}
+	
 	function showCovers() {		
 		let params = {
 			id: id,
@@ -151,7 +164,10 @@ export function BookDetailsScreen({ route, navigation }) {
 		else if (service == "WorldCat") {
 			url = "https://www.worldcat.org/search?q=" + isbn;
 		}
-		else if (service == "Set from Open Library") {
+		else if (service == "Set Finished Date") {
+			showDatePicker();
+		}
+		else if (service == "Set Cover from Open Library") {
 			showCovers();
 		}
 		

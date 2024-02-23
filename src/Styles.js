@@ -744,6 +744,16 @@ export const light = StyleSheet.create({
 	},
 	useThisCoverTitle: {
 		color: "#000000"
+	},
+	finishedDatePicker: {
+		marginTop: 3,
+		marginBottom: 20,
+		paddingBottom: 25,
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#d6d6d6"
+	},
+	finishedTimePicker: {
+		alignItems: "center"
 	}
 });
 

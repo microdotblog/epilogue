@@ -13,6 +13,7 @@
     "@invertase/react-native-apple-authentication": "^2.2.2",
     "@react-native-async-storage/async-storage": "^1.16.1",
     "@react-native-clipboard/clipboard": "^1.10.0",
+    "@react-native-community/datetimepicker": "^7.6.2",
     "@react-native-cookies/cookies": "^6.2.1",
     "@react-native-menu/menu": "https://github.com/react-native-menu/menu#11a60059ee59a58c8e67f50f81011db32952cb52",
     "@react-native/metro-config": "^0.73.5",
