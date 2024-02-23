@@ -13,11 +13,18 @@ var editing_time = new Date();
 export function DateScreen({ route, navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const styles = useEpilogueStyle();
-	const opened_date = new Date();
-	const [ date, setDate ] = useState(opened_date);
-	const [ time, setTime ] = useState(opened_date);
+	const { id, bookshelf_id, isbn, date_finished } = route.params;
+
+	var d = new Date();
+	if (date_finished.length > 0) {
+		d = new Date(date_finished);
+	}
+	editing_date = d;
+	editing_time = d;
+	 
+	const [ date, setDate ] = useState(d);
+	const [ time, setTime ] = useState(d);
 	const [ isUploading, setIsUploading ] = useState(false);
-	const { id, bookshelf_id, isbn, finished_date } = route.params;
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -45,7 +52,9 @@ export function DateScreen({ route, navigation }) {
 	};
 
 	const onChangeTime = (event, selectedTime) => {
-		if (selectedTime != opened_date) {
+		let d1 = new Date(selectedTime);
+		let d2 = new Date(date_finished);
+		if (d1.getTime() != d2.getTime()) {
 			editing_time = selectedTime;
 		}
 	};
@@ -58,11 +67,11 @@ export function DateScreen({ route, navigation }) {
 		const offset_minutes = combined_date.getTimezoneOffset();
 		const offset_ms = offset_minutes * 60 * 1000;
 		const combined_gmt = new Date(combined_date.getTime() + offset_ms);
-
+		
 		epilogueStorage.get("auth_token").then(auth_token => {
 			let form = new FormData();
-			form.append("date_finished", combined_gmt);
-		
+			form.append("date_finished", combined_gmt.toString());
+				
 			var options = {
 				method: "POST",
 				body: form,
@@ -70,8 +79,8 @@ export function DateScreen({ route, navigation }) {
 					"Authorization": "Bearer " + auth_token
 				}
 			};
-		
-			let url = `https://micro.blog/books/bookshelves/${bookshelf_id}/books/${id}`;
+					
+			let url = `https://micro.blog/books/bookshelves/${bookshelf_id}/save/${id}`;
 			fetch(url, options).then(response => response.json()).then(data => {
 				navigation.goBack();
 			});

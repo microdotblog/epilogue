@@ -237,8 +237,9 @@ export function HomeScreen({ navigation }) {
 						image: item.image,
 						author: author_name,
 						description: item.content_text,
+						date: item.date_published,
 						is_search: false
-					});
+					});					
 				}
 				
 				setBooks(new_items);
@@ -353,6 +354,7 @@ export function HomeScreen({ navigation }) {
 							image: b.cover_url,
 							author: b.author,
 							description: b.description,
+							date: "",
 							is_search: true
 						});
 					}
@@ -371,6 +373,7 @@ export function HomeScreen({ navigation }) {
 								image: b.cover_url,
 								author: b.author,
 								description: b.description,
+								date: "",
 								is_search: true
 							});
 						}
@@ -393,6 +396,7 @@ export function HomeScreen({ navigation }) {
 						image: b.cover_url,
 						author: b.author,
 						description: b.description,
+						date: "",
 						is_search: true
 					});
 				}
@@ -411,6 +415,7 @@ export function HomeScreen({ navigation }) {
 				image: item.image,
 				author: item.author,
 				description: item.description,
+				date: item.date,
 				bookshelves: bookshelves,
 				current_bookshelf: current_bookshelf,
 				is_search: item.is_search

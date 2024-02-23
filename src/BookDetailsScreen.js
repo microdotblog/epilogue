@@ -16,7 +16,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 	const [ menuActions, setMenuActions] = useState([])	
-	const { id, isbn, title, image, author, description, bookshelves, current_bookshelf, is_search } = route.params;
+	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -140,7 +140,7 @@ export function BookDetailsScreen({ route, navigation }) {
 			id: id,
 			bookshelf_id: current_bookshelf.id,
 			isbn: isbn,
-			finished_date: ""
+			date_finished: date
 		};
 		navigation.navigate("DatePicker", params);
 	}
