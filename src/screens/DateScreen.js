@@ -7,19 +7,92 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 
+var editing_date = new Date();
+var editing_time = new Date();
+
 export function DateScreen({ route, navigation }) {
 	const is_dark = (useColorScheme() == "dark");
 	const styles = useEpilogueStyle();
-	const [ date, setDate ] = useState(new Date());
-	const [ time, setTime ] = useState(new Date());
+	const opened_date = new Date();
+	const [ date, setDate ] = useState(opened_date);
+	const [ time, setTime ] = useState(opened_date);
+	const [ isUploading, setIsUploading ] = useState(false);
+	const { id, bookshelf_id, isbn, finished_date } = route.params;
+
+	React.useEffect(() => {
+		const unsubscribe = navigation.addListener("focus", () => {
+			onFocus(navigation);
+		});
+		return unsubscribe;
+	}, [navigation]);	
+
+	function setupUpdateButton() {
+		navigation.setOptions({
+			headerRight: () => (
+			  <Pressable onPress={() => { onUpdate(); }}>
+				  <Text style={styles.navbarSubmit}>Update</Text>
+			  </Pressable>
+			)
+		});		
+	}
+	
+	function onFocus() {
+		setupUpdateButton();
+	}
 	
 	const onChangeDate = (event, selectedDate) => {
-		console.log("date", selectedDate);
+		editing_date = selectedDate;
 	};
 
 	const onChangeTime = (event, selectedTime) => {
-		console.log("time", selectedTime);
+		if (selectedTime != opened_date) {
+			editing_time = selectedTime;
+		}
 	};
+	
+	function onUpdate() {
+		setIsUploading(true);
+
+		// combine date/time pickers and convert to GMT
+		const combined_date = combineDateAndTime(editing_date, editing_time);
+		const offset_minutes = combined_date.getTimezoneOffset();
+		const offset_ms = offset_minutes * 60 * 1000;
+		const combined_gmt = new Date(combined_date.getTime() + offset_ms);
+
+		epilogueStorage.get("auth_token").then(auth_token => {
+			let form = new FormData();
+			form.append("date_finished", combined_gmt);
+		
+			var options = {
+				method: "POST",
+				body: form,
+				headers: {
+					"Authorization": "Bearer " + auth_token
+				}
+			};
+		
+			let url = `https://micro.blog/books/bookshelves/${bookshelf_id}/books/${id}`;
+			fetch(url, options).then(response => response.json()).then(data => {
+				navigation.goBack();
+			});
+		});
+	}
+
+	function combineDateAndTime(date, time) {
+		// date components
+		const year = date.getFullYear();
+		const month = date.getMonth();
+		const day = date.getDate();
+	
+		// time components
+		const hours = time.getHours();
+		const minutes = time.getMinutes();
+		const seconds = time.getSeconds();
+		const ms = time.getMilliseconds();
+	
+		// new date with combined components
+		return new Date(year, month, day, hours, minutes, seconds, ms);
+	}	
 	
 	return (
 		<View>
@@ -32,14 +105,14 @@ export function DateScreen({ route, navigation }) {
 					onChange={onChangeDate}
 				/>
 			</View>
-			<View style={styles.finishedTimePicker}>
+			<View style={styles.finishedTimePickerRow}>
 				<DateTimePicker
 					testID="timePicker"
 					value={time}
 					mode="time"
-					display="inline"
 					onChange={onChangeTime}
 				/>
+				<ActivityIndicator style={styles.finishedProgress} size="small" animating={isUploading} />
 			</View>
 		</View>
 	)

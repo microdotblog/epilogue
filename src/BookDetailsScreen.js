@@ -53,20 +53,24 @@ export function BookDetailsScreen({ route, navigation }) {
 		];
 		
 		if (Platform.OS === "ios") {
+			var edit_actions = [];
+			if (current_bookshelf.type == "finished") {
+				edit_actions.push({
+					id: "setfinisheddate",
+					title: "Set Finished Date"
+				});
+			}
+
+			edit_actions.push({
+				id: "setopenlibrary",
+				title: "Set Cover from Open Library"
+			});
+
 			menu_items.push({
 				id: "edit",
 				title: "Edit Book...",
 				inlineChildren: true,
-				actions: [
-					{
-						id: "setfinisheddate",
-						title: "Set Finished Date"
-					},
-					{
-						id: "setopenlibrary",
-						title: "Set Cover from Open Library"
-					}
-				]
+				actions: edit_actions
 			});
 		}
 		
@@ -135,7 +139,8 @@ export function BookDetailsScreen({ route, navigation }) {
 		let params = {
 			id: id,
 			bookshelf_id: current_bookshelf.id,
-			isbn: isbn
+			isbn: isbn,
+			finished_date: ""
 		};
 		navigation.navigate("DatePicker", params);
 	}

@@ -752,8 +752,14 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
-	finishedTimePicker: {
-		alignItems: "center"
+	finishedTimePickerRow: {		
+		flexDirection: "row",
+		marginLeft: 20
+	},
+	finishedProgress: {
+		flex: 1,
+		alignItems: "flex-end",
+		marginRight: 20
 	}
 });
 
