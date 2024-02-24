@@ -104,7 +104,7 @@ export function DateScreen({ route, navigation }) {
 	}	
 	
 	return (
-		<View>
+		<View style={styles.container}>
 			<View style={styles.finishedDatePicker}>
 				<DateTimePicker				
 					testID="datePicker"
