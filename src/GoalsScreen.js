@@ -193,11 +193,13 @@ export function GoalsScreen({ navigation }) {
 						</View>
 						<View style={styles.goalCovers}>
 							<FlatList
+								style = {{ marginRight: 80 }}
 								horizontal = {true}
 								data = {item.isbns}
 								renderItem = {({ item: isbn }) => {
 									return renderCoverItem(item, isbn);
 								}}
+								showsHorizontalScrollIndicator = {false}
 							/>
 						</View>
 					</Pressable>
