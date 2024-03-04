@@ -112,7 +112,9 @@ export function ProfileScreen({ navigation }) {
 											
 						fetch(use_url, options).then(response => response.json()).then(data => {
 							var new_items = previous_posts;
-							const html_parser = new DOMParser();
+							const html_parser = new DOMParser({ onError: (error) => {
+								// silently ignore errors
+							}});							
 							const md_parser = new showdown.Converter();
 							const num_posts = data.items.length;
 							
