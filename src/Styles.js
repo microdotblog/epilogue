@@ -471,7 +471,8 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
-	goalDetails: {		
+	goalDetails: {
+		minWidth: 100
 	},
 	goalCovers: {
 		paddingLeft: 20
