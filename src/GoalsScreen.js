@@ -32,6 +32,7 @@ export function GoalsScreen({ navigation }) {
 	function loadGoals() {		
 		// show banner if goal for previous year
 		let previous_year = new Date().getFullYear() - 1;
+		let this_month = new Date().getMonth();
 		var has_banner = false;
 		
 		epilogueStorage.get("auth_token").then(auth_token => {
@@ -76,6 +77,12 @@ export function GoalsScreen({ navigation }) {
 					}
 				}
 				
+				// if past February, don't show banner
+				if (this_month >= 2) {
+					has_banner = false;
+				}
+				
+				// set goals and cancel banner if not needed
 				setGoals(new_goals);
 				if (!has_banner) {
 					setBannerYear(undefined);
@@ -142,9 +149,7 @@ export function GoalsScreen({ navigation }) {
 
 	const BannerView = ({ year, count }) => {
 		if ((year == undefined) || (count == 0)) {
-			return (
-				<View />
-			)
+			return null;
 		}
 		else {
 			let params = {

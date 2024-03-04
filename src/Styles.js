@@ -546,7 +546,7 @@ export const light = StyleSheet.create({
 		borderBottomColor: "#d6d6d6",
 		paddingLeft: 20,
 		paddingRight: 20,
-		paddingTop: 15,
+		paddingTop: 17,
 		paddingBottom: 15
 	},
 	goalsBannerText: {		
