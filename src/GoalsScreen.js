@@ -172,9 +172,13 @@ export function GoalsScreen({ navigation }) {
 		}
 	}
 
-	const renderCoverItem =({item}) => (
-		<FastImage style={styles.goalCoverThumbnail} source={{ uri: "https://micro.blog/books/" + item + "/cover.jpg" }} />
-	)
+	function renderCoverItem(goalItem, isbn) {
+		return (
+			<Pressable onPress={() => { onSelectGoal(goalItem) }}>
+				<FastImage style={styles.goalCoverThumbnail} source={{ uri: "https://micro.blog/books/" + isbn + "/cover.jpg" }} />
+			</Pressable>
+		)
+	}
 
 	return (
 		<View style={styles.goalsContainer}>
@@ -191,7 +195,9 @@ export function GoalsScreen({ navigation }) {
 							<FlatList
 								horizontal = {true}
 								data = {item.isbns}
-								renderItem = {renderCoverItem}
+								renderItem = {({ item: isbn }) => {
+									return renderCoverItem(item, isbn);
+								}}
 							/>
 						</View>
 					</Pressable>
