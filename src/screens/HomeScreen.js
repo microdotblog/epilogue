@@ -1,6 +1,6 @@
 import React, { Component, useState, useRef } from "react";
 import type { Node } from "react";
-import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
@@ -25,10 +25,20 @@ export function HomeScreen({ navigation }) {
 	var bookRowReferences = [];
     
 	React.useEffect(() => {
-		const unsubscribe = navigation.addListener("focus", () => {
+		const unsubscribe_focus = navigation.addListener("focus", () => {
 			onFocus(navigation);
 		});
-		return unsubscribe;
+
+		const unsubscribe_change = AppState.addEventListener("change", nextAppState => {
+			if (nextAppState == "active") {
+				onBecomeActive();
+			}
+		});
+
+		return () => {
+			unsubscribe_focus();
+			unsubscribe_change.remove();
+		};
 	}, [navigation]);
   
 	function onFocus(navigation) {
@@ -58,6 +68,20 @@ export function HomeScreen({ navigation }) {
 		setupLinking();
 		setupProfileIcon();
 		clearSelection();
+	}
+	
+	function onBecomeActive() {
+		epilogueStorage.get(keys.authToken).then(auth_token => {
+			if ((auth_token != null) && (auth_token.length > 0)) {
+				// no search yet, load bookshelves
+				epilogueStorage.get(keys.currentSearch).then(current_search => {
+					if ((current_search == null) || (current_search.length == 0)) {
+						searchFieldRef.current.clear();
+						loadBookshelves(navigation);
+					}
+				});
+			}
+		});
 	}
   
   	function setupLinking() {
