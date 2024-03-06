@@ -75,7 +75,6 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 		
 		setMenuActions(menu_items);
-
 	}
 	
 	function addToBookshelf(bookshelf_id) {
@@ -192,6 +191,7 @@ export function BookDetailsScreen({ route, navigation }) {
 							}}
 							actions={menuActions}
 							previewBackgroundColor="rgba(0, 0, 0, 0.0)"
+							dropdownMenuMode={true}
 						>
 						<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
 					</ContextMenu>
