@@ -3,14 +3,14 @@ import { Text, View, useColorScheme } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import { Icon } from './Icon';
-import epilogueStorage from "./Storage";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
+import { Icon } from '../Icon';
+import epilogueStorage from "../Storage";
 import { HomeScreen } from "./HomeScreen";
 import { DiscoverScreen } from "./DiscoverScreen";
 import { GoalsScreen } from "./GoalsScreen";
-import { OpenLibraryScreen } from "./screens/OpenLibraryScreen";
+import { OpenLibraryScreen } from "./OpenLibraryScreen";
 
 const Tab = createBottomTabNavigator();
 

@@ -4,9 +4,9 @@ import { Linking, Alert, TextInput, ActivityIndicator, Pressable, Button, Image,
 import { NavigationContainer } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 
-import { keys, errors } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
+import { keys, errors } from "../Constants";
+import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
+import epilogueStorage from "../Storage";
 
 export function ExternalScreen({ navigation }) {
 	const styles = useEpilogueStyle()

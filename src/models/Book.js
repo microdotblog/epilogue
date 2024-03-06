@@ -1,4 +1,4 @@
-import { Edition } from "./models/Edition";
+import { Edition } from "./Edition";
 
 export class Book {	
 	constructor(isbn, title, author, cover_url) {
@@ -157,7 +157,7 @@ export class Book {
 	}
 	
 	static languageFromOpenLibrary(key) {
-		let languages = require("../config/languages.json");
+		let languages = require("../../config/languages.json");
 		return languages[key];
 	}
 

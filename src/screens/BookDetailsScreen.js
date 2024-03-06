@@ -7,9 +7,9 @@ import { MenuView } from "@react-native-menu/menu";
 import ContextMenu from "react-native-context-menu-view";
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from "./hooks/useEpilogueStyle";
-import epilogueStorage from "./Storage";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
+import epilogueStorage from "../Storage";
 
 export function BookDetailsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle()

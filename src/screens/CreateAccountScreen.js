@@ -2,10 +2,10 @@
 import React, { useState } from "react";
 import { View, TextInput, Text, Pressable, Alert, Linking } from 'react-native';
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
-import { Book } from "./Book";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
+import epilogueStorage from "../Storage";
+import { Book } from "../models/Book";
 
 export function CreateAccountScreen({ navigation }) {		
 	const styles = useEpilogueStyle();

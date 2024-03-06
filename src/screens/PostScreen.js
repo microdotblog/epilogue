@@ -4,9 +4,9 @@ import { InputAccessoryView, TextInput, ActivityIndicator, Pressable, Button, Im
 import { NavigationContainer } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
+import epilogueStorage from "../Storage";
 
 export function PostScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();

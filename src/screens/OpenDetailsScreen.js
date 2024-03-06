@@ -8,7 +8,7 @@ import RNFS from "react-native-fs";
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
-import { Book } from "../Book";
+import { Book } from "../models/Book";
 import { Icon } from "../Icon";
 
 export function OpenDetailsScreen({ route, navigation }) {

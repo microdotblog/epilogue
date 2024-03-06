@@ -3,9 +3,9 @@ import type { Node } from "react";
 import { FlatList, ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from "./hooks/useEpilogueStyle";
-import epilogueStorage from "./Storage";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
+import epilogueStorage from "../Storage";
 
 export function BlogsScreen({ navigation }) {
 	const styles = useEpilogueStyle()

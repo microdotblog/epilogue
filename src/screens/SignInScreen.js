@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { TextInput, Pressable, Text, View, Image, Alert, Linking, Platform, useColorScheme } from "react-native";
 import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
+import epilogueStorage from "../Storage";
 
 export function SignInScreen({ navigation }) {
 	const styles = useEpilogueStyle();

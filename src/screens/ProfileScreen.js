@@ -6,9 +6,9 @@ import { DOMParser } from "@xmldom/xmldom";
 import FastImage from "react-native-fast-image";
 var showdown  = require("showdown");
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
+import epilogueStorage from "../Storage";
 
 export function ProfileScreen({ navigation }) {
 	const styles = useEpilogueStyle()

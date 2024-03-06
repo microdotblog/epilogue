@@ -6,10 +6,10 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import FastImage from "react-native-fast-image";
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
-import { Book } from "./Book";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
+import epilogueStorage from "../Storage";
+import { Book } from "../models/Book";
 
 export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();

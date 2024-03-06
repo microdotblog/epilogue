@@ -9,11 +9,11 @@ import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import FastImage from "react-native-fast-image";
 
-import { keys, errors } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
-import { Icon } from "./Icon";
-import { Book } from "./Book";
+import { keys, errors } from "../Constants";
+import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
+import epilogueStorage from "../Storage";
+import { Icon } from "../Icon";
+import { Book } from "../models/Book";
 
 export function HomeScreen({ navigation }) {
 	const styles = useEpilogueStyle()

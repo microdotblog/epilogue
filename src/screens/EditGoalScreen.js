@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Pressable, FlatList, Image, View, TouchableOpacity, Text, TextInput, ActivityIndicator, Platform, Keyboard, useColorScheme } from 'react-native';
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
-import { Icon } from "./Icon";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
+import epilogueStorage from "../Storage";
+import { Icon } from "../Icon";
 
 export function EditGoalScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();

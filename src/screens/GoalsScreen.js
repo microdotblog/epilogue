@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, useColorScheme, useWindowDimensions } from 'react-native';
 import FastImage from "react-native-fast-image";
 
-import { keys } from "./Constants";
-import { useEpilogueStyle } from './hooks/useEpilogueStyle';
-import epilogueStorage from "./Storage";
-import { Icon } from "./Icon";
+import { keys } from "../Constants";
+import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
+import epilogueStorage from "../Storage";
+import { Icon } from "../Icon";
 
 export function GoalsScreen({ navigation }) {
 	const windowSize = useWindowDimensions();
