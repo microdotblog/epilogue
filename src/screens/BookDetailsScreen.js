@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
@@ -28,6 +28,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	function onFocus(navigation) {
 		let bookshelf_title = current_bookshelf.title;
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
+		let url = "https://micro.blog/books/" + isbn
 		epilogueStorage.set(keys.currentTitle, "");
 		epilogueStorage.set(keys.currentText, s);
 		epilogueStorage.set(keys.currentTextExtra, "");
@@ -72,9 +73,39 @@ export function BookDetailsScreen({ route, navigation }) {
 				inlineChildren: true,
 				actions: edit_actions
 			});
+
+			menu_items.push({
+				id: "share",
+				title: "Share",
+				systemIcon: "square.and.arrow.up",
+				actions: onShare(url)
+			})
 		}
 		
 		setMenuActions(menu_items);
+	}
+
+	async function onShare(url) {
+		try {
+			const result = await Share.share({
+				message: url
+			})
+			if (result.action === Share.sharedAction) {
+				if (result.activityType) {
+					switch (result.activityType) {
+						case 'com.apple.UIKit.activity.CopyToPasteboard':
+							Clipboard.setString(url)
+							break
+					}
+				} else {
+
+				}
+			} else if (result.action === Share.dismissedAction) {
+
+			}
+		} catch (error) {
+			Alert.alert(error.message)
+		}
 	}
 	
 	function addToBookshelf(bookshelf_id) {
