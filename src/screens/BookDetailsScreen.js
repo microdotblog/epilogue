@@ -28,7 +28,6 @@ export function BookDetailsScreen({ route, navigation }) {
 	function onFocus(navigation) {
 		let bookshelf_title = current_bookshelf.title;
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
-		let url = "https://micro.blog/books/" + isbn
 		epilogueStorage.set(keys.currentTitle, "");
 		epilogueStorage.set(keys.currentText, s);
 		epilogueStorage.set(keys.currentTextExtra, "");
@@ -78,7 +77,6 @@ export function BookDetailsScreen({ route, navigation }) {
 				id: "share",
 				title: "Share",
 				systemIcon: "square.and.arrow.up",
-				actions: onShare(url)
 			})
 		}
 		
@@ -219,6 +217,10 @@ export function BookDetailsScreen({ route, navigation }) {
 							title="View on..."
 							onPress={({nativeEvent}) => {
 								viewBookOn(nativeEvent.name);
+								if (nativeEvent.name === "Share") {
+									let url = "https://micro.blog/books/" + isbn
+									onShare(url)
+								}
 							}}
 							actions={menuActions}
 							previewBackgroundColor="rgba(0, 0, 0, 0.0)"
