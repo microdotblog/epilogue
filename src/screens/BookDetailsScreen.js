@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView } from "react-native";
+import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
@@ -72,9 +72,38 @@ export function BookDetailsScreen({ route, navigation }) {
 				inlineChildren: true,
 				actions: edit_actions
 			});
+
+			menu_items.push({
+				id: "share",
+				title: "Share",
+				systemIcon: "square.and.arrow.up",
+			})
 		}
 		
 		setMenuActions(menu_items);
+	}
+
+	async function onShare(url) {
+		try {
+			const result = await Share.share({
+				message: url
+			})
+			if (result.action === Share.sharedAction) {
+				if (result.activityType) {
+					switch (result.activityType) {
+						case 'com.apple.UIKit.activity.CopyToPasteboard':
+							Clipboard.setString(url)
+							break
+					}
+				} else {
+
+				}
+			} else if (result.action === Share.dismissedAction) {
+
+			}
+		} catch (error) {
+			Alert.alert(error.message)
+		}
 	}
 	
 	function addToBookshelf(bookshelf_id) {
@@ -188,6 +217,10 @@ export function BookDetailsScreen({ route, navigation }) {
 							title="View on..."
 							onPress={({nativeEvent}) => {
 								viewBookOn(nativeEvent.name);
+								if (nativeEvent.name === "Share") {
+									let url = "https://micro.blog/books/" + isbn
+									onShare(url)
+								}
 							}}
 							actions={menuActions}
 							previewBackgroundColor="rgba(0, 0, 0, 0.0)"
