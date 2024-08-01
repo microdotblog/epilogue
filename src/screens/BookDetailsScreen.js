@@ -47,9 +47,13 @@ export function BookDetailsScreen({ route, navigation }) {
 				title: "Bookshop.org"
 			},
 			{
+				id: "openlibrary",
+				title: "OpenLibrary"
+			},
+			{
 				id: "worldcat",
 				title: "WorldCat"
-			}
+			},
 		];
 		
 		if (Platform.OS === "ios") {
@@ -194,6 +198,9 @@ export function BookDetailsScreen({ route, navigation }) {
 		else if (service == "Bookshop.org") {
 			url = "https://bookshop.org/books?keywords=" + isbn;
 		}
+		else if (service == "OpenLibrary") {
+			url = "https://openlibrary.org/search?q=" + isbn;
+		}
 		else if (service == "WorldCat") {
 			url = "https://www.worldcat.org/search?q=" + isbn;
 		}
@@ -217,7 +224,7 @@ export function BookDetailsScreen({ route, navigation }) {
 							title="View on..."
 							onPress={({nativeEvent}) => {
 								viewBookOn(nativeEvent.name);
-								if (nativeEvent.name === "Share") {
+								if (nativeEvent.name === "Share	") {
 									let url = "https://micro.blog/books/" + isbn
 									onShare(url)
 								}
