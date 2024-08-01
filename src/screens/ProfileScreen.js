@@ -122,25 +122,28 @@ export function ProfileScreen({ navigation }) {
 								const markdown = item.properties.content[0];
 								if (markdown.includes("micro.blog/books/")) {
 									// convert from Markdown and parse HTML
-									const html = md_parser.makeHtml(markdown);
+									const html = "<html>" + md_parser.makeHtml(markdown) + "</html>";
 									const doc = html_parser.parseFromString(html, "text/html");
 									const text = doc.documentElement.textContent;
 									const display_text = text.replace("📚", "");
 									const date_s = item.properties.published[0].slice(0, 10);
-									
+																		
 									// try to get the book ISBN
-									var isbn = "";
-									var cover_url = "";
-									const a_tag = doc.getElementsByTagName("a")[0];
-									if (a_tag != undefined) {
-										const href = a_tag.getAttribute("href");
-										if (href.includes("micro.blog/books/")) {
-											const pieces = href.split("/");
-											isbn = pieces[pieces.length - 1];
-											cover_url = `https://micro.blog/books/${isbn}/cover.jpg`;
+									let isbn = "";
+									let cover_url = "";
+									const a_tags = doc.getElementsByTagName("a");
+									for (let i = 0; i < a_tags.length; i++) {
+										if (isbn.length == 0) {
+											const a_tag = a_tags[i];
+											const href = a_tag.getAttribute("href");
+											if (href && href.includes("micro.blog/books/")) {
+												const pieces = href.split("/");
+												isbn = pieces[pieces.length - 1];
+												cover_url = `https://micro.blog/books/${isbn}/cover.jpg`;
+											}
 										}
 									}
-									
+																		
 									new_items.push({
 										id: item.properties.uid[0],
 										url: item.properties.url[0],
