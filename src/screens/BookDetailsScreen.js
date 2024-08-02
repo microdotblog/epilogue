@@ -58,6 +58,8 @@ export function BookDetailsScreen({ route, navigation }) {
 		
 		if (Platform.OS === "ios") {
 			var edit_actions = [];
+			var share_actions = [];
+			
 			if (current_bookshelf.type == "finished") {
 				edit_actions.push({
 					id: "setfinisheddate",
@@ -70,6 +72,12 @@ export function BookDetailsScreen({ route, navigation }) {
 				title: "Set Cover from Open Library"
 			});
 
+			share_actions.push({
+				id: "sharebutton",
+				title: "Share",
+				systemIcon: "square.and.arrow.up"
+			})
+
 			menu_items.push({
 				id: "edit",
 				title: "Edit Book...",
@@ -78,9 +86,10 @@ export function BookDetailsScreen({ route, navigation }) {
 			});
 
 			menu_items.push({
-				id: "share",
+				id: "sharelabel",
 				title: "Share",
-				systemIcon: "square.and.arrow.up",
+				inlineChildren: true,
+				actions: share_actions
 			})
 		}
 		
@@ -224,7 +233,8 @@ export function BookDetailsScreen({ route, navigation }) {
 							title="View on..."
 							onPress={({nativeEvent}) => {
 								viewBookOn(nativeEvent.name);
-								if (nativeEvent.name === "Share	") {
+
+								if (nativeEvent.name === "Share") {
 									let url = "https://micro.blog/books/" + isbn
 									onShare(url)
 								}
