@@ -59,7 +59,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		if (Platform.OS === "ios") {
 			var edit_actions = [];
 			var share_actions = [];
-			
+
 			if (current_bookshelf.type == "finished") {
 				edit_actions.push({
 					id: "setfinisheddate",
@@ -87,7 +87,7 @@ export function BookDetailsScreen({ route, navigation }) {
 
 			menu_items.push({
 				id: "sharelabel",
-				title: "Share",
+				title: "micro.blog/books/" + isbn,
 				inlineChildren: true,
 				actions: share_actions
 			})
