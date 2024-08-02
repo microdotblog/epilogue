@@ -864,7 +864,7 @@ PODS:
   - React-Mapbuffer (0.73.3):
     - glog
     - React-debug
-  - react-native-context-menu-view (1.10.0):
+  - react-native-context-menu-view (1.16.0):
     - React
   - react-native-cookies (6.2.1):
     - React-Core
@@ -1043,9 +1043,9 @@ PODS:
     - React-perflogger (= 0.73.3)
   - RNAppleAuthentication (2.2.2):
     - React-Core
-  - RNCAsyncStorage (1.19.1):
+  - RNCAsyncStorage (1.17.11):
     - React-Core
-  - RNCClipboard (1.11.2):
+  - RNCClipboard (1.11.1):
     - React-Core
   - RNDateTimePicker (7.7.0):
     - React-Core
@@ -1055,13 +1055,11 @@ PODS:
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.12.0):
+  - RNGestureHandler (2.8.0):
     - React-Core
   - RNInAppBrowser (3.7.0):
     - React-Core
-  - RNScreens (3.31.1):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
+  - RNScreens (3.24.0):
     - React-Core
     - React-RCTImage
   - RNVectorIcons (9.2.0):
@@ -1280,11 +1278,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
-  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   FBLazyVector: 70590b4f9e8ae9b0ce076efacea3abd7bc585ace
   FBReactNativeSpec: e47ea8c8f044c25e41a4fa5e8b7ff3923d3e0a94
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 9b898847f76977a6dfed2a08f4c5ed37add75ec0
@@ -1307,7 +1305,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 6fad0fe14882fb6b1c32e5cc8a4bd3d33a8b6790
   React-logger: cb0dd15ac67b00e7b771ef15203edcb29d4a3f8e
   React-Mapbuffer: d59258be3b0d2280c6ba8964ab6e36ec69211871
-  react-native-context-menu-view: 4cd5ecaabd2cbb420018b3242ca1eef5efa0a629
+  react-native-context-menu-view: 30915369a9b5887904c571b616653acf3f1c8edb
   react-native-cookies: f54fcded06bb0cda05c11d86788020b43528a26c
   react-native-image-picker: 994a97b28e7f2c2197e21801569bb19f6e494e38
   react-native-menu: 8e172cfcf0e42e92f028e7781eddf84d430cae24
@@ -1334,14 +1332,14 @@ SPEC CHECKSUMS:
   React-utils: b22b4a51aa578b3aac1e7c19501c0b9ba358ed79
   ReactCommon: aaf57f04ba14fa95cb0b941ee5c0d9d0f595c058
   RNAppleAuthentication: 0571c08da8c327ae2afc0261b48b4a515b0286a6
-  RNCAsyncStorage: f47fe18526970a69c34b548883e1aeceb115e3e1
-  RNCClipboard: 3f0451a8100393908bea5c5c5b16f96d45f30bfc
+  RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
+  RNCClipboard: 2834e1c4af68697089cdd455ee4a4cdd198fa7dd
   RNDateTimePicker: 4f3c4dbd4f908be32ec8c93f086e8924bd4a2e07
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
+  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
-  RNScreens: 79c1020e7f52f4edde5ad96540f6e33c8b9b3b6c
+  RNScreens: b21dc57dfa2b710c30ec600786a3fc223b1b92e7
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
