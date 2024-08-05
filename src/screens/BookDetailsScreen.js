@@ -47,13 +47,19 @@ export function BookDetailsScreen({ route, navigation }) {
 				title: "Bookshop.org"
 			},
 			{
+				id: "openlibrary",
+				title: "OpenLibrary"
+			},
+			{
 				id: "worldcat",
 				title: "WorldCat"
-			}
+			},
 		];
 		
 		if (Platform.OS === "ios") {
 			var edit_actions = [];
+			var share_actions = [];
+
 			if (current_bookshelf.type == "finished") {
 				edit_actions.push({
 					id: "setfinisheddate",
@@ -66,6 +72,12 @@ export function BookDetailsScreen({ route, navigation }) {
 				title: "Set Cover from Open Library"
 			});
 
+			share_actions.push({
+				id: "sharebutton",
+				title: "Share",
+				systemIcon: "square.and.arrow.up"
+			})
+
 			menu_items.push({
 				id: "edit",
 				title: "Edit Book...",
@@ -74,9 +86,10 @@ export function BookDetailsScreen({ route, navigation }) {
 			});
 
 			menu_items.push({
-				id: "share",
-				title: "Share",
-				systemIcon: "square.and.arrow.up",
+				id: "sharelabel",
+				title: "micro.blog/books/" + isbn,
+				inlineChildren: true,
+				actions: share_actions
 			})
 		}
 		
@@ -194,6 +207,9 @@ export function BookDetailsScreen({ route, navigation }) {
 		else if (service == "Bookshop.org") {
 			url = "https://bookshop.org/books?keywords=" + isbn;
 		}
+		else if (service == "OpenLibrary") {
+			url = "https://openlibrary.org/search?q=" + isbn;
+		}
 		else if (service == "WorldCat") {
 			url = "https://www.worldcat.org/search?q=" + isbn;
 		}
@@ -217,6 +233,7 @@ export function BookDetailsScreen({ route, navigation }) {
 							title="View on..."
 							onPress={({nativeEvent}) => {
 								viewBookOn(nativeEvent.name);
+
 								if (nativeEvent.name === "Share") {
 									let url = "https://micro.blog/books/" + isbn
 									onShare(url)
