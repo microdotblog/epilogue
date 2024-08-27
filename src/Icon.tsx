@@ -22,7 +22,8 @@ const IconNames = {
   "trash": { ios: "trash", android: "trash-can" },
   "book": { ios: "book.closed", android: "book" },
   "openlibrary": { ios: "building.columns", android: "archive" },
-  "photo": { ios: "photo", android: "image" }
+  "photo": { ios: "photo", android: "image" },
+  "ellipsis": { ios: "ellipsis.circle", android: "dots-horizontal-circle-outline" }
 }
 
 export const Icon = (props) => {

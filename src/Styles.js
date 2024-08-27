@@ -74,19 +74,41 @@ export const light = StyleSheet.create({
 	},
 	bookDetails: {
 		alignItems: "center",
-		marginTop: 5,
-		marginBottom: 20,
-		paddingBottom: 20,
+		marginTop: 5
+	},
+	bookDetailsColumns: {
+		flexDirection: "row",
+		alignItems: "center",
+		backgroundColor: "#FFF",
+		width: "100%",
+		borderTopWidth: 1,
+		borderTopColor: "#DEDEDE",
 		borderBottomWidth: 1,
-		borderBottomColor: "#DEDEDE"
+		borderBottomColor: "#DEDEDE",
+		marginBottom: 20,
+		marginTop: 20,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 10,
+		paddingBottom: 10
+	},
+	bookDetailsFields: {
+		alignItems: "left",
+		flex: 1,
+	},
+	bookDetailsTop: {
+		alignItems: "center"
 	},
 	bookDetailsCover: {
 		width: 200,
 		height: 200,
 		resizeMode: "contain"
 	},
+	bookDetailsMenuButton: {
+		marginLeft: 5
+	},
 	bookDetailsTitle: {
-		marginTop: 10
+		marginTop: 3
 	},
 	bookDetailsAuthor: {
 		marginTop: 5,
@@ -805,6 +827,11 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#212936",
 		color: "#E5E7EB",
 		height: 2000
+	},
+	bookDetailsColumns: {
+		backgroundColor: "#141723",
+		borderTopColor: "#444444",
+		borderBottomColor: "#444444"
 	},
 	bookDetailsButton: {
 		backgroundColor: "#141723"
