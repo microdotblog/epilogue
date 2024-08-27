@@ -50,7 +50,7 @@ export function BookDetailsScreen({ route, navigation }) {
 			},
 			{
 				id: "openlibrary",
-				title: "OpenLibrary"
+				title: "Open Library"
 			},
 			{
 				id: "worldcat",
@@ -209,7 +209,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		else if (service == "Bookshop.org") {
 			url = "https://bookshop.org/books?keywords=" + isbn;
 		}
-		else if (service == "OpenLibrary") {
+		else if (service == "Open Library") {
 			url = "https://openlibrary.org/search?q=" + isbn;
 		}
 		else if (service == "WorldCat") {
