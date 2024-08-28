@@ -150,8 +150,8 @@ export const light = StyleSheet.create({
 		color: "#777777"
 	},
 	navbarNewIcon: {
-		width: 25,
-		height: 25,
+		width: 22,
+		height: 22,
 		tintColor: "#337AB7"
 	},
 	navbarBackIcon: {

@@ -11,7 +11,7 @@ import { SFSymbol } from "./SFSymbols";
 // To find Material icons, use the browser here: https://materialdesignicons.com
 
 const IconNames = {
-  "publish": { ios: "square.and.pencil", android: "pencil" },
+  "publish": { ios: "square.and.pencil", android: "text-box-plus-outline" },
   "navbar-back": { ios: "chevron.left", android: "arrow-left" },
   "close": { ios: "xmark", android: "close" },
   "bookshelf": { ios: "books.vertical", android: "bookshelf" },
@@ -33,15 +33,15 @@ export const Icon = (props) => {
   }
 
   const style = {
-    width: props.size,
-    height: props.size,
+    width: Platform.OS == 'ios' ? props.size : props.size + 2,
+    height: Platform.OS == 'ios' ? props.size : props.size + 2,
     textAlignVertical: "center",
     textAlign: "center",
     ...props.style,
   };
 
   if (Platform.OS === 'android') {
-    return <AndroidIcon {...props} size={props.size + 2} name={name} style={style} />
+    return <AndroidIcon {...props} size={style.width} name={name} style={style} />
   }
   if (Platform.OS === 'ios') {
     return <SFSymbol {...props} name={name} style={style} />
