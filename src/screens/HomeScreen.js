@@ -366,7 +366,7 @@ export function HomeScreen({ navigation }) {
 		
 	function sendSearch(searchText) {
 		if (Book.isISBN(searchText)) {
-			Book.searchOpenLibrary(searchText, function(new_books) {				
+			Book.searchOpenLibrary(searchText, function(new_books) {
 				if (new_books.length > 0) {				
 					var new_items = [];
 
@@ -386,7 +386,8 @@ export function HomeScreen({ navigation }) {
 					setBooks(new_items);
 				}
 				else {
-					Book.searchGoogleBooks(searchText, function(new_books) {
+					let q = `isbn:${searchText}`;
+					Book.searchGoogleBooks(q, function(new_books) {
 						var new_items = [];
 					
 						for (b of new_books) {
