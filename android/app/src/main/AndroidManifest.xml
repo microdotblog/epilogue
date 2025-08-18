@@ -11,6 +11,7 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:exported="true"
+      android:supportsRtl="true"
       >
       <activity
         android:name=".MainActivity"
