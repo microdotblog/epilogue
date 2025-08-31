@@ -26,6 +26,7 @@ import { OpenEditionsScreen } from "./src/screens/OpenEditionsScreen";
 import { OpenDetailsScreen } from "./src/screens/OpenDetailsScreen";
 import { OpenCoversScreen } from "./src/screens/OpenCoversScreen";
 import { DateScreen } from "./src/screens/DateScreen";
+import { NoteScreen } from "./src/screens/NoteScreen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 	
 const Stack = createNativeStackNavigator();
@@ -105,6 +106,14 @@ const App: () => Node = () => {
               headerRight: () => (
                 <Pressable onPress={() => { }}>
                   <Text style={styles.navbarSubmit}>Post</Text>
+                </Pressable>
+              )
+            })} />
+            <Stack.Screen name="Note" component={NoteScreen} options={({ navigation, route }) => ({
+              title: "Note",
+              headerLeft: () => (
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />

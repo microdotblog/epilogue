@@ -228,6 +228,16 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 	}
 
+	function onAddNotePressed() {
+		// Navigate to the Note screen for adding a new note
+		// Pass along identifiers if needed later for saving
+		let params = {
+			bookId: id,
+			isbn: isbn
+		};
+		navigation.navigate("Note", params);
+	}
+
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={styles.container}>
