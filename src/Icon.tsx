@@ -44,6 +44,14 @@ export const Icon = (props) => {
     return <AndroidIcon {...props} size={style.width} name={name} style={style} />
   }
   if (Platform.OS === 'ios') {
-    return <SFSymbol {...props} name={name} style={style} />
+    // Wrap SFSymbol in a View to ensure layout positioning remains relative
+    // to its parent (addresses iOS/RN layout changes where the native view
+    // could render at screen origin if measured outside normal flow).
+    const { width, height, ...restStyle } = style as any;
+    return (
+      <View style={{ width, height, ...restStyle }}>
+        <SFSymbol {...props} name={name} style={{ width: "100%", height: "100%" }} />
+      </View>
+    );
   }
 };

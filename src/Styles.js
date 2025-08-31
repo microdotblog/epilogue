@@ -93,7 +93,7 @@ export const light = StyleSheet.create({
 		paddingBottom: 10
 	},
 	bookDetailsFields: {
-		alignItems: "left",
+		alignItems: "flex-start",
 		flex: 1,
 	},
 	bookDetailsTop: {
@@ -106,6 +106,17 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsMenuButton: {
 		marginLeft: 5
+	},
+	bookDetailsMenuContainer: {
+		width: 28,
+		height: 28,
+		alignItems: "center",
+		justifyContent: "center",
+		marginLeft: 5
+	},
+	bookDetailsMenuIcon: {
+		width: 18,
+		height: 18
 	},
 	bookDetailsTitle: {
 		marginTop: 3

@@ -230,21 +230,20 @@ export function BookDetailsScreen({ route, navigation }) {
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={styles.container}>
-				<View style={styles.bookDetails}>
-					<ContextMenu
-							title="View on..."
-							onPress={({nativeEvent}) => {
-								viewBookOn(nativeEvent.name);
-
-								if (nativeEvent.name === "Share") {
-									let url = "https://micro.blog/books/" + isbn
-									onShare(url)
-								}
-							}}
-							actions={menuActions}
-							previewBackgroundColor="rgba(0, 0, 0, 0.0)"
-							dropdownMenuMode={true}
-						>
+				<ContextMenu
+						title="View on..."
+						onPress={({nativeEvent}) => {
+							viewBookOn(nativeEvent.name);
+							if (nativeEvent.name === "Share") {
+								let url = "https://micro.blog/books/" + isbn
+								onShare(url)
+							}
+						}}
+						actions={menuActions}
+						previewBackgroundColor="rgba(0, 0, 0, 0.0)"
+						dropdownMenuMode={true}
+				>
+					<View style={styles.bookDetails}>
 						<View style={styles.bookDetailsTop}>
 							<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
 						</View>
@@ -253,10 +252,17 @@ export function BookDetailsScreen({ route, navigation }) {
 								<Text style={styles.bookDetailsTitle}>{title}</Text>
 								<Text style={styles.bookDetailsAuthor}>{author}</Text>
 							</View>
-							<Icon name="ellipsis" size={18} color={is_dark ? "#FFFFFF" : "#337AB7"} style={styles.bookDetailsMenuButton} />
+							<View style={styles.bookDetailsMenuContainer} pointerEvents="none">
+								<Icon
+									name="ellipsis"
+									size={18}
+									color={is_dark ? "#FFFFFF" : "#337AB7"}
+									style={styles.bookDetailsMenuIcon}
+								/>
+							</View>
 						</View>
-					</ContextMenu>					
-				</View>
+					</View>
+				</ContextMenu>
 				<View style={styles.bookDetailsBookshelves}>
 					<View style={styles.bookDetailsAddBar}>
 					<Text style={styles.bookDetailsAddTo}>Add to bookshelf...</Text>
