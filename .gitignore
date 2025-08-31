@@ -183,3 +183,6 @@ ios/Pods/
 .nova
 yarn.lock
 package-lock.json
+
+ios/.xcode.env
+ios/.xcode.env.local
