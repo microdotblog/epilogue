@@ -73,5 +73,7 @@
 	<false/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Epilogue can upload book cover photos to Open Library.</string>
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
 </dict>
 </plist>
