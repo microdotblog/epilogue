@@ -18,6 +18,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 	const [ menuActions, setMenuActions] = useState([])	
+	const [ notes, setNotes] = useState([])	
 	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
@@ -290,6 +291,14 @@ export function BookDetailsScreen({ route, navigation }) {
 					styles.bookDetailsNoDescription
 					}>
 					<Text style={styles.bookDetailsDescription}>{description}</Text>
+				</View>
+				<View style={styles.bookDetailsNotesSection}>
+					<View style={styles.bookDetailsNotesHeader}>
+						<Text style={styles.bookDetailsNotesTitle}>Notes</Text>
+						<Pressable style={styles.plainButton} onPress={() => { onAddNotePressed(); }}>
+							<Text style={styles.plainButtonTitle} accessibilityLabel="add new reading note">Add Note...</Text>
+						</Pressable>
+					</View>
 				</View>
 			</View>
 		</ScrollView>
