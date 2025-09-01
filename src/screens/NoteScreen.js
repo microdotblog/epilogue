@@ -4,11 +4,14 @@ import { TextInput, Pressable, Text, View } from "react-native";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { keys } from "../Constants";
+import { Note } from "../models/Note";
+import CryptoUtils from '../utils/crypto';
 
 export function NoteScreen({ route, navigation }) {
   const styles = useEpilogueStyle();
-  const initialText = route?.params?.note?.text ?? "";
-  const isEditing = route?.params?.note != null;
+  const initialText = route.params.note?.text ?? "";
+  const isEditing = route.params.note != null;
+  const isbn = route.params.isbn;
   const [text, setText] = useState(initialText);
 
   React.useEffect(() => {
@@ -21,12 +24,14 @@ export function NoteScreen({ route, navigation }) {
     });
   }, [navigation, isEditing, text]);
 
-  function onSubmit() {
-    const encrypted_text = encryptText(text);
+  async function onSubmit() {
+    const secret_key = await epilogueStorage.get(keys.notesKey);
+    const encrypted_text = await CryptoUtils.encrypt(text, secret_key);
 
     let form = new FormData();
     form.append("text", encrypted_text);
     form.append("is_encrypted", "1");
+    form.append("attached_book_isbn", isbn);
 
     const note_id = route?.params?.note?.id;
     if (note_id != null) {
@@ -55,11 +60,6 @@ export function NoteScreen({ route, navigation }) {
 
   function onChangeText(t) {
     setText(t);
-  }
-
-  function encryptText(t) {
-    // ...
-    return t;
   }
 
   return (

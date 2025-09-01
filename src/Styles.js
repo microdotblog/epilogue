@@ -412,8 +412,8 @@ export const light = StyleSheet.create({
 		paddingTop: 15
 	},
 	noteCell: {
-		paddingBottom: 10,
-		marginBottom: 10,
+		paddingBottom: 15,
+		marginBottom: 15,
 		borderBottomColor: "#d6d6d6",
 		borderBottomWidth: 0.5
 	},
@@ -487,7 +487,7 @@ export const light = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		marginBottom: 10
+		marginBottom: 15
 	},
 	bookDetailsNotesTitle: {
 		fontWeight: "bold"

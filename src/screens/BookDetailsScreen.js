@@ -125,11 +125,11 @@ export function BookDetailsScreen({ route, navigation }) {
 
 			fetch(url, options)
 				.then(response => response.json())
-				.then(json => {
-					epilogueStorage.get(keys.notesKey).then(secret_key => {
+				.then(async json => {
+					epilogueStorage.get(keys.notesKey).then(async secret_key => {
 						let new_notes = [];
 						for (let n of json.items) {
-							let t = CryptoUtils.decrypt(n.content_text, secret_key);
+							let t = await CryptoUtils.decrypt(n.content_text, secret_key);
 							new_notes.push({
 								id: n.id,
 								text: t
@@ -274,17 +274,18 @@ export function BookDetailsScreen({ route, navigation }) {
 	}
 
 	function onAddNotePressed() {
-		// Navigate to the Note screen for adding a new note
-		// Pass along identifiers if needed later for saving
-		let params = {
-			bookId: id,
+		const params = {
 			isbn: isbn
 		};
 		navigation.navigate("Note", params);
 	}
 
 	function onEditNotePressed(item) {
-		navigation.navigate("Note", { item });
+		const params = {
+			isbn: isbn,
+			note: item
+		}
+		navigation.navigate("Note", params);
 	}
 
 	return (
