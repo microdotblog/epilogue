@@ -11,6 +11,8 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
+import { Note } from "../models/Note";
+import CryptoUtils from '../utils/crypto';
 
 export function BookDetailsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle()
@@ -116,8 +118,16 @@ export function BookDetailsScreen({ route, navigation }) {
 			fetch(url, options)
 				.then(response => response.json())
 				.then(json => {
-					const items = Array.isArray(json?.items) ? json.items : [];
-					setNotes(items);
+					let new_notes = [];
+					let secret_key = "...";
+					for (let n of json.items) {
+						let t = CryptoUtils.decrypt(n.content_text, secret_key);
+						new_notes.push({
+							id: n.id,
+							text: t
+						});
+					}
+					setNotes(new_notes);
 				})
 				.catch(error => {
 					setNotes([]);
@@ -265,11 +275,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	}
 
 	function onEditNotePressed(item) {
-		const note = {
-			id: item.id,
-			text: item.content_text
-		};
-		navigation.navigate("Note", { note });
+		navigation.navigate("Note", { item });
 	}
 
 	return (
@@ -349,7 +355,7 @@ export function BookDetailsScreen({ route, navigation }) {
 						renderItem={({ item }) => (
 							<Pressable onPress={() => onEditNotePressed(item)}>
 								<View style={{ paddingTop: 8 }}>
-									<Text>{item.content_text}</Text>
+									<Text>{item.text}</Text>
 								</View>
 							</Pressable>
 						)}

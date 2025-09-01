@@ -12,6 +12,8 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		4B719C3E2E65FFC5006D4E7D /* MBNoteCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B719C3B2E65FFC5006D4E7D /* MBNoteCrypto.swift */; };
+		4B719C3F2E65FFC5006D4E7D /* MBNotesCryptoModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B719C3D2E65FFC5006D4E7D /* MBNotesCryptoModule.m */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		92A36815DE671515821F1CDE /* libPods-epilogue-epilogueTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AAA9915A05BF3847A4C64BC /* libPods-epilogue-epilogueTests.a */; };
 		F0F6F80434025CE3D5DABE20 /* libPods-epilogue.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6740AAA8D2EFE819C9CBF146 /* libPods-epilogue.a */; };
@@ -40,6 +42,10 @@
 		28B22893B9D176E10E00D7AF /* Pods-epilogue-epilogueTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-epilogue-epilogueTests.release.xcconfig"; path = "Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests.release.xcconfig"; sourceTree = "<group>"; };
 		34A6ED399D5D443F46E004D6 /* Pods-epilogue.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-epilogue.release.xcconfig"; path = "Target Support Files/Pods-epilogue/Pods-epilogue.release.xcconfig"; sourceTree = "<group>"; };
 		3AAA9915A05BF3847A4C64BC /* libPods-epilogue-epilogueTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-epilogue-epilogueTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B719C3B2E65FFC5006D4E7D /* MBNoteCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBNoteCrypto.swift; sourceTree = "<group>"; };
+		4B719C3C2E65FFC5006D4E7D /* MBNotesCryptoModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MBNotesCryptoModule.h; sourceTree = "<group>"; };
+		4B719C3D2E65FFC5006D4E7D /* MBNotesCryptoModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MBNotesCryptoModule.m; sourceTree = "<group>"; };
+		4B719C402E65FFC8006D4E7D /* epilogue-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "epilogue-Bridging-Header.h"; sourceTree = "<group>"; };
 		6740AAA8D2EFE819C9CBF146 /* libPods-epilogue.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-epilogue.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		72E6C67A60EC779B9B4E4F12 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = epilogue/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = epilogue/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -96,7 +102,11 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				4B719C3B2E65FFC5006D4E7D /* MBNoteCrypto.swift */,
+				4B719C3C2E65FFC5006D4E7D /* MBNotesCryptoModule.h */,
+				4B719C3D2E65FFC5006D4E7D /* MBNotesCryptoModule.m */,
 				72E6C67A60EC779B9B4E4F12 /* PrivacyInfo.xcprivacy */,
+				4B719C402E65FFC8006D4E7D /* epilogue-Bridging-Header.h */,
 			);
 			name = epilogue;
 			sourceTree = "<group>";
@@ -212,7 +222,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 2600;
 					};
 				};
 			};
@@ -278,9 +288,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-epilogue/Pods-epilogue-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-epilogue/Pods-epilogue-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -295,9 +309,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -334,9 +352,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -373,9 +395,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-epilogue/Pods-epilogue-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-epilogue/Pods-epilogue-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -418,6 +444,8 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				4B719C3E2E65FFC5006D4E7D /* MBNoteCrypto.swift in Sources */,
+				4B719C3F2E65FFC5006D4E7D /* MBNotesCryptoModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,6 +534,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = blog.micro.epilogue;
 				PRODUCT_NAME = epilogue;
+				SWIFT_OBJC_BRIDGING_HEADER = "epilogue-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -535,6 +564,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = blog.micro.epilogue;
 				PRODUCT_NAME = epilogue;
+				SWIFT_OBJC_BRIDGING_HEADER = "epilogue-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -608,10 +638,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -678,10 +705,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
