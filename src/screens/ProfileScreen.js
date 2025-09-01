@@ -273,6 +273,9 @@ export function ProfileScreen({ navigation }) {
 				<Pressable style={styles.micropubButton} onPress={() => { onChangePressed(); }}>
 					<Text style={styles.micropubButtonTitle} accessibilityLabel="change posting blog">Change...</Text>
 				</Pressable>
+				<Pressable style={styles.micropubButton} onPress={() => { onNotesKeyPressed(); }}>
+					<Text style={styles.micropubButtonTitle} accessibilityLabel="set secret key">Notes Key...</Text>
+				</Pressable>
 			</View>
 			<FlatList
 				style={styles.profilePosts}

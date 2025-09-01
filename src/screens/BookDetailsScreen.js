@@ -118,16 +118,17 @@ export function BookDetailsScreen({ route, navigation }) {
 			fetch(url, options)
 				.then(response => response.json())
 				.then(json => {
-					let new_notes = [];
-					let secret_key = "...";
-					for (let n of json.items) {
-						let t = CryptoUtils.decrypt(n.content_text, secret_key);
-						new_notes.push({
-							id: n.id,
-							text: t
-						});
-					}
-					setNotes(new_notes);
+					epilogueStorage.get(keys.notesKey).then(secret_key => {
+						let new_notes = [];
+						for (let n of json.items) {
+							let t = CryptoUtils.decrypt(n.content_text, secret_key);
+							new_notes.push({
+								id: n.id,
+								text: t
+							});
+						}
+						setNotes(new_notes);
+					});
 				})
 				.catch(error => {
 					setNotes([]);
