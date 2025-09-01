@@ -97,6 +97,32 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 		
 		setMenuActions(menu_items);
+
+		// refresh notes whenever this screen gains focus
+		fetchNotesForBook();
+	}
+
+	function fetchNotesForBook() {
+		// fetch notes for this book
+		epilogueStorage.get(keys.authToken).then(auth_token => {
+			const url = "https://micro.blog/notes/for_book?isbn=" + encodeURIComponent(isbn);
+			const options = {
+				method: "GET",
+				headers: {
+					"Authorization": "Bearer " + auth_token
+				}
+			};
+
+			fetch(url, options)
+				.then(response => response.json())
+				.then(json => {
+					const items = Array.isArray(json?.items) ? json.items : [];
+					setNotes(items);
+				})
+				.catch(error => {
+					setNotes([]);
+				});
+		});
 	}
 
 	async function onShare(url) {
@@ -238,6 +264,14 @@ export function BookDetailsScreen({ route, navigation }) {
 		navigation.navigate("Note", params);
 	}
 
+	function onEditNotePressed(item) {
+		const note = {
+			id: item.id,
+			text: item.content_text
+		};
+		navigation.navigate("Note", { note });
+	}
+
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={styles.container}>
@@ -309,6 +343,18 @@ export function BookDetailsScreen({ route, navigation }) {
 							<Text style={styles.plainButtonTitle} accessibilityLabel="add new reading note">Add Note...</Text>
 						</Pressable>
 					</View>
+					<FlatList
+						data={notes}
+						keyExtractor = { item => item.id }
+						renderItem={({ item }) => (
+							<Pressable onPress={() => onEditNotePressed(item)}>
+								<View style={{ paddingTop: 8 }}>
+									<Text>{item.content_text}</Text>
+								</View>
+							</Pressable>
+						)}
+						scrollEnabled={false}
+					/>
 				</View>
 			</View>
 		</ScrollView>
