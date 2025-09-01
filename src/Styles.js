@@ -411,6 +411,12 @@ export const light = StyleSheet.create({
 		paddingRight: 15,
 		paddingTop: 15
 	},
+	noteCell: {
+		paddingBottom: 10,
+		marginBottom: 10,
+		borderBottomColor: "#d6d6d6",
+		borderBottomWidth: 0.5
+	},
 	micropubPane: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -480,7 +486,8 @@ export const light = StyleSheet.create({
 	bookDetailsNotesHeader: {
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "space-between"
+		justifyContent: "space-between",
+		marginBottom: 10
 	},
 	bookDetailsNotesTitle: {
 		fontWeight: "bold"

@@ -364,7 +364,7 @@ export function BookDetailsScreen({ route, navigation }) {
 							keyExtractor = { item => item.id }
 							renderItem={({ item }) => (
 								<Pressable onPress={() => onEditNotePressed(item)}>
-									<View style={{ paddingTop: 8 }}>
+									<View style={styles.noteCell}>
 										<Text>{item.text}</Text>
 									</View>
 								</Pressable>
