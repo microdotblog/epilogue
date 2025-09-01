@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { TextInput, Pressable, Text, View } from "react-native";
 
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
+import epilogueStorage from "../Storage";
+import { keys } from "../Constants";
 
 export function NoteScreen({ route, navigation }) {
   const styles = useEpilogueStyle();
@@ -20,11 +22,44 @@ export function NoteScreen({ route, navigation }) {
   }, [navigation, isEditing, text]);
 
   function onSubmit() {
-    navigation.goBack();
+    const encrypted_text = encryptText(text);
+
+    let form = new FormData();
+    form.append("text", encrypted_text);
+    form.append("is_encrypted", "1");
+
+    const note_id = route?.params?.note?.id;
+    if (note_id != null) {
+      form.append("id", note_id);
+    }
+
+    epilogueStorage.get(keys.authToken).then(auth_token => {
+      const options = {
+        method: "POST",
+        body: form,
+        headers: {
+          "Authorization": "Bearer " + auth_token
+        }
+      };
+
+      fetch("https://micro.blog/notes", options)
+        .then(response => response.json())
+        .then(data => {
+          navigation.goBack();
+        })
+        .catch(err => {
+          navigation.goBack();
+        });
+    });
   }
 
   function onChangeText(t) {
     setText(t);
+  }
+
+  function encryptText(t) {
+    // ...
+    return t;
   }
 
   return (
@@ -33,11 +68,10 @@ export function NoteScreen({ route, navigation }) {
         style={styles.postTextInput}
         value={text}
         onChangeText={onChangeText}
-        placeholder="Reading note text..."
+        placeholder=""
         multiline={true}
         autoFocus={true}
       />
     </View>
   );
 }
-
