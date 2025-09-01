@@ -39,7 +39,12 @@ export function NotesKeyScreen({ navigation }) {
   }
 
   function onUnlockNotes(newSecretKey) {
-    if (!newSecretKey.includes("mkey")) {
+    if (newSecretKey == "") {
+      epilogueStorage.remove(keys.notesKey).then(() => {
+        navigation.goBack();
+      });
+    }
+    else if (!newSecretKey.includes("mkey")) {
       Alert.alert("This key does not appear to be a valid secret key.");
     }
     else {

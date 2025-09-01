@@ -20,7 +20,8 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 	const [ menuActions, setMenuActions] = useState([])	
-	const [ notes, setNotes] = useState([])	
+	const [ notes, setNotes] = useState([])
+	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
 	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
@@ -100,8 +101,15 @@ export function BookDetailsScreen({ route, navigation }) {
 		
 		setMenuActions(menu_items);
 
-		// refresh notes whenever this screen gains focus
-		fetchNotesForBook();
+		// check for notes key and refresh notes if available
+		Note.hasSecretKey().then((hasKey) => {
+			setHasSecretKey(hasKey)
+			if (hasKey) {
+				fetchNotesForBook();
+			} else {
+				setNotes([])
+			}
+		})
 	}
 
 	function fetchNotesForBook() {
@@ -343,26 +351,28 @@ export function BookDetailsScreen({ route, navigation }) {
 					}>
 					<Text style={styles.bookDetailsDescription}>{description}</Text>
 				</View>
-				<View style={styles.bookDetailsNotesSection}>
-					<View style={styles.bookDetailsNotesHeader}>
-						<Text style={styles.bookDetailsNotesTitle}>Notes</Text>
-						<Pressable style={styles.plainButton} onPress={() => { onAddNotePressed(); }}>
-							<Text style={styles.plainButtonTitle} accessibilityLabel="add new reading note">Add Note...</Text>
-						</Pressable>
-					</View>
-					<FlatList
-						data={notes}
-						keyExtractor = { item => item.id }
-						renderItem={({ item }) => (
-							<Pressable onPress={() => onEditNotePressed(item)}>
-								<View style={{ paddingTop: 8 }}>
-									<Text>{item.text}</Text>
-								</View>
+				{ hasSecretKey ? (
+					<View style={styles.bookDetailsNotesSection}>
+						<View style={styles.bookDetailsNotesHeader}>
+							<Text style={styles.bookDetailsNotesTitle}>Notes</Text>
+							<Pressable style={styles.plainButton} onPress={() => { onAddNotePressed(); }}>
+								<Text style={styles.plainButtonTitle} accessibilityLabel="add new reading note">Add Note...</Text>
 							</Pressable>
-						)}
-						scrollEnabled={false}
-					/>
-				</View>
+						</View>
+						<FlatList
+							data={notes}
+							keyExtractor = { item => item.id }
+							renderItem={({ item }) => (
+								<Pressable onPress={() => onEditNotePressed(item)}>
+									<View style={{ paddingTop: 8 }}>
+										<Text>{item.text}</Text>
+									</View>
+								</Pressable>
+							)}
+							scrollEnabled={false}
+						/>
+					</View>
+				) : null }
 			</View>
 		</ScrollView>
 	);

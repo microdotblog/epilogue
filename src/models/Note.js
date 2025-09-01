@@ -7,4 +7,14 @@ export class Note {
 		this.id = "";
 		this.text = "";
 	}
+
+	static async hasSecretKey() {
+		try {
+			const secretKey = await epilogueStorage.get(keys.notesKey);
+			return (secretKey != null && String(secretKey).trim().length > 0);
+		}
+		catch (e) {
+			return false;
+		}
+	}
 }
