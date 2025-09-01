@@ -400,6 +400,17 @@ export const light = StyleSheet.create({
 	profileSpinner: {
 		alignItems: "flex-end"
 	},
+	notesKeyIntro: {
+		paddingLeft: 15,
+		paddingRight: 15,
+		paddingTop: 15
+	},
+	notesKeyLabel: {
+		fontWeight: "bold",
+		paddingLeft: 15,
+		paddingRight: 15,
+		paddingTop: 15
+	},
 	micropubPane: {
 		flexDirection: "row",
 		alignItems: "center",

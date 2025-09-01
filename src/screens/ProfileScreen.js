@@ -234,6 +234,10 @@ export function ProfileScreen({ navigation }) {
 	function onShowBlogs() {
 		navigation.navigate("Blogs");
 	}
+
+	function onNotesKeyPressed() {
+		navigation.navigate("NotesKey");
+	}
 	
 	function onEditPost(item) {
 		const s = item.text;
