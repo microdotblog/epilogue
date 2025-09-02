@@ -234,6 +234,10 @@ export function ProfileScreen({ navigation }) {
 	function onShowBlogs() {
 		navigation.navigate("Blogs");
 	}
+
+	function onNotesKeyPressed() {
+		navigation.navigate("NotesKey");
+	}
 	
 	function onEditPost(item) {
 		const s = item.text;
@@ -272,6 +276,9 @@ export function ProfileScreen({ navigation }) {
 				<Text style={styles.micropubHostname}>Posting to: {hostname}</Text>
 				<Pressable style={styles.micropubButton} onPress={() => { onChangePressed(); }}>
 					<Text style={styles.micropubButtonTitle} accessibilityLabel="change posting blog">Change...</Text>
+				</Pressable>
+				<Pressable style={styles.micropubButton} onPress={() => { onNotesKeyPressed(); }}>
+					<Text style={styles.micropubButtonTitle} accessibilityLabel="set secret key">Notes Key...</Text>
 				</Pressable>
 			</View>
 			<FlatList

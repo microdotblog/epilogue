@@ -11,6 +11,8 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
+import { Note } from "../models/Note";
+import CryptoUtils from '../utils/crypto';
 
 export function BookDetailsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle()
@@ -18,6 +20,8 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ data, setData ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 	const [ menuActions, setMenuActions] = useState([])	
+	const [ notes, setNotes] = useState([])
+	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
 	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
@@ -96,6 +100,48 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 		
 		setMenuActions(menu_items);
+
+		// check for notes key and refresh notes if available
+		Note.hasSecretKey().then((hasKey) => {
+			setHasSecretKey(hasKey)
+			if (hasKey) {
+				fetchNotesForBook();
+			} else {
+				setNotes([])
+			}
+		})
+	}
+
+	function fetchNotesForBook() {
+		// fetch notes for this book
+		epilogueStorage.get(keys.authToken).then(auth_token => {
+			const url = "https://micro.blog/notes/for_book?isbn=" + encodeURIComponent(isbn);
+			const options = {
+				method: "GET",
+				headers: {
+					"Authorization": "Bearer " + auth_token
+				}
+			};
+
+			fetch(url, options)
+				.then(response => response.json())
+				.then(async json => {
+					epilogueStorage.get(keys.notesKey).then(async secret_key => {
+						let new_notes = [];
+						for (let n of json.items) {
+							let t = await CryptoUtils.decrypt(n.content_text, secret_key);
+							new_notes.push({
+								id: n.id,
+								text: t
+							});
+						}
+						setNotes(new_notes);
+					});
+				})
+				.catch(error => {
+					setNotes([]);
+				});
+		});
 	}
 
 	async function onShare(url) {
@@ -227,6 +273,21 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 	}
 
+	function onAddNotePressed() {
+		const params = {
+			isbn: isbn
+		};
+		navigation.navigate("Note", params);
+	}
+
+	function onEditNotePressed(item) {
+		const params = {
+			isbn: isbn,
+			note: item
+		}
+		navigation.navigate("Note", params);
+	}
+
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={styles.container}>
@@ -291,6 +352,28 @@ export function BookDetailsScreen({ route, navigation }) {
 					}>
 					<Text style={styles.bookDetailsDescription}>{description}</Text>
 				</View>
+				{ hasSecretKey ? (
+					<View style={styles.bookDetailsNotesSection}>
+						<View style={styles.bookDetailsNotesHeader}>
+							<Text style={styles.bookDetailsNotesTitle}>Notes</Text>
+							<Pressable style={styles.plainButton} onPress={() => { onAddNotePressed(); }}>
+								<Text style={styles.plainButtonTitle} accessibilityLabel="add new reading note">Add Note...</Text>
+							</Pressable>
+						</View>
+						<FlatList
+							data={notes}
+							keyExtractor = { item => item.id }
+							renderItem={({ item }) => (
+								<Pressable onPress={() => onEditNotePressed(item)}>
+									<View style={styles.noteCell}>
+										<Text style={styles.noteCellText}>{item.text}</Text>
+									</View>
+								</Pressable>
+							)}
+							scrollEnabled={false}
+						/>
+					</View>
+				) : null }
 			</View>
 		</ScrollView>
 	);

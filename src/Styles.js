@@ -119,7 +119,8 @@ export const light = StyleSheet.create({
 		height: 18
 	},
 	bookDetailsTitle: {
-		marginTop: 3
+		marginTop: 3,
+		fontWeight: "bold"
 	},
 	bookDetailsAuthor: {
 		marginTop: 5,
@@ -399,6 +400,23 @@ export const light = StyleSheet.create({
 	profileSpinner: {
 		alignItems: "flex-end"
 	},
+	notesKeyIntro: {
+		paddingLeft: 15,
+		paddingRight: 15,
+		paddingTop: 15
+	},
+	notesKeyLabel: {
+		fontWeight: "bold",
+		paddingLeft: 15,
+		paddingRight: 15,
+		paddingTop: 15
+	},
+	noteCell: {
+		paddingBottom: 15,
+		marginBottom: 15,
+		borderBottomColor: "#d6d6d6",
+		borderBottomWidth: 0.5
+	},
 	micropubPane: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -418,7 +436,8 @@ export const light = StyleSheet.create({
 		borderRadius: 5,
 		backgroundColor: "#c9c9c9"
 	},
-	micropubButtonTitle: {		
+	micropubButtonTitle: {
+		fontSize: 13
 	},
 	micropubIntro: {
 		marginLeft: 12,
@@ -437,9 +456,41 @@ export const light = StyleSheet.create({
 		borderTopWidth: 1,
 		borderTopColor: "#DEDEDE"
 	},
+	plainButton: {
+		marginLeft: 12,
+		paddingLeft: 8,
+		paddingRight: 8,
+		paddingTop: 4,
+		paddingBottom: 4,
+		borderRadius: 5,
+		backgroundColor: "#DEDEDE"
+	},
+	plainButtonTitle: {
+		color: "#000",
+		fontSize: 13
+	},
 	bookDetailsDescription: {		
 	},
 	bookDetailsNoDescription: {		
+	},
+	bookDetailsNotesSection: {
+		marginTop: 0,
+		marginBottom: 25,
+		paddingTop: 20,
+		paddingBottom: 20,
+		paddingLeft: 20,
+		paddingRight: 20,
+		borderTopWidth: 1,
+		borderTopColor: "#DEDEDE"
+	},
+	bookDetailsNotesHeader: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginBottom: 15
+	},
+	bookDetailsNotesTitle: {
+		fontWeight: "bold"
 	},
 	// for books on discover page
 	bookCovers: {
@@ -933,7 +984,6 @@ export const dark = StyleSheet.create({
 	},
 	micropubButtonTitle: {
 		color: "#E5E7EB",
-		fontSize: 13
 	},
 	micropubIntro: {
 		color: "#E5E7EB"
@@ -941,7 +991,16 @@ export const dark = StyleSheet.create({
 	micropubURL: {
 		color: "#E5E7EB"
 	},
+	plainButton: {
+		backgroundColor: "#272f3d"
+	},
+	plainButtonTitle: {
+		color: "#E5E7EB",
+	},
 	bookDetailsMore: {
+		borderTopColor: "#444444"
+	},
+	bookDetailsNotesSection: {
 		borderTopColor: "#444444"
 	},
 	bookDetailsDescription: {
@@ -1075,6 +1134,21 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#141723"
 	},
 	useThisCoverTitle: {
+		color: "#FFFFFF"
+	},
+	notesKeyIntro: {
+		color: "#FFFFFF"
+	},
+	notesKeyLabel: {
+		color: "#FFFFFF"
+	},
+	bookDetailsNotesTitle: {
+		color: "#FFFFFF"
+	},
+	noteCell: {
+		borderBottomColor: "#444444"		
+	},
+	noteCellText: {
 		color: "#FFFFFF"
 	}
 });
