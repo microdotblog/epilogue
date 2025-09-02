@@ -366,7 +366,7 @@ export function BookDetailsScreen({ route, navigation }) {
 							renderItem={({ item }) => (
 								<Pressable onPress={() => onEditNotePressed(item)}>
 									<View style={styles.noteCell}>
-										<Text>{item.text}</Text>
+										<Text style={styles.noteCellText}>{item.text}</Text>
 									</View>
 								</Pressable>
 							)}

@@ -1135,5 +1135,20 @@ export const dark = StyleSheet.create({
 	},
 	useThisCoverTitle: {
 		color: "#FFFFFF"
+	},
+	notesKeyIntro: {
+		color: "#FFFFFF"
+	},
+	notesKeyLabel: {
+		color: "#FFFFFF"
+	},
+	bookDetailsNotesTitle: {
+		color: "#FFFFFF"
+	},
+	noteCell: {
+		borderBottomColor: "#444444"		
+	},
+	noteCellText: {
+		color: "#FFFFFF"
 	}
 });
