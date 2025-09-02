@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { TextInput, Pressable, Text, View, Alert } from "react-native";
+import { TextInput, Pressable, Text, View, Alert, useColorScheme } from "react-native";
+import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import { useFocusEffect } from "@react-navigation/native";
 
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
+import { Icon } from "../Icon";
 
 export function NotesKeyScreen({ navigation }) {
   const styles = useEpilogueStyle();
+  const is_dark = (useColorScheme() == "dark");
   const [secretKey, setSecretKey] = useState("");
 
   useFocusEffect(
@@ -56,10 +59,20 @@ export function NotesKeyScreen({ navigation }) {
       }
     }
   }
+  
+  async function onHelpPressed() {
+    const url = "https://help.micro.blog/t/notes/2939";
+    try {
+      await InAppBrowser.open(url, { animated: true });
+    }
+    catch (e) {
+    }
+  }
 
   return (
     <View style={styles.blogListContainer}>
-      <Text style={styles.notesKeyIntro}>Notes in Micro.blog are encrypted. To sync notes across devices, you will need to save a secret key so the notes can be decrypted later. If you lose your key, you will lose access to your notes too.</Text>
+      <Text style={styles.notesKeyIntro}>Notes in Micro.blog are encrypted. To sync notes across devices, you will need to save a secret key so the notes can be decrypted later.</Text>
+      <Text style={styles.notesKeyIntro}>Copy your secret key from Micro.blog on the web.</Text>
       <Text style={styles.notesKeyLabel}>Notes Secret Key:</Text>
       <TextInput
         style={[styles.signInInput, styles.micropubURL, { height: 120, textAlignVertical: "top", marginRight: 15 }]}
@@ -69,9 +82,14 @@ export function NotesKeyScreen({ navigation }) {
         autoCapitalize="none"
         autoCorrect={false}
         multiline={true}
-        numberOfLines={6}
+        numberOfLines={4}
       />
+      <View style={{ alignSelf: "flex-start" }}>
+        <Pressable style={[styles.plainButton, { flexDirection: "row", alignItems: "center", marginTop: 15 }]} onPress={() => { onHelpPressed(); }}>
+          <Icon name="help" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
+          <Text style={[styles.plainButtonTitle, { marginLeft: 6 }]} accessibilityLabel="view help article">Notes in Micro.blog</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
-
