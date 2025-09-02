@@ -44,13 +44,16 @@ export function NotesKeyScreen({ navigation }) {
         navigation.goBack();
       });
     }
-    else if (!newSecretKey.includes("mkey")) {
-      Alert.alert("This key does not appear to be a valid secret key.");
-    }
     else {
-      epilogueStorage.set(keys.notesKey, newSecretKey).then(() => {
-        navigation.goBack();
-      });
+      const key = newSecretKey.trim();
+      if (!key.includes("mkey") || ((key.length != 64) && (key.length != 68))) {
+        Alert.alert("This key does not appear to be a valid secret key.");
+      }
+      else {
+        epilogueStorage.set(keys.notesKey, key).then(() => {
+          navigation.goBack();
+        });
+      }
     }
   }
 
