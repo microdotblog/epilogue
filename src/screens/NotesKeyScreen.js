@@ -86,7 +86,7 @@ export function NotesKeyScreen({ navigation }) {
       />
       <View style={{ alignSelf: "flex-start" }}>
         <Pressable style={[styles.plainButton, { flexDirection: "row", alignItems: "center", marginTop: 15 }]} onPress={() => { onHelpPressed(); }}>
-          <Icon name="help" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
+          <Icon name="help" color={is_dark ? "#FFFFFF" : "#000000"} size={16} />
           <Text style={[styles.plainButtonTitle, { marginLeft: 6 }]} accessibilityLabel="view help article">Notes in Micro.blog</Text>
         </Pressable>
       </View>
