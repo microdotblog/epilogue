@@ -65,9 +65,18 @@ export function HomeScreen({ navigation }) {
 			}
 		});
 		
-		setupLinking();
+		const linking_sub = setupLinking();
 		setupProfileIcon();
 		clearSelection();
+		
+		// cleanup
+		return () => {
+			unsubscribe_focus();
+			unsubscribe_change.remove();
+			if (linking_sub && (typeof linking_sub.remove == "function")) {
+				linking_sub.remove();
+			}
+		};
 	}
 	
 	function onBecomeActive() {
@@ -84,13 +93,15 @@ export function HomeScreen({ navigation }) {
 		});
 	}
   
-  	function setupLinking() {
+	function setupLinking() {
 		Linking.getInitialURL().then(url => {
 			loadURL(url);
 		});
 		
-		Linking.addEventListener("url", (event) => {
-			loadURL(event.url);
+		// returns EventSubscription in modern RN
+		return Linking.addEventListener("url", (event) => {
+			const u = event && event.url ? event.url : undefined;
+			loadURL(u);
 		});
 	}
   
