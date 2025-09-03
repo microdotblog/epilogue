@@ -82,7 +82,7 @@ android {
         applicationId "blog.micro.epilogue"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 26
+        versionCode 27
         versionName "2.0"
     }
     signingConfigs {
