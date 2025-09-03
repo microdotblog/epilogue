@@ -24,7 +24,7 @@ const IconNames = {
   "openlibrary": { ios: "building.columns", android: "archive" },
   "photo": { ios: "photo", android: "image" },
   "ellipsis": { ios: "ellipsis.circle", android: "dots-horizontal-circle-outline" },
-  "help": { ios: "questionmark.circle", android: "help" },
+  "help": { ios: "questionmark.circle", android: "help-circle-outline" },
 }
 
 export const Icon = (props) => {
