@@ -1,0 +1,80 @@
+name: Android → Google Play
+
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Play track (internal, closed, open, production)"
+        required: true
+        default: "internal"
+      release_notes:
+        description: "Release notes (en-US)"
+        required: false
+        default: ""
+
+env:
+  JAVA_VERSION: "17"
+  NODE_VERSION: "20"
+  ANDROID_SDK_ROOT: /usr/local/android-sdk
+  ANDROID_KEYSTORE_PATH: app/release.keystore
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - run: yarn install --frozen-lockfile
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Decode keystore
+        run: echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > $ANDROID_KEYSTORE_PATH
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Write Play service account JSON
+        run: echo '${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}' > app/play-service-account.json
+
+      - name: Optional release notes
+        if: ${{ github.event.inputs.release_notes != '' }}
+        run: |
+          mkdir -p app/src/main/play/release-notes/en-US
+          printf "%s\n" "${{ github.event.inputs.release_notes }}" > app/src/main/play/release-notes/en-US/default.txt
+
+      - name: Build AAB
+        working-directory: android
+        run: ./gradlew clean :app:bundleRelease --stacktrace
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload to Google Play
+        working-directory: android
+        run: ./gradlew :app:publishReleaseBundle -Pplay.track=${{ github.event.inputs.track }} --stacktrace
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: aab-and-mapping
+          path: |
+            android/app/build/outputs/bundle/release/*.aab
+            android/app/build/outputs/mapping/release/mapping.txt
