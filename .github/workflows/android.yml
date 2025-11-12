@@ -15,7 +15,7 @@ on:
 env:
   JAVA_VERSION: "17"
   NODE_VERSION: "20"
-  ANDROID_SDK_ROOT: /usr/local/android-sdk
+  ANDROID_SDK_ROOT: $HOME/android-sdk
   ANDROID_KEYSTORE_PATH: app/release.keystore
 
 jobs:
