@@ -29,9 +29,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
 
-      - run: yarn install --frozen-lockfile
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.1.x
+
+      - name: Install JS deps
+        run: bun install --frozen-lockfile
 
       - uses: actions/setup-java@v4
         with:
@@ -42,15 +46,18 @@ jobs:
       - uses: android-actions/setup-android@v3
 
       - name: Decode keystore
+        working-directory: android
         run: echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > $ANDROID_KEYSTORE_PATH
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
 
       - name: Write Play service account JSON
+        working-directory: android
         run: echo '${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}' > app/play-service-account.json
 
       - name: Optional release notes
         if: ${{ github.event.inputs.release_notes != '' }}
+        working-directory: android
         run: |
           mkdir -p app/src/main/play/release-notes/en-US
           printf "%s\n" "${{ github.event.inputs.release_notes }}" > app/src/main/play/release-notes/en-US/default.txt
