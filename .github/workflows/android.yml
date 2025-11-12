@@ -44,6 +44,19 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
+      - name: Ensure debug.keystore exists
+        working-directory: android/app
+        run: |
+          if [ ! -f debug.keystore ]; then
+            keytool -genkey -v \
+              -keystore debug.keystore \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
       - name: Decode keystore
         working-directory: android
         run: echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > $ANDROID_KEYSTORE_PATH
