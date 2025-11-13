@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: "com.github.triplet.play"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -124,3 +125,9 @@ project.ext.vectoricons = [
 ]
 
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+
+play {
+    serviceAccountCredentials.set(file("play-service-account.json"))
+    track.set(project.findProperty("play.track") ?: "internal")
+    defaultToAppBundles.set(true)
+}
