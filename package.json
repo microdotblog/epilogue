@@ -1,6 +1,6 @@
 {
   "name": "epilogue",
-  "version": "0.0.1",
+  "version": "2.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -27,7 +27,7 @@
     "react-native-context-menu-view": "^1.19.0",
     "react-native-fast-image": "^8.6.3",
     "react-native-fs": "^2.20.0",
-    "react-native-gesture-handler": "^2.27.2",
+    "react-native-gesture-handler": "^2.29.1",
     "react-native-image-picker": "^7.2.3",
     "react-native-inappbrowser-reborn": "^3.7.0",
     "react-native-navigation-bar-color": "^2.0.2",
