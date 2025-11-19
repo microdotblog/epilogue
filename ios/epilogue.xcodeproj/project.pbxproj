@@ -9,9 +9,8 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* epilogueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* epilogueTests.m */; };
 		0A0F6C4361B604F8E6738629 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 72E6C67A60EC779B9B4E4F12 /* PrivacyInfo.xcprivacy */; };
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		4B6C06582ECE3B8F007B2264 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6C06572ECE3B8F007B2264 /* AppDelegate.swift */; };
 		4B719C3E2E65FFC5006D4E7D /* MBNoteCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B719C3B2E65FFC5006D4E7D /* MBNoteCrypto.swift */; };
 		4B719C3F2E65FFC5006D4E7D /* MBNotesCryptoModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B719C3D2E65FFC5006D4E7D /* MBNotesCryptoModule.m */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -34,14 +33,12 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* epilogueTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = epilogueTests.m; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* epilogue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = epilogue.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = epilogue/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = epilogue/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = epilogue/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = epilogue/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = epilogue/main.m; sourceTree = "<group>"; };
 		28B22893B9D176E10E00D7AF /* Pods-epilogue-epilogueTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-epilogue-epilogueTests.release.xcconfig"; path = "Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests.release.xcconfig"; sourceTree = "<group>"; };
 		34A6ED399D5D443F46E004D6 /* Pods-epilogue.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-epilogue.release.xcconfig"; path = "Target Support Files/Pods-epilogue/Pods-epilogue.release.xcconfig"; sourceTree = "<group>"; };
 		3AAA9915A05BF3847A4C64BC /* libPods-epilogue-epilogueTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-epilogue-epilogueTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B6C06572ECE3B8F007B2264 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = epilogue/AppDelegate.swift; sourceTree = "<group>"; };
 		4B719C3B2E65FFC5006D4E7D /* MBNoteCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBNoteCrypto.swift; sourceTree = "<group>"; };
 		4B719C3C2E65FFC5006D4E7D /* MBNotesCryptoModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MBNotesCryptoModule.h; sourceTree = "<group>"; };
 		4B719C3D2E65FFC5006D4E7D /* MBNotesCryptoModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MBNotesCryptoModule.m; sourceTree = "<group>"; };
@@ -96,12 +93,10 @@
 			isa = PBXGroup;
 			children = (
 				B9B19CC82A7837CD0077659F /* epilogue.entitlements */,
-				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
+				4B6C06572ECE3B8F007B2264 /* AppDelegate.swift */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
-				13B07FB71A68108700A75B9A /* main.m */,
 				4B719C3B2E65FFC5006D4E7D /* MBNoteCrypto.swift */,
 				4B719C3C2E65FFC5006D4E7D /* MBNotesCryptoModule.h */,
 				4B719C3D2E65FFC5006D4E7D /* MBNotesCryptoModule.m */,
@@ -442,8 +437,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				4B6C06582ECE3B8F007B2264 /* AppDelegate.swift in Sources */,
 				4B719C3E2E65FFC5006D4E7D /* MBNoteCrypto.swift in Sources */,
 				4B719C3F2E65FFC5006D4E7D /* MBNotesCryptoModule.m in Sources */,
 			);

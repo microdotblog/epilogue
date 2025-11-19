@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import type { Node } from "react";
 import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, useColorScheme } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
 import ContextMenu from "react-native-context-menu-view";
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
