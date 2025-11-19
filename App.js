@@ -51,7 +51,12 @@ const App: () => Node = () => {
 
   return (
     <NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerLeftContainerStyle: { paddingLeft: 15 },
+          headerRightContainerStyle: { paddingRight: 15 }
+        }}
+      >
           <Stack.Group>
             <Stack.Screen name="Tabs" component={TabsScreen} options={{
               headerShown: false
