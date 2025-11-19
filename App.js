@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import type { Node } from "react";
 import { Alert, LogBox, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Platform } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import { MenuView } from "@react-native-menu/menu";
-import "react-native-gesture-handler";
 import changeNavigationBarColor from "react-native-navigation-bar-color";
+import "react-native-gesture-handler";
 
 import { keys } from "./src/Constants";
 import { useEpilogueStyle } from './src/hooks/useEpilogueStyle';
@@ -28,9 +28,8 @@ import { OpenCoversScreen } from "./src/screens/OpenCoversScreen";
 import { DateScreen } from "./src/screens/DateScreen";
 import { NoteScreen } from "./src/screens/NoteScreen";
 import { NotesKeyScreen } from "./src/screens/NotesKeyScreen";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-	
-const Stack = createNativeStackNavigator();
+
+const Stack = createStackNavigator();
 
 const EpilogueDarkTheme = {
   dark: true,
@@ -51,9 +50,8 @@ const App: () => Node = () => {
   }
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}> 
-      <NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
-        <Stack.Navigator>
+    <NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
+      <Stack.Navigator>
           <Stack.Group>
             <Stack.Screen name="Tabs" component={TabsScreen} options={{
               headerShown: false
@@ -206,9 +204,8 @@ const App: () => Node = () => {
               ),
             })}/>
           </Stack.Group>
-        </Stack.Navigator>
-      </NavigationContainer>
-    </GestureHandlerRootView>
+      </Stack.Navigator>
+    </NavigationContainer>
   	
   );
 }
