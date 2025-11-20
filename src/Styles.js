@@ -507,7 +507,8 @@ export const light = StyleSheet.create({
 	bookCovers: {
 		height: '100%',
 		width: '100%',
-		resizeMode: 'cover'
+		resizeMode: 'cover',
+		borderRadius: 4
 	},
 	discoverView: {
 		flex: 1,
@@ -597,7 +598,8 @@ export const light = StyleSheet.create({
 	goalCoverThumbnail: {		
 		width: 50,
 		height: 70,
-		marginRight: 5
+		marginRight: 5,
+		borderRadius: 4
 	},
 	goalName: {
 	},
