@@ -16,7 +16,8 @@ export function MoviesScreen({ navigation }) {
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			setupProfileIcon();
-			fetchDiscover();
+			clearResults();
+			// fetchDiscover();
 		});
 		return unsubscribe;
 	}, [navigation]);	
@@ -45,13 +46,20 @@ export function MoviesScreen({ navigation }) {
 	function onRunSearch() {
 		let s = searchText.trim();
 		if (s.length === 0) {
-			fetchDiscover();
+			// fetchDiscover();
+			clearResults();
 			return;
 		}
 		if (s.length <= 2) {
 			return;
 		}
 		fetchSearch(s);
+	}
+
+	function clearResults() {
+		setLoading(false);
+		setSearching(false);
+		setMovies([]);
 	}
 
 	function fetchDiscover() {
@@ -170,7 +178,7 @@ export function MoviesScreen({ navigation }) {
 					ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#eee", marginLeft: 88 }} />}
 					ListEmptyComponent={() => (
 						<View style={{ padding: 20 }}>
-							<Text style={{ textAlign: "center", color: "#5f5f5f" }}>{searching ? "Searching..." : "No results."}</Text>
+							<Text style={{ textAlign: "center", color: "#5f5f5f" }}>{searching ? "Searching..." : ""}</Text>
 						</View>
 					)}
 				/>
