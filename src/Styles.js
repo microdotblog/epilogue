@@ -950,8 +950,8 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsColumns: {
 		backgroundColor: "#141723",
-		borderTopColor: "#444444",
-		borderBottomColor: "#444444"
+		borderTopColor: "#353A44",
+		borderBottomColor: "#353A44"
 	},
 	bookDetailsButton: {
 		backgroundColor: "#141723"
