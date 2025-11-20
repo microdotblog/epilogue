@@ -49,6 +49,7 @@ export function TVEpisodesScreen({ navigation, route }) {
 						id: item.id?.toString() || metadata.tmdb_id || (item.title + "-" + index),
 						title: item.title,
 						image: item.image,
+						largeImage: metadata.large_still_url || item.image,
 						airDate: metadata.air_date,
 						url: metadata.url,
 						tmdbId: metadata.tmdb_id || id,

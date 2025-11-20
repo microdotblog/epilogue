@@ -117,6 +117,7 @@ export function MoviesScreen({ navigation }) {
 						id: item.id?.toString() || metadata.tmdb_id || (item.title + "-" + index),
 						title: item.title,
 						image: item.image,
+						largeImage: metadata.large_poster_url || item.image,
 						year: metadata.year,
 						director: metadata.director,
 						seasonsCount: metadata.seasons_count,

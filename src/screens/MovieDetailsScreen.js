@@ -39,8 +39,8 @@ export function MovieDetailsScreen({ navigation, route }) {
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={[styles.movieDetails, styles.bookDetailsTop]}>
-				{movie?.image ? (
-					<FastImage style={styles.movieDetailsPoster} source={{ uri: movie.image }} />
+				{movie?.largeImage ? (
+					<FastImage style={styles.movieDetailsPoster} source={{ uri: movie.largeImage }} />
 				) : (
 					<View style={[styles.movieDetailsPoster, { backgroundColor: "#DEDEDE", borderRadius: 6 }]} />
 				)}

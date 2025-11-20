@@ -40,8 +40,8 @@ export function TVEpisodeDetailsScreen({ navigation, route }) {
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={[styles.episodeDetails, styles.bookDetailsTop]}>
-				{episode?.image ? (
-					<FastImage style={styles.episodeDetailsPoster} source={{ uri: episode.image }} />
+				{episode?.largeImage ? (
+					<FastImage style={styles.episodeDetailsPoster} source={{ uri: episode.largeImage }} />
 				) : (
 					<View style={[styles.episodeDetailsPoster, { backgroundColor: "#DEDEDE", borderRadius: 6 }]} />
 				)}
