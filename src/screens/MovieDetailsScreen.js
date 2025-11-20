@@ -13,8 +13,8 @@ export function MovieDetailsScreen({ navigation, route }) {
 	const movie = route.params?.movie;
 
 	React.useEffect(() => {
-		const title = movie?.title || "Movie";
-		navigation.setOptions({ title: title });
+		// const title = movie?.title || "Movie";
+		// navigation.setOptions({ title: title });
 		setupPostButton(movie?.postText);
 	}, [navigation, movie]);
 
@@ -38,11 +38,11 @@ export function MovieDetailsScreen({ navigation, route }) {
 
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
-			<View style={[styles.bookDetails, styles.bookDetailsTop]}>
+			<View style={[styles.movieDetails, styles.bookDetailsTop]}>
 				{movie?.image ? (
-					<FastImage style={styles.bookDetailsCover} source={{ uri: movie.image }} />
+					<FastImage style={styles.movieDetailsPoster} source={{ uri: movie.image }} />
 				) : (
-					<View style={[styles.bookDetailsCover, { backgroundColor: "#DEDEDE", borderRadius: 6 }]} />
+					<View style={[styles.movieDetailsPoster, { backgroundColor: "#DEDEDE", borderRadius: 6 }]} />
 				)}
 				<Text style={styles.bookDetailsTitle}>{movie?.title}</Text>
 				{movie?.year ? <Text style={styles.bookDetailsAuthor}>{movie.year}</Text> : null}

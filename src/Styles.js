@@ -51,10 +51,11 @@ export const light = StyleSheet.create({
 		alignSelf: "center"
 	},
 	bookItem: {
-		flex: 1
+		flex: 1,
+		marginLeft: 5,
+		justifyContent: "center"
 	},
 	bookTitle: {
-		marginTop: 8,
 		paddingLeft: 7
 	},
 	bookAuthor: {
@@ -70,7 +71,8 @@ export const light = StyleSheet.create({
 	bookCover: {
 		marginTop: 5,
 		width: 50,
-		height: 70
+		height: 70,
+		borderRadius: 4
 	},
 	bookDetails: {
 		alignItems: "center",
@@ -854,7 +856,17 @@ export const light = StyleSheet.create({
 	},
 	episodeDetails: {
 		alignItems: "center",
-	}	
+	},
+	movieDetails: {
+		marginTop: 15,
+		marginBottom: 15
+	},
+	movieDetailsPoster: {
+		width: 150,
+		height: 200,
+		marginBottom: 12,
+		borderRadius: 4
+	}
 });
 
 export const dark = StyleSheet.create({

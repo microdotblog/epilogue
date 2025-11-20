@@ -103,7 +103,7 @@ const App: () => Node = () => {
               )
             })} />
             <Stack.Screen name="MovieDetails" component={MovieDetailsScreen} options={({ navigation, route }) => ({
-              title: "Movie",
+              title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
@@ -127,7 +127,7 @@ const App: () => Node = () => {
               )
             })} />
             <Stack.Screen name="TVEpisodeDetails" component={TVEpisodeDetailsScreen} options={({ navigation, route }) => ({
-              title: "Episode",
+              title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />

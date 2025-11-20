@@ -14,8 +14,8 @@ export function TVEpisodeDetailsScreen({ navigation, route }) {
 	const showTitle = route.params?.showTitle;
 
 	React.useEffect(() => {
-		const title = episode?.title || "Episode";
-		navigation.setOptions({ title: title });
+		// const title = episode?.title || "Episode";
+		// navigation.setOptions({ title: title });
 		setupPostButton(episode?.postText);
 	}, [navigation, episode]);
 
