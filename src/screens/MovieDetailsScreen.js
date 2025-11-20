@@ -50,7 +50,7 @@ export function MovieDetailsScreen({ navigation, route }) {
 			</View>
 			{movie?.postText ? (
 				<View style={styles.bookDetailsDescription}>
-					<Text>{movie.postText}</Text>
+					<Text></Text>
 				</View>
 			) : null}
 		</ScrollView>
