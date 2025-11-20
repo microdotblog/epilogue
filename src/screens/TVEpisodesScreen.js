@@ -95,7 +95,7 @@ export function TVEpisodesScreen({ navigation, route }) {
 	const renderEpisode = ({ item }) => {
 		return (
 			<Pressable onPress={() => { onSelectEpisode(item); }}>
-				<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 12, alignItems: "center" }}>
+				<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 12, alignItems: "center", marginLeft: 5 }}>
 					{item.image ? (
 						<FastImage style={{ width: 80, height: 50, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
 					) : (

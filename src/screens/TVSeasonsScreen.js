@@ -96,7 +96,7 @@ export function TVSeasonsScreen({ navigation, route }) {
 	const renderSeason = ({ item }) => {
 		return (
 			<Pressable onPress={() => { onSelectSeason(item); }}>
-				<View style={{ flexDirection: "row", paddingVertical: 12, paddingHorizontal: 16, alignItems: "center" }}>
+				<View style={{ flexDirection: "row", paddingVertical: 12, paddingHorizontal: 16, alignItems: "center", marginLeft: 5 }}>
 					{item.image ? (
 						<FastImage style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
 					) : (
