@@ -169,7 +169,11 @@ export function MoviesScreen({ navigation }) {
 					<View style={{ flex: 1 }}>
 						<Text style={styles.movieTitle} numberOfLines={2}>{item.title}</Text>
 						{item.username ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>@{item.username}</Text> : null}
-						{item.year ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.year}</Text> : null}
+						{(item.year || item.director) ? (
+							<Text style={{ color: "#5f5f5f", marginTop: 2 }}>
+								{item.year}{(item.year && item.director) ? " \u2022 " : ""}{item.director ? "Directed by " + item.director : ""}
+							</Text>
+						) : null}
 						{item.seasonsCount > 0 ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.seasonsCount} season{item.seasonsCount == 1 ? "" : "s"}</Text> : null}
 					</View>
 				</View>
