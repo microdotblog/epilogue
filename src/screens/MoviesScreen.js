@@ -126,21 +126,32 @@ export function MoviesScreen({ navigation }) {
 		});
 	}
 
+	function onSelectMovie(item) {
+		if ((item.seasonsCount != null) && (item.seasonsCount > 0)) {
+			navigation.navigate("TVSeasons", { movie: item });
+		}
+		else {
+			navigation.navigate("MovieDetails", { movie: item });
+		}
+	}
+
 	const renderMovie = ({ item }) => {
 		return (
-			<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, alignItems: "center" }}>
-				{item.image ? (
-					<FastImage style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
-				) : (
-					<View style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
-				)}
-				<View style={{ flex: 1 }}>
-					<Text style={{ fontWeight: "600", fontSize: 14 }} numberOfLines={2}>{item.title}</Text>
-					{item.username ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>@{item.username}</Text> : null}
-					{item.year ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.year}</Text> : null}
-					{item.seasonsCount > 0 ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.seasonsCount} season{item.seasonsCount === 1 ? "" : "s"}</Text> : null}
+			<Pressable onPress={() => { onSelectMovie(item); }}>
+				<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, alignItems: "center" }}>
+					{item.image ? (
+						<FastImage style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
+					) : (
+						<View style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
+					)}
+					<View style={{ flex: 1 }}>
+						<Text style={{ fontWeight: "600", fontSize: 14 }} numberOfLines={2}>{item.title}</Text>
+						{item.username ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>@{item.username}</Text> : null}
+						{item.year ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.year}</Text> : null}
+						{item.seasonsCount > 0 ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.seasonsCount} season{item.seasonsCount === 1 ? "" : "s"}</Text> : null}
+					</View>
 				</View>
-			</View>
+			</Pressable>
 		);
 	};
 
