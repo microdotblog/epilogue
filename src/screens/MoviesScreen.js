@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Pressable, Text, TextInput, View } from "react-native";
 import FastImage from "react-native-fast-image";
 
@@ -13,6 +13,7 @@ export function MoviesScreen({ navigation }) {
 	const [ loading, setLoading ] = useState(true);
 	const [ searching, setSearching ] = useState(false);
 	const [ hideCredits, setHideCredits ] = useState(false);
+	const hideCreditsTimeout = useRef(null);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -21,7 +22,15 @@ export function MoviesScreen({ navigation }) {
 			// fetchDiscover();
 		});
 		return unsubscribe;
-	}, [navigation]);	
+	}, [navigation]);
+
+	React.useEffect(() => {
+		return () => {
+			if (hideCreditsTimeout.current) {
+				clearTimeout(hideCreditsTimeout.current);
+			}
+		};
+	}, []);
 
 	function setupProfileIcon() {
 		epilogueStorage.get(keys.currentUsername).then(username => {
@@ -167,7 +176,12 @@ export function MoviesScreen({ navigation }) {
 
 	return (
 		<View style={styles.discoverView}>
-			<TextInput style={styles.searchField} value={searchText} onChangeText={onChangeSearch} onEndEditing={onRunSearch} onFocus={() => setHideCredits(true)} returnKeyType="search" placeholder="Search for movies or TV shows" placeholderTextColor="#6d6d72" clearButtonMode="always" />
+			<TextInput style={styles.searchField} value={searchText} onChangeText={onChangeSearch} onEndEditing={onRunSearch} onFocus={() => {
+				if (hideCreditsTimeout.current) {
+					clearTimeout(hideCreditsTimeout.current);
+				}
+				hideCreditsTimeout.current = setTimeout(() => setHideCredits(true), 1000);
+			}} returnKeyType="search" placeholder="Search for movies or TV shows" placeholderTextColor="#6d6d72" clearButtonMode="always" />
 			<View style={{ flex: 1 }}>
 				{loading ? (
 					<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
