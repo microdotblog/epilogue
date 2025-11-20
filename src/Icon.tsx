@@ -25,6 +25,7 @@ const IconNames = {
   "photo": { ios: "photo", android: "image" },
   "ellipsis": { ios: "ellipsis.circle", android: "dots-horizontal-circle-outline" },
   "help": { ios: "questionmark.circle", android: "help-circle-outline" },
+  "movies": { ios: "movieclapper", android: "movie-open-outline" },
 }
 
 export const Icon = (props) => {

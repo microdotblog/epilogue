@@ -431,7 +431,7 @@ export function DiscoverScreen({ navigation }) {
 			)
 		) : (
 			<View style={styles.loadingPage}>
-				<ActivityIndicator size='large'/>
+				<ActivityIndicator size='small'/>
 			</View>
 		)	
 	)

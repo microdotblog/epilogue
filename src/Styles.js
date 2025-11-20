@@ -51,10 +51,11 @@ export const light = StyleSheet.create({
 		alignSelf: "center"
 	},
 	bookItem: {
-		flex: 1
+		flex: 1,
+		marginLeft: 5,
+		justifyContent: "center"
 	},
 	bookTitle: {
-		marginTop: 8,
 		paddingLeft: 7
 	},
 	bookAuthor: {
@@ -70,7 +71,8 @@ export const light = StyleSheet.create({
 	bookCover: {
 		marginTop: 5,
 		width: 50,
-		height: 70
+		height: 70,
+		borderRadius: 4
 	},
 	bookDetails: {
 		alignItems: "center",
@@ -471,6 +473,15 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsDescription: {		
 	},
+	movieDescription: {
+		marginTop: 20,
+		paddingTop: 16,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingBottom: 4,
+		borderTopWidth: 1,
+		borderTopColor: "#DEDEDE"
+	},
 	bookDetailsNoDescription: {		
 	},
 	bookDetailsNotesSection: {
@@ -496,11 +507,34 @@ export const light = StyleSheet.create({
 	bookCovers: {
 		height: '100%',
 		width: '100%',
-		resizeMode: 'cover'
+		resizeMode: 'cover',
+		borderRadius: 4
 	},
 	discoverView: {
 		flex: 1,
 		paddingTop: 10
+	},
+	moviesCreditPane: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingLeft: 16,
+		paddingRight: 16,
+		paddingTop: 12,
+		paddingBottom: 12,
+		borderTopWidth: 0.5,
+		borderTopColor: "#d6d6d6",
+		backgroundColor: "#e8e8e8"
+	},
+	moviesCreditImage: {
+		width: 60,
+		height: 60,
+		marginRight: 15,
+		resizeMode: "contain"
+	},
+	moviesCreditText: {
+		color: "#4a4a4a",
+		flex: 1,
+		flexWrap: "wrap"
 	},
 	bookContainer: {
 		flex: 1/3,
@@ -564,7 +598,8 @@ export const light = StyleSheet.create({
 	goalCoverThumbnail: {		
 		width: 50,
 		height: 70,
-		marginRight: 5
+		marginRight: 5,
+		borderRadius: 4
 	},
 	goalName: {
 	},
@@ -845,6 +880,25 @@ export const light = StyleSheet.create({
 		flex: 1,
 		alignItems: "flex-end",
 		marginRight: 20
+	},
+	episodeDetailsPoster: {
+		width: "100%",
+		height: "150",
+		resizeMode: "contain",
+		marginBottom: 10
+	},
+	episodeDetails: {
+		alignItems: "center",
+	},
+	movieDetails: {
+		marginTop: 15,
+		marginBottom: 15
+	},
+	movieDetailsPoster: {
+		width: 150,
+		height: 200,
+		marginBottom: 12,
+		borderRadius: 4
 	}
 });
 
@@ -1006,6 +1060,15 @@ export const dark = StyleSheet.create({
 	bookDetailsDescription: {
 		color: "#E5E7EB"
 	},
+	movieDescription: {
+		marginTop: 20,
+		paddingTop: 16,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingBottom: 4,
+		borderTopWidth: 1,
+		borderTopColor: "#444444"
+	},
 	placeholderTitleText: {
 		color: "#E5E7EB"
 	},
@@ -1018,6 +1081,15 @@ export const dark = StyleSheet.create({
 	},
 	discoverView: {
 		backgroundColor: '#212936'
+	},
+	moviesCreditPane: {
+		borderTopColor: "#444444",
+		backgroundColor: "#272f3d"
+	},
+	moviesCreditText: {
+		color: "#E5E7EB",
+		flex: 1,
+		flexWrap: "wrap"
 	},
 	loadingPage: {
 		backgroundColor: '#212936'		

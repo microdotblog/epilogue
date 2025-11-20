@@ -28,6 +28,10 @@ import { OpenCoversScreen } from "./src/screens/OpenCoversScreen";
 import { DateScreen } from "./src/screens/DateScreen";
 import { NoteScreen } from "./src/screens/NoteScreen";
 import { NotesKeyScreen } from "./src/screens/NotesKeyScreen";
+import { MovieDetailsScreen } from "./src/screens/MovieDetailsScreen";
+import { TVSeasonsScreen } from "./src/screens/TVSeasonsScreen";
+import { TVEpisodesScreen } from "./src/screens/TVEpisodesScreen";
+import { TVEpisodeDetailsScreen } from "./src/screens/TVEpisodeDetailsScreen";
 
 const Stack = createStackNavigator();
 
@@ -92,6 +96,38 @@ const App: () => Node = () => {
             })} />
             <Stack.Screen name="OLDetails" component={OpenDetailsScreen} options={({ navigation, route }) => ({
               title: "Details",
+              headerLeft: () => (
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                </Pressable>
+              )
+            })} />
+            <Stack.Screen name="MovieDetails" component={MovieDetailsScreen} options={({ navigation, route }) => ({
+              title: "",
+              headerLeft: () => (
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                </Pressable>
+              )
+            })} />
+            <Stack.Screen name="TVSeasons" component={TVSeasonsScreen} options={({ navigation, route }) => ({
+              title: "",
+              headerLeft: () => (
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                </Pressable>
+              )
+            })} />
+            <Stack.Screen name="TVEpisodes" component={TVEpisodesScreen} options={({ navigation, route }) => ({
+              title: "",
+              headerLeft: () => (
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                </Pressable>
+              )
+            })} />
+            <Stack.Screen name="TVEpisodeDetails" component={TVEpisodeDetailsScreen} options={({ navigation, route }) => ({
+              title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
