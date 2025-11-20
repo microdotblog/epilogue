@@ -473,6 +473,15 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsDescription: {		
 	},
+	movieDescription: {
+		marginTop: 20,
+		paddingTop: 16,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingBottom: 4,
+		borderTopWidth: 1,
+		borderTopColor: "#DEDEDE"
+	},
 	bookDetailsNoDescription: {		
 	},
 	bookDetailsNotesSection: {
@@ -1048,6 +1057,15 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsDescription: {
 		color: "#E5E7EB"
+	},
+	movieDescription: {
+		marginTop: 20,
+		paddingTop: 16,
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingBottom: 4,
+		borderTopWidth: 1,
+		borderTopColor: "#444444"
 	},
 	placeholderTitleText: {
 		color: "#E5E7EB"

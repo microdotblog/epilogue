@@ -54,6 +54,7 @@ export function TVEpisodesScreen({ navigation, route }) {
 						url: metadata.url,
 						tmdbId: metadata.tmdb_id || id,
 						postText: metadata.post_text,
+						overview: metadata.overview,
 					};
 				});
 				setEpisodes(new_episodes);

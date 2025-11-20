@@ -49,6 +49,11 @@ export function TVEpisodeDetailsScreen({ navigation, route }) {
 				{showTitle ? <Text style={styles.bookDetailsAuthor}>{showTitle}</Text> : null}
 				{episode?.airDate ? <Text style={styles.bookDetailsAuthor}>{episode.airDate}</Text> : null}
 			</View>
+			{episode?.overview ? (
+				<View style={styles.movieDescription}>
+					<Text style={styles.bookDetailsDescription}>{episode.overview}</Text>
+				</View>
+			) : null}
 			{episode?.postText ? (
 				<View style={styles.bookDetailsDescription}>
 					<Text></Text>
