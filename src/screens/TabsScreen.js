@@ -10,6 +10,7 @@ import epilogueStorage from "../Storage";
 import { HomeScreen } from "./HomeScreen";
 import { DiscoverScreen } from "./DiscoverScreen";
 import { GoalsScreen } from "./GoalsScreen";
+import { MoviesScreen } from "./MoviesScreen";
 import { OpenLibraryScreen } from "./OpenLibraryScreen";
 
 const Tab = createBottomTabNavigator();
@@ -42,6 +43,19 @@ export function TabsScreen({ navigation }) {
 					}
 					else {					
 						return <Icon name="goals" color={"gray"} size={18} />
+					}
+				},
+				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
+				tabBarInactiveTintColor: "gray"
+			}} />
+			<Tab.Screen name="Movies" component={MoviesScreen} options={{
+				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
+				tabBarIcon: ({ focused, color, size }) => {
+					if (focused) {
+						return <Icon name="movies" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
+					}
+					else {					
+						return <Icon name="movies" color={"gray"} size={18} />
 					}
 				},
 				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
