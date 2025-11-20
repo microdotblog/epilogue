@@ -21,8 +21,8 @@ export function TVEpisodesScreen({ navigation, route }) {
 
 	useFocusEffect(
 		React.useCallback(() => {
-			const title = seasonTitle || showTitle || "Episodes";
-			navigation.setOptions({ title: title });
+			// const title = seasonTitle || showTitle || "Episodes";
+			// navigation.setOptions({ title: title });
 			setupPostButton(postText);
 
 			if (tmdbId && seasonNumber != null) {

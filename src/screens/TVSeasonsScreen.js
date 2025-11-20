@@ -16,8 +16,8 @@ export function TVSeasonsScreen({ navigation, route }) {
 	const tmdbId = show?.tmdbId;
 
 	React.useEffect(() => {
-		const title = show?.title || "Seasons";
-		navigation.setOptions({ title: title });
+		// const title = show?.title || "Seasons";
+		// navigation.setOptions({ title: title });
 		setupPostButton(show?.postText);
 	}, [navigation, show]);
 
