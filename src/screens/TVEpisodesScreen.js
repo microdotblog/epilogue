@@ -62,11 +62,11 @@ export function TVEpisodesScreen({ navigation, route }) {
 
 	const renderEpisode = ({ item }) => {
 		return (
-			<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, alignItems: "center" }}>
+			<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 12, alignItems: "center" }}>
 				{item.image ? (
-					<FastImage style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
+					<FastImage style={{ width: 80, height: 50, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
 				) : (
-					<View style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
+					<View style={{ width: 80, height: 50, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
 				)}
 				<View style={{ flex: 1 }}>
 					<Text style={{ fontWeight: "600", fontSize: 14 }} numberOfLines={2}>{item.title}</Text>
