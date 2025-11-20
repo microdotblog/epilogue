@@ -48,6 +48,11 @@ export function MovieDetailsScreen({ navigation, route }) {
 				{movie?.year ? <Text style={styles.bookDetailsAuthor}>{movie.year}</Text> : null}
 				{movie?.director ? <Text style={styles.bookDetailsAuthor}>{movie.director}</Text> : null}
 			</View>
+			{movie?.overview ? (
+				<View style={styles.movieDescription}>
+					<Text style={styles.bookDetailsDescription}>{movie.overview}</Text>
+				</View>
+			) : null}
 			{movie?.postText ? (
 				<View style={styles.bookDetailsDescription}>
 					<Text></Text>

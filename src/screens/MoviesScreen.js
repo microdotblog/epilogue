@@ -97,7 +97,8 @@ export function MoviesScreen({ navigation }) {
 						year: metadata.year,
 						director: metadata.director,
 						seasonsCount: metadata.seasons_count,
-						tmdbId: metadata.tmdb_id
+						tmdbId: metadata.tmdb_id,
+						overview: metadata.overview,
 					};
 				});
 				setMovies(new_movies);
@@ -132,7 +133,8 @@ export function MoviesScreen({ navigation }) {
 						director: metadata.director,
 						seasonsCount: metadata.seasons_count,
 						tmdbId: metadata.tmdb_id,
-						postText: metadata.post_text
+						postText: metadata.post_text,
+						overview: metadata.overview,
 					};
 				});
 				setMovies(new_movies);
