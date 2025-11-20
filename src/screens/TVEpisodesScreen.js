@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, Text, View, useColorScheme } from "react-native";
 import FastImage from "react-native-fast-image";
 import { keys } from "../Constants";
 import epilogueStorage from "../Storage";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
+import { Icon } from "../Icon";
 
 export function TVEpisodesScreen({ navigation, route }) {
 	const styles = useEpilogueStyle();
+	const is_dark = (useColorScheme() == "dark");
 	const [ episodes, setEpisodes ] = useState([]);
 	const [ loading, setLoading ] = useState(true);
 
@@ -18,7 +20,8 @@ export function TVEpisodesScreen({ navigation, route }) {
 	React.useEffect(() => {
 		const title = seasonTitle || showTitle || "Episodes";
 		navigation.setOptions({ title: title });
-	}, [navigation, showTitle, seasonTitle]);
+		setupPostButton(route.params?.postText);
+	}, [navigation, showTitle, seasonTitle, route]);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -50,6 +53,7 @@ export function TVEpisodesScreen({ navigation, route }) {
 						airDate: metadata.air_date,
 						url: metadata.url,
 						tmdbId: metadata.tmdb_id || id,
+						postText: metadata.post_text,
 					};
 				});
 				setEpisodes(new_episodes);
@@ -60,19 +64,49 @@ export function TVEpisodesScreen({ navigation, route }) {
 		});
 	}
 
+	function setupPostButton(text) {
+		navigation.setOptions({
+			headerRight: () => (
+				<Pressable onPress={() => { startPost(text); }} hitSlop={10}>
+					<Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+				</Pressable>
+			)
+		});
+	}
+
+	function startPost(text) {
+		epilogueStorage.set(keys.currentTitle, "");
+		epilogueStorage.set(keys.currentText, text || "");
+		epilogueStorage.set(keys.currentTextExtra, "");
+		epilogueStorage.remove(keys.currentPostURL);
+		navigation.navigate("Post", { books: [] });
+	}
+
+	function onSelectEpisode(item) {
+		if (!item) {
+			return;
+		}
+		navigation.navigate("TVEpisodeDetails", {
+			episode: item,
+			showTitle: showTitle
+		});
+	}
+
 	const renderEpisode = ({ item }) => {
 		return (
-			<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 12, alignItems: "center" }}>
-				{item.image ? (
-					<FastImage style={{ width: 80, height: 50, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
-				) : (
-					<View style={{ width: 80, height: 50, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
-				)}
-				<View style={{ flex: 1 }}>
-					<Text style={{ fontWeight: "600", fontSize: 14 }} numberOfLines={2}>{item.title}</Text>
-					{item.airDate ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.airDate}</Text> : null}
+			<Pressable onPress={() => { onSelectEpisode(item); }}>
+				<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 12, alignItems: "center" }}>
+					{item.image ? (
+						<FastImage style={{ width: 80, height: 50, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
+					) : (
+						<View style={{ width: 80, height: 50, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
+					)}
+					<View style={{ flex: 1 }}>
+						<Text style={{ fontWeight: "600", fontSize: 14 }} numberOfLines={2}>{item.title}</Text>
+						{item.airDate ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.airDate}</Text> : null}
+					</View>
 				</View>
-			</View>
+			</Pressable>
 		);
 	};
 

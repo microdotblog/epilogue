@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, Text, View, useColorScheme } from "react-native";
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
+import { Icon } from "../Icon";
 
 export function TVSeasonsScreen({ navigation, route }) {
 	const styles = useEpilogueStyle();
+	const is_dark = (useColorScheme() == "dark");
 	const [ seasons, setSeasons ] = useState([]);
 	const [ loading, setLoading ] = useState(true);
 	const show = route.params?.movie;
@@ -16,6 +18,7 @@ export function TVSeasonsScreen({ navigation, route }) {
 	React.useEffect(() => {
 		const title = show?.title || "Seasons";
 		navigation.setOptions({ title: title });
+		setupPostButton(show?.postText);
 	}, [navigation, show]);
 
 	React.useEffect(() => {
@@ -59,6 +62,24 @@ export function TVSeasonsScreen({ navigation, route }) {
 		});
 	}
 
+	function setupPostButton(text) {
+		navigation.setOptions({
+			headerRight: () => (
+				<Pressable onPress={() => { startPost(text); }} hitSlop={10}>
+					<Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+				</Pressable>
+			)
+		});
+	}
+
+	function startPost(text) {
+		epilogueStorage.set(keys.currentTitle, "");
+		epilogueStorage.set(keys.currentText, text || "");
+		epilogueStorage.set(keys.currentTextExtra, "");
+		epilogueStorage.remove(keys.currentPostURL);
+		navigation.navigate("Post", { books: [] });
+	}
+
 	function onSelectSeason(item) {
 		if (!item) {
 			return;
@@ -67,7 +88,8 @@ export function TVSeasonsScreen({ navigation, route }) {
 			showTitle: show?.title,
 			seasonTitle: item.title,
 			tmdbId: item.tmdbId,
-			seasonNumber: item.seasonNumber
+			seasonNumber: item.seasonNumber,
+			postText: show?.postText
 		});
 	}
 

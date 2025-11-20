@@ -7,16 +7,17 @@ import { Icon } from "../Icon";
 import epilogueStorage from "../Storage";
 import { keys } from "../Constants";
 
-export function MovieDetailsScreen({ navigation, route }) {
+export function TVEpisodeDetailsScreen({ navigation, route }) {
 	const styles = useEpilogueStyle();
 	const is_dark = (useColorScheme() == "dark");
-	const movie = route.params?.movie;
+	const episode = route.params?.episode;
+	const showTitle = route.params?.showTitle;
 
 	React.useEffect(() => {
-		const title = movie?.title || "Movie";
+		const title = episode?.title || "Episode";
 		navigation.setOptions({ title: title });
-		setupPostButton(movie?.postText);
-	}, [navigation, movie]);
+		setupPostButton(episode?.postText);
+	}, [navigation, episode]);
 
 	function setupPostButton(text) {
 		navigation.setOptions({
@@ -39,18 +40,18 @@ export function MovieDetailsScreen({ navigation, route }) {
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={[styles.bookDetails, styles.bookDetailsTop]}>
-				{movie?.image ? (
-					<FastImage style={styles.bookDetailsCover} source={{ uri: movie.image }} />
+				{episode?.image ? (
+					<FastImage style={styles.bookDetailsCover} source={{ uri: episode.image }} />
 				) : (
 					<View style={[styles.bookDetailsCover, { backgroundColor: "#DEDEDE", borderRadius: 6 }]} />
 				)}
-				<Text style={styles.bookDetailsTitle}>{movie?.title}</Text>
-				{movie?.year ? <Text style={styles.bookDetailsAuthor}>{movie.year}</Text> : null}
-				{movie?.director ? <Text style={styles.bookDetailsAuthor}>{movie.director}</Text> : null}
+				<Text style={styles.bookDetailsTitle}>{episode?.title}</Text>
+				{showTitle ? <Text style={styles.bookDetailsAuthor}>{showTitle}</Text> : null}
+				{episode?.airDate ? <Text style={styles.bookDetailsAuthor}>{episode.airDate}</Text> : null}
 			</View>
-			{movie?.postText ? (
+			{episode?.postText ? (
 				<View style={styles.bookDetailsDescription}>
-					<Text>{movie.postText}</Text>
+					<Text>{episode.postText}</Text>
 				</View>
 			) : null}
 		</ScrollView>
