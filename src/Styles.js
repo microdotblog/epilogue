@@ -504,6 +504,29 @@ export const light = StyleSheet.create({
 		flex: 1,
 		paddingTop: 10
 	},
+	moviesCreditPane: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingLeft: 16,
+		paddingRight: 16,
+		paddingTop: 12,
+		paddingBottom: 12,
+		borderTopWidth: 0.5,
+		borderTopColor: "#d6d6d6",
+		backgroundColor: "#e8e8e8"
+	},
+	moviesCreditImage: {
+		width: 34,
+		height: 34,
+		borderRadius: 5,
+		marginRight: 12,
+		backgroundColor: "#c9c9c9"
+	},
+	moviesCreditText: {
+		color: "#4a4a4a",
+		flex: 1,
+		flexWrap: "wrap"
+	},
 	bookContainer: {
 		flex: 1/3,
 		flexDirection: 'column',
@@ -1039,6 +1062,18 @@ export const dark = StyleSheet.create({
 	},
 	discoverView: {
 		backgroundColor: '#212936'
+	},
+	moviesCreditPane: {
+		borderTopColor: "#444444",
+		backgroundColor: "#272f3d"
+	},
+	moviesCreditImage: {
+		backgroundColor: "#1f2633"
+	},
+	moviesCreditText: {
+		color: "#E5E7EB",
+		flex: 1,
+		flexWrap: "wrap"
 	},
 	loadingPage: {
 		backgroundColor: '#212936'		

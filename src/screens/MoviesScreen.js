@@ -12,6 +12,7 @@ export function MoviesScreen({ navigation }) {
 	const [ movies, setMovies ] = useState([]);
 	const [ loading, setLoading ] = useState(true);
 	const [ searching, setSearching ] = useState(false);
+	const [ hideCredits, setHideCredits ] = useState(false);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -147,7 +148,7 @@ export function MoviesScreen({ navigation }) {
 	const renderMovie = ({ item }) => {
 		return (
 			<Pressable onPress={() => { onSelectMovie(item); }}>
-				<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, alignItems: "center" }}>
+				<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, alignItems: "center", marginLeft: 5 }}>
 					{item.image ? (
 						<FastImage style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
 					) : (
@@ -166,23 +167,31 @@ export function MoviesScreen({ navigation }) {
 
 	return (
 		<View style={styles.discoverView}>
-			<TextInput style={styles.searchField} value={searchText} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for movies or TV shows" placeholderTextColor="#6d6d72" clearButtonMode="always" />
-			{loading ? (
-				<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-					<ActivityIndicator size="small" />
+			<TextInput style={styles.searchField} value={searchText} onChangeText={onChangeSearch} onEndEditing={onRunSearch} onFocus={() => setHideCredits(true)} returnKeyType="search" placeholder="Search for movies or TV shows" placeholderTextColor="#6d6d72" clearButtonMode="always" />
+			<View style={{ flex: 1 }}>
+				{loading ? (
+					<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+						<ActivityIndicator size="small" />
+					</View>
+				) : (
+					<FlatList
+						data={movies}
+						keyExtractor={(item, index) => item.id ?? index.toString()}
+						renderItem={renderMovie}
+						ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#eee", marginLeft: 88 }} />}
+						ListEmptyComponent={() => (
+							<View style={{ padding: 20 }}>
+								<Text style={{ textAlign: "center", color: "#5f5f5f" }}>{searching ? "Searching..." : ""}</Text>
+							</View>
+						)}
+					/>
+				)}
+			</View>
+			{hideCredits ? null : (
+				<View style={styles.moviesCreditPane}>
+					<View style={styles.moviesCreditImage} />
+					<Text style={styles.moviesCreditText}>Micro.blog and Epilogue use TMDB but are not endorsed, certified, or otherwise approved by TMDB.</Text>
 				</View>
-			) : (
-				<FlatList
-					data={movies}
-					keyExtractor={(item, index) => item.id ?? index.toString()}
-					renderItem={renderMovie}
-					ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#eee", marginLeft: 88 }} />}
-					ListEmptyComponent={() => (
-						<View style={{ padding: 20 }}>
-							<Text style={{ textAlign: "center", color: "#5f5f5f" }}>{searching ? "Searching..." : ""}</Text>
-						</View>
-					)}
-				/>
 			)}
 		</View>
 	)
