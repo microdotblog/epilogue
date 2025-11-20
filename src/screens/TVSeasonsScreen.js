@@ -52,6 +52,7 @@ export function TVSeasonsScreen({ navigation, route }) {
 						episodesCount: metadata.episode_count,
 						year: metadata.year,
 						seasonNumber: metadata.season_number,
+						postText: metadata.post_text,
 					};
 				});
 				setSeasons(new_seasons);
@@ -89,7 +90,7 @@ export function TVSeasonsScreen({ navigation, route }) {
 			seasonTitle: item.title,
 			tmdbId: item.tmdbId,
 			seasonNumber: item.seasonNumber,
-			postText: show?.postText
+			postText: item.postText || show?.postText
 		});
 	}
 
