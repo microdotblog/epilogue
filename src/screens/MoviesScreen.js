@@ -18,7 +18,8 @@ export function MoviesScreen({ navigation }) {
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			setupProfileIcon();
-			clearResults();
+			setLoading(false);
+			setSearching(false);
 			// fetchDiscover();
 		});
 		return unsubscribe;
