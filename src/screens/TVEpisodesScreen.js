@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, Text, View, useColorScheme } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 import { keys } from "../Constants";
 import epilogueStorage from "../Storage";
@@ -16,21 +17,19 @@ export function TVEpisodesScreen({ navigation, route }) {
 	const seasonNumber = route.params?.seasonNumber;
 	const showTitle = route.params?.showTitle;
 	const seasonTitle = route.params?.seasonTitle;
+	const postText = route.params?.postText;
 
-	React.useEffect(() => {
-		const title = seasonTitle || showTitle || "Episodes";
-		navigation.setOptions({ title: title });
-		setupPostButton(route.params?.postText);
-	}, [navigation, showTitle, seasonTitle, route]);
+	useFocusEffect(
+		React.useCallback(() => {
+			const title = seasonTitle || showTitle || "Episodes";
+			navigation.setOptions({ title: title });
+			setupPostButton(postText);
 
-	React.useEffect(() => {
-		const unsubscribe = navigation.addListener("focus", () => {
 			if (tmdbId && seasonNumber != null) {
 				loadEpisodes(tmdbId, seasonNumber);
 			}
-		});
-		return unsubscribe;
-	}, [navigation, tmdbId, seasonNumber]);
+		}, [navigation, postText, seasonNumber, seasonTitle, showTitle, tmdbId, is_dark, styles])
+	);
 
 	function loadEpisodes(id, season) {
 		setLoading(true);

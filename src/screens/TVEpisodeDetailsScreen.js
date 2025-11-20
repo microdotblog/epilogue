@@ -39,11 +39,11 @@ export function TVEpisodeDetailsScreen({ navigation, route }) {
 
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
-			<View style={[styles.bookDetails, styles.bookDetailsTop]}>
+			<View style={[styles.episodeDetails, styles.bookDetailsTop]}>
 				{episode?.image ? (
-					<FastImage style={styles.bookDetailsCover} source={{ uri: episode.image }} />
+					<FastImage style={styles.episodeDetailsPoster} source={{ uri: episode.image }} />
 				) : (
-					<View style={[styles.bookDetailsCover, { backgroundColor: "#DEDEDE", borderRadius: 6 }]} />
+					<View style={[styles.episodeDetailsPoster, { backgroundColor: "#DEDEDE", borderRadius: 6 }]} />
 				)}
 				<Text style={styles.bookDetailsTitle}>{episode?.title}</Text>
 				{showTitle ? <Text style={styles.bookDetailsAuthor}>{showTitle}</Text> : null}
@@ -51,7 +51,7 @@ export function TVEpisodeDetailsScreen({ navigation, route }) {
 			</View>
 			{episode?.postText ? (
 				<View style={styles.bookDetailsDescription}>
-					<Text>{episode.postText}</Text>
+					<Text></Text>
 				</View>
 			) : null}
 		</ScrollView>

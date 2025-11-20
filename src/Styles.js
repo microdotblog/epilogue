@@ -845,7 +845,16 @@ export const light = StyleSheet.create({
 		flex: 1,
 		alignItems: "flex-end",
 		marginRight: 20
-	}
+	},
+	episodeDetailsPoster: {
+		width: "100%",
+		height: "150",
+		resizeMode: "contain",
+		marginBottom: 10
+	},
+	episodeDetails: {
+		alignItems: "center",
+	}	
 });
 
 export const dark = StyleSheet.create({
