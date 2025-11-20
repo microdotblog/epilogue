@@ -516,11 +516,10 @@ export const light = StyleSheet.create({
 		backgroundColor: "#e8e8e8"
 	},
 	moviesCreditImage: {
-		width: 34,
-		height: 34,
-		borderRadius: 5,
-		marginRight: 12,
-		backgroundColor: "#c9c9c9"
+		width: 60,
+		height: 60,
+		marginRight: 15,
+		resizeMode: "contain"
 	},
 	moviesCreditText: {
 		color: "#4a4a4a",
@@ -1066,9 +1065,6 @@ export const dark = StyleSheet.create({
 	moviesCreditPane: {
 		borderTopColor: "#444444",
 		backgroundColor: "#272f3d"
-	},
-	moviesCreditImage: {
-		backgroundColor: "#1f2633"
 	},
 	moviesCreditText: {
 		color: "#E5E7EB",

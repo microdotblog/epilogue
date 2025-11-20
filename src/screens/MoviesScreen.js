@@ -189,7 +189,7 @@ export function MoviesScreen({ navigation }) {
 			</View>
 			{hideCredits ? null : (
 				<View style={styles.moviesCreditPane}>
-					<View style={styles.moviesCreditImage} />
+					<Image style={styles.moviesCreditImage} source={require("../../images/tmdb.png")} />
 					<Text style={styles.moviesCreditText}>Micro.blog and Epilogue use TMDB but are not endorsed, certified, or otherwise approved by TMDB.</Text>
 				</View>
 			)}
