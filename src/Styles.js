@@ -473,6 +473,10 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsDescription: {		
 	},
+	movieTitle: {
+		fontWeight: "600",
+		fontSize: 14
+	},
 	movieDescription: {
 		marginTop: 20,
 		paddingTop: 16,
@@ -1059,6 +1063,9 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsDescription: {
 		color: "#E5E7EB"
+	},
+	movieTitle: {
+		color: "#FFF"
 	},
 	movieDescription: {
 		marginTop: 20,

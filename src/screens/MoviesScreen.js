@@ -167,10 +167,10 @@ export function MoviesScreen({ navigation }) {
 						<View style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
 					)}
 					<View style={{ flex: 1 }}>
-						<Text style={{ fontWeight: "600", fontSize: 14 }} numberOfLines={2}>{item.title}</Text>
+						<Text style={styles.movieTitle} numberOfLines={2}>{item.title}</Text>
 						{item.username ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>@{item.username}</Text> : null}
 						{item.year ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.year}</Text> : null}
-						{item.seasonsCount > 0 ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.seasonsCount} season{item.seasonsCount === 1 ? "" : "s"}</Text> : null}
+						{item.seasonsCount > 0 ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.seasonsCount} season{item.seasonsCount == 1 ? "" : "s"}</Text> : null}
 					</View>
 				</View>
 			</Pressable>
@@ -195,7 +195,6 @@ export function MoviesScreen({ navigation }) {
 						data={movies}
 						keyExtractor={(item, index) => item.id ?? index.toString()}
 						renderItem={renderMovie}
-						ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#eee", marginLeft: 88 }} />}
 						ListEmptyComponent={() => (
 							<View style={{ padding: 20 }}>
 								<Text style={{ textAlign: "center", color: "#5f5f5f" }}>{searching ? "Searching..." : ""}</Text>
