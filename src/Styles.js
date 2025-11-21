@@ -473,6 +473,9 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsDescription: {		
 	},
+	movieTitle: {
+		fontSize: 14
+	},
 	movieDescription: {
 		marginTop: 20,
 		paddingTop: 16,
@@ -946,8 +949,8 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsColumns: {
 		backgroundColor: "#141723",
-		borderTopColor: "#444444",
-		borderBottomColor: "#444444"
+		borderTopColor: "#353A44",
+		borderBottomColor: "#353A44"
 	},
 	bookDetailsButton: {
 		backgroundColor: "#141723"
@@ -1059,6 +1062,9 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsDescription: {
 		color: "#E5E7EB"
+	},
+	movieTitle: {
+		color: "#FFF"
 	},
 	movieDescription: {
 		marginTop: 20,

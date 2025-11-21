@@ -104,7 +104,7 @@ export function TVSeasonsScreen({ navigation, route }) {
 						<View style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
 					)}
 					<View style={{ flex: 1 }}>
-						<Text style={{ fontWeight: "600", fontSize: 14 }} numberOfLines={2}>{item.title}</Text>
+						<Text style={styles.movieTitle} numberOfLines={2}>{item.title}</Text>
 						{item.year ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.year}</Text> : null}
 						{item.episodesCount ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>{item.episodesCount} episode{item.episodesCount === 1 ? "" : "s"}</Text> : null}
 					</View>
@@ -124,7 +124,6 @@ export function TVSeasonsScreen({ navigation, route }) {
 					data={seasons}
 					keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
 					renderItem={renderSeason}
-					ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#eee", marginLeft: 88 }} />}
 					ListEmptyComponent={() => (
 						<View style={{ padding: 20 }}>
 							<Text style={{ textAlign: "center", color: "#5f5f5f" }}>No seasons found.</Text>

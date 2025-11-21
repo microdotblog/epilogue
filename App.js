@@ -58,7 +58,8 @@ const App: () => Node = () => {
       <Stack.Navigator
         screenOptions={{
           headerLeftContainerStyle: { paddingLeft: 15 },
-          headerRightContainerStyle: { paddingRight: 15 }
+          headerRightContainerStyle: { paddingRight: 15 },
+          headerMode: 'screen'
         }}
       >
           <Stack.Group>
