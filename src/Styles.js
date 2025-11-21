@@ -474,7 +474,6 @@ export const light = StyleSheet.create({
 	bookDetailsDescription: {		
 	},
 	movieTitle: {
-		fontWeight: "600",
 		fontSize: 14
 	},
 	movieDescription: {
