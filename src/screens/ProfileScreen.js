@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList } from "react-native";
+import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useColorScheme } from "react-native";
 import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 import FastImage from "react-native-fast-image";
@@ -12,6 +12,8 @@ import epilogueStorage from "../Storage";
 
 export function ProfileScreen({ navigation }) {
 	const styles = useEpilogueStyle()
+	const colorScheme = useColorScheme();
+	const is_dark = (colorScheme == "dark");
 	const [ username, setUsername ] = useState("");
 	const [ hostname, setHostname ] = useState("Micro.blog");
 	const [ posts, setPosts ] = useState([]);
@@ -29,6 +31,10 @@ export function ProfileScreen({ navigation }) {
 			};
 		}, [])
 	);
+
+	React.useLayoutEffect(() => {
+		setupSignOutButton();
+	}, [is_dark, styles]);
 		
 	function onFocus(navigation) {
 		isCancelDownload = false;
