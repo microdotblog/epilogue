@@ -8,7 +8,8 @@ import epilogueStorage from "../Storage";
 
 export function SignInScreen({ navigation }) {
 	const styles = useEpilogueStyle();
-	const is_dark = (useColorScheme() == "dark");
+	const colorScheme = useColorScheme();
+	const is_dark = (colorScheme == "dark");
 	
 	const [ email, setEmail ] = useState();
 	const [ emailSent, setEmailSent ] = useState(false);
@@ -22,7 +23,7 @@ export function SignInScreen({ navigation }) {
 			  </Pressable>
 			),
 		});
-	}, [navigation, email, emailSent]);	
+	}, [navigation, email, emailSent, is_dark, styles]);	
 	
 	if (Platform.OS == "ios") {
 		React.useEffect(() => {
