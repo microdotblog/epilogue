@@ -49,6 +49,21 @@ export function HomeScreen({ navigation }) {
 	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
   
 	function onFocus(navigation) {
+		if (currentBookshelfTitle && bookshelves.length > 0) {
+			setupBookshelves(navigation, bookshelves, currentBookshelfTitle);
+		}
+		else {
+			epilogueStorage.get(keys.allBookshelves).then(saved_bookshelves => {
+				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+					if (saved_bookshelves && saved_bookshelves.length > 0 && current_bookshelf) {
+						setBookshelves(saved_bookshelves);
+						setCurrentBookshelfTitle(current_bookshelf.title);
+						setupBookshelves(navigation, saved_bookshelves, current_bookshelf.title);
+					}
+				});
+			});
+		}
+		
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			if ((auth_token == null) || (auth_token.length == 0)) {
 				navigation.navigate("SignIn");
