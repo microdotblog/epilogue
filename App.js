@@ -233,7 +233,11 @@ const App: () => Node = () => {
           <Stack.Group>
             <Stack.Screen name="SignIn" component={SignInScreen} options={({ navigation, route }) => ({
               title: "Epilogue",
-              headerBackVisible: false
+              headerBackVisible: false,
+              headerBackTitle: "",
+              headerBackTitleVisible: false,
+              headerLeft: () => null,
+              headerTintColor: is_dark ? "#FFFFFF" : "#000000"
             })} />
           </Stack.Group>
           <Stack.Group>

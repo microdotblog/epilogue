@@ -1004,10 +1004,10 @@ export const dark = StyleSheet.create({
 		borderBottomColor: "#444444"
 	},
 	signInText: {
-		color: "#E5E7EB"
+		color: "#FFFFFF"
 	},
 	signInTextHeader: {
-		color: "#E5E7EB"
+		color: "#FFFFFF"
 	},
 	signInInput: {
 		borderColor: "rgba(255, 255, 255, 0.1)",
