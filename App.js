@@ -70,6 +70,7 @@ const App: () => Node = () => {
           <Stack.Group>
             <Stack.Screen name="Home" component={HomeScreen} options={{
               title: "",
+              headerTintColor: is_dark ? "#FFFFFF" : "#000000",
               headerLeft: () => (
                 <Image style={styles.profileIcon} source={{ uri: "https://micro.blog/images/blank_avatar.png" }} />
               )

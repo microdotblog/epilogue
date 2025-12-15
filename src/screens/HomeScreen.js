@@ -1,6 +1,6 @@
 import React, { Component, useState, useRef } from "react";
 import type { Node } from "react";
-import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState } from "react-native";
+import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { MenuView } from "@react-native-menu/menu";
 import Swipeable from "react-native-gesture-handler/Swipeable";
@@ -16,10 +16,12 @@ import { Book } from "../models/Book";
 
 export function HomeScreen({ navigation }) {
 	const styles = useEpilogueStyle()
-	const is_dark = (useColorScheme() == "dark");
+	const colorScheme = useColorScheme();
+	const is_dark = (colorScheme == "dark");
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ selectedRow, setSelectedRow ] = useState();
+	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
 	const searchFieldRef = useRef();
 	var bookRowReferences = [];
     
@@ -39,6 +41,12 @@ export function HomeScreen({ navigation }) {
 			unsubscribe_change.remove();
 		};
 	}, [navigation]);
+
+	React.useEffect(() => {
+		if (currentBookshelfTitle && bookshelves.length > 0) {
+			setupBookshelves(navigation, bookshelves, currentBookshelfTitle);
+		}
+	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
   
 	function onFocus(navigation) {
 		epilogueStorage.get(keys.authToken).then(auth_token => {
@@ -317,11 +325,13 @@ export function HomeScreen({ navigation }) {
 						let first_bookshelf = new_items[0];
 						epilogueStorage.set(keys.currentBookshelf, first_bookshelf).then(() => {
 							loadBooks(first_bookshelf.id);
+							setCurrentBookshelfTitle(first_bookshelf.title);
 							setupBookshelves(navigation, new_items, first_bookshelf.title);
 						});
 					}
 					else {
-						loadBooks(current_bookshelf.id);						
+						loadBooks(current_bookshelf.id);
+						setCurrentBookshelfTitle(current_bookshelf.title);
 						setupBookshelves(navigation, new_items, current_bookshelf.title);
 					}
 				});
@@ -340,6 +350,7 @@ export function HomeScreen({ navigation }) {
 							for (let shelf of bookshelves) {
 								if (shelf.id == shelf_id) {
 									epilogueStorage.set(keys.currentBookshelf, shelf);
+									setCurrentBookshelfTitle(shelf.title);
 									setupBookshelves(navigation, bookshelves, shelf.title);
 								}
 							}
@@ -349,7 +360,7 @@ export function HomeScreen({ navigation }) {
 				actions = {items}
 				>
 					<View style={styles.navbarBookshelf}>
-						<Text style={[ styles.navbarBookshelfTitle, { marginLeft: Platform.OS == "os" ? 15 : 0 } ]}>{currentTitle}</Text>
+						<Text style={[ styles.navbarBookshelfTitle, { marginLeft: Platform.OS == "ios" ? 15 : 0, color: is_dark ? "#FFFFFF" : "#000000" } ]}>{currentTitle}</Text>
 						<Icon name="popup-triangle" color={is_dark ? "#FFFFFF" : "#000000"} size={10} style={styles.navbarBookshelfTriangle} />
 					</View>
 				</MenuView>
