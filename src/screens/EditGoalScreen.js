@@ -59,7 +59,8 @@ export function EditGoalScreen({ route, navigation }) {
 
 	function setupNavTitle() {
 		navigation.setOptions({
-			title: name
+			title: name,
+			headerTintColor: is_dark ? "#FFFFFF" : "#000000"
 		});		
 	}
 	
