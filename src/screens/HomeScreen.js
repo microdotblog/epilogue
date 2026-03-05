@@ -422,8 +422,7 @@ export function HomeScreen({ navigation }) {
 					setBooks(new_items);
 				}
 				else {
-					let q = `isbn:${searchText}`;
-					Book.searchGoogleBooks(q, function(new_books) {
+					Book.searchMicroBooks(searchText, function(new_books) {
 						var new_items = [];
 					
 						for (b of new_books) {
@@ -446,7 +445,7 @@ export function HomeScreen({ navigation }) {
 			});
 		}
 		else {		
-			Book.searchGoogleBooks(searchText, function(new_books) {
+			Book.searchMicroBooks(searchText, function(new_books) {
 				var new_items = [];
 			
 				for (b of new_books) {

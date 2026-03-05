@@ -1,4 +1,6 @@
 import { Edition } from "./Edition";
+import { keys } from "../Constants";
+import epilogueStorage from "../Storage";
 
 export class Book {	
 	constructor(isbn, title, author, cover_url) {
@@ -154,6 +156,62 @@ export class Book {
 			
 			handler(results);
 		});		
+	}
+
+	static searchMicroBooks(searchText, handler = function(books) {}) {
+		let q = encodeURIComponent(searchText);
+		epilogueStorage.get(keys.authToken).then(auth_token => {
+			var options = {};
+			if ((auth_token != null) && (auth_token.length > 0)) {
+				options = {
+					headers: {
+						"Authorization": "Bearer " + auth_token
+					}
+				};
+			}
+
+			fetch("https://micro.blog/books/search?q=" + q + "&format=jsonfeed", options).then(response => response.json()).then(data => {
+				var results = [];
+				
+				if (data.items != undefined) {
+					for (let book_item of data.items) {
+						var author_name = "";
+						var description = "";
+						
+						if ((book_item.authors != undefined) && (book_item.authors.length > 0) && (book_item.authors[0].name != undefined)) {
+							author_name = book_item.authors[0].name;
+						}
+						
+						if (book_item.content_text != undefined) {
+							description = book_item.content_text;
+						}
+						
+						var cover_url = "";
+						if (book_item.image != undefined) {
+							cover_url = book_item.image.replace("http://", "https://");
+						}
+						
+						var best_isbn = "";
+						if ((book_item._microblog != undefined) && (book_item._microblog.isbn != undefined)) {
+							best_isbn = book_item._microblog.isbn;
+						}
+			
+						if ((best_isbn.length > 0) && (cover_url.length > 0)) {
+							let b = new Book(best_isbn, book_item.title, author_name, cover_url);
+							b.id = (book_item.id != undefined) ? book_item.id : best_isbn;
+							b.description = description;
+							results.push(b);
+						}
+					}
+				}
+				
+				handler(results);
+			}).catch(() => {
+				handler([]);
+			});
+		}).catch(() => {
+			handler([]);
+		});
 	}
 	
 	static languageFromOpenLibrary(key) {

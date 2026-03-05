@@ -287,7 +287,7 @@ export function DiscoverScreen({ navigation }) {
 					setBooks(new_items);
 				}
 				else {
-					Book.searchGoogleBooks(searchText, function(new_books) {
+					Book.searchMicroBooks(searchText, function(new_books) {
 						var new_items = [];
 					
 						for (b of new_books) {
@@ -309,7 +309,7 @@ export function DiscoverScreen({ navigation }) {
 			});
 		}
 		else {		
-			Book.searchGoogleBooks(searchText, function(new_books) {
+			Book.searchMicroBooks(searchText, function(new_books) {
 				var new_items = [];
 			
 				for (b of new_books) {

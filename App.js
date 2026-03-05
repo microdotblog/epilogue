@@ -161,6 +161,7 @@ const App: () => Node = () => {
             })} />
             <Stack.Screen name="Blogs" component={BlogsScreen} options={({ navigation, route }) => ({
               title: "Blogs",
+              headerTintColor: is_dark ? "#FFFFFF" : "#000000",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
