@@ -201,7 +201,7 @@ const App: () => Node = () => {
               )
             })} />
             <Stack.Screen name="EditBookInfo" component={EditBookInfoScreen} options={({ navigation, route }) => ({
-              title: "Edit Book",
+              title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
@@ -209,7 +209,7 @@ const App: () => Node = () => {
               )
             })} />
             <Stack.Screen name="AddBookInfo" component={AddBookInfoScreen} options={({ navigation, route }) => ({
-              title: "Add Book",
+              title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />

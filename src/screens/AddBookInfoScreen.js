@@ -13,7 +13,7 @@ export function AddBookInfoScreen({ route, navigation }) {
 		navigation.setOptions({
 			headerRight: () => (
 				<Pressable onPress={() => { onAddPressed(); }}>
-					<Text style={styles.navbarSubmit}>Add</Text>
+					<Text style={styles.navbarSubmit}>Add Book</Text>
 				</Pressable>
 			)
 		});

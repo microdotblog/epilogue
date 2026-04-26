@@ -13,7 +13,7 @@ export function EditBookInfoScreen({ route, navigation }) {
 		navigation.setOptions({
 				headerRight: () => (
 					<Pressable onPress={() => { onSavePressed(); }}>
-						<Text style={styles.navbarSubmit}>Update</Text>
+						<Text style={styles.navbarSubmit}>Update Book</Text>
 					</Pressable>
 				)
 		});
