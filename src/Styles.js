@@ -649,11 +649,11 @@ export const light = StyleSheet.create({
 		marginTop: 10,
 		marginLeft: 20,
 		marginRight: 10,
-		paddingTop: 10,
+		paddingTop: 0,
 		paddingLeft: 10,
 		paddingRight: 10,
-		paddingBottom: 10,
-		height: 44,
+		paddingBottom: 0,
+		height: 54,
 		backgroundColor: "#FFFFFF",
 		borderRadius: 5		
 	},
@@ -664,10 +664,10 @@ export const light = StyleSheet.create({
 		flexDirection: "row"
 	},
 	editGoalButton: {
-		height: 44,
+		height: 54,
 		marginTop: 10,
 		marginRight: 20,
-		paddingVertical: 14,
+		justifyContent: "center",
 		paddingHorizontal: 14,
 		borderRadius: 5,
 		marginBottom: 6,
