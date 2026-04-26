@@ -59,6 +59,7 @@ const App: () => Node = () => {
         screenOptions={{
           headerLeftContainerStyle: { paddingLeft: 15 },
           headerRightContainerStyle: { paddingRight: 15 },
+          headerTintColor: is_dark ? "#FFFFFF" : "#000000",
           headerMode: 'screen'
         }}
       >

@@ -21,7 +21,11 @@ export function TabsScreen({ navigation }) {
 	const enable_open_library = false;
 
 	return (
-		<Tab.Navigator>
+		<Tab.Navigator
+			screenOptions={{
+				headerTintColor: is_dark ? "#FFFFFF" : "#000000"
+			}}
+		>
 			<Tab.Screen name="Bookshelves" component={HomeScreen} options={{				
 				headerTitle: "",
 				tabBarIcon: ({ focused, color, size }) => {
