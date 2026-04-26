@@ -381,7 +381,8 @@ export const light = StyleSheet.create({
 	},
 	profilePostCover: {
 		width: 50,
-		height: 70
+		height: 70,
+		borderRadius: 4
 	},
 	profilePostContent: {
 		flex: 1,
