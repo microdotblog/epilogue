@@ -1,4 +1,4 @@
-import React, { Component, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -14,6 +14,47 @@ import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
 
+function BookSwipeableRow({ bookID, children, onRemove, styles }) {
+	const swipeableRef = useRef(null);
+
+	const renderRightActions = (progress) => {
+		const actionOpacity = progress.interpolate({
+			inputRange: [0, 0.2, 0.85, 1],
+			outputRange: [0, 0, 1, 1],
+			extrapolate: "clamp",
+		});
+
+		return (
+			<View style={styles.removeContainer}>
+				<RectButton style={styles.removeAction} onPress={() => {
+					swipeableRef.current?.close?.();
+					onRemove(bookID);
+				}}>
+					<Animated.View style={{ opacity: actionOpacity }}>
+						<View style={styles.removeCircle}>
+							<Icon name="trash" color="#FFFFFF" size={18} />
+						</View>
+					</Animated.View>
+				</RectButton>
+			</View>
+		);
+	};
+
+	return (
+		<Swipeable
+			enableTrackpadTwoFingerGesture={true}
+			friction={1}
+			overshootFriction={8}
+			overshootRight={false}
+			ref={swipeableRef}
+			renderRightActions={renderRightActions}
+			rightThreshold={40}
+		>
+			{children}
+		</Swipeable>
+	);
+}
+
 export function HomeScreen({ navigation }) {
 	const styles = useEpilogueStyle()
 	const colorScheme = useColorScheme();
@@ -23,7 +64,6 @@ export function HomeScreen({ navigation }) {
 	const [ selectedRow, setSelectedRow ] = useState();
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
 	const searchFieldRef = useRef();
-	var bookRowReferences = [];
     
 	React.useEffect(() => {
 		const unsubscribe_focus = navigation.addListener("focus", () => {
@@ -535,57 +575,13 @@ export function HomeScreen({ navigation }) {
 		});
 	}
 
-	function collectRowRefs(ref) {
-		bookRowReferences.push(ref);
-	}
-
-	class BookSwipeableRow extends Component {
-		constructor(props) {
-			super(props);
-			this.bookID = props.book;
-		}
-
-		renderRightActions = (progress) => {
-			const x = 60;
-			const trans = progress.interpolate({
-				inputRange: [0, 1],
-				outputRange: [x, 0]
-			});
-					
-			return (
-				<RectButton style={styles.removeAction} onPress={() => {
-					removeFromBookshelf(this.bookID);
-					for (let ref of bookRowReferences) {
-						ref.close();
-					}
-				}}>
-				<View style={styles.removeContainer}>
-					<Animated.Text style={[ styles.removeText, {
-						transform: [{ translateX: trans }],
-					}]}>
-						Remove
-					</Animated.Text>
-					</View>
-				</RectButton>
-			);
-		};
-		
-		render() {
-			return (
-				<Swipeable friction={1} overshootFriction={8} renderRightActions={this.renderRightActions} ref={collectRowRefs}>
-					{this.props.children}
-				</Swipeable>
-			);
-		}
-	}
-
 	return (
 		<View style={styles.container}>
 			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" ref={searchFieldRef} />
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
-				<BookSwipeableRow book={item.id}>
+				<BookSwipeableRow bookID={item.id} onRemove={removeFromBookshelf} styles={styles}>
 					<Pressable onPress={() => {
 						onShowBookPressed(item);
 					}} onLongPress={() => {

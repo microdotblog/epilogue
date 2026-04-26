@@ -174,18 +174,23 @@ export const light = StyleSheet.create({
 		tintColor: "#337AB7"
 	},
 	removeAction: {
-		backgroundColor: "#AAAAAA",
-		width: 100,
 		alignItems: "center",
-		marginBottom: 20
+		height: "100%",
+		justifyContent: "center",
+		width: 74
 	},
 	removeContainer: {
-		flex: 1,
-		flexDirection: "row",
-		alignItems: "center"
+		alignItems: "stretch",
+		justifyContent: "center"
 	},
-	removeText: {
-		color: "#FFFFFF"
+	removeCircle: {
+		alignItems: "center",
+		backgroundColor: "#FF3B30",
+		borderRadius: 22,
+		height: 44,
+		justifyContent: "center",
+		transform: [{ translateY: -6 }],
+		width: 44
 	},
 	searchField: {
 		height: 36,
