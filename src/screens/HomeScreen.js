@@ -61,7 +61,6 @@ export function HomeScreen({ navigation }) {
 	const is_dark = (colorScheme == "dark");
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
-	const [ selectedRow, setSelectedRow ] = useState();
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
 	const searchFieldRef = useRef();
     
@@ -129,7 +128,6 @@ export function HomeScreen({ navigation }) {
 		
 		const linking_sub = setupLinking();
 		setupProfileIcon();
-		clearSelection();
 		
 		// cleanup
 		return () => {
@@ -165,10 +163,6 @@ export function HomeScreen({ navigation }) {
 			const u = event && event.url ? event.url : undefined;
 			loadURL(u);
 		});
-	}
-  
-	function clearSelection() {
-		setSelectedRow(0);
 	}
   
 	function loadURL(url) {
@@ -584,22 +578,13 @@ export function HomeScreen({ navigation }) {
 				<BookSwipeableRow bookID={item.id} onRemove={removeFromBookshelf} styles={styles}>
 					<Pressable onPress={() => {
 						onShowBookPressed(item);
-					}} onLongPress={() => {
-						setSelectedRow(item.id);
 					}}>
-						<View style={selectedRow == item.id ? styles.selectedItem : styles.item}>
+						<View style={styles.item}>
 							<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>
 								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
 								<Text style={styles.bookAuthor}>{item.author}</Text>
 							</View>
-							{ selectedRow == item.id && 
-								<Pressable onPress={() => {
-									removeFromBookshelf(item.id);
-								}} style={styles.itemTrash}>
-									<Icon name="trash" color={is_dark ? "#FFFFFF" : "#000000"} size={25} />
-								</Pressable>
-							}
 						</View>
 					</Pressable>
 				</BookSwipeableRow>

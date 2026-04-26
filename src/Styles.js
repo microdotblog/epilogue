@@ -37,19 +37,6 @@ export const light = StyleSheet.create({
 		paddingBottom: 5,
 		marginBottom: 5
 	},
-	selectedItem: {
-		flexDirection: "row",
-		height: 90,
-		paddingLeft: 20,
-		paddingRight: 20,
-		paddingTop: 5,
-		paddingBottom: 5,
-		marginBottom: 5,
-		backgroundColor: "#DEDEDE"
-	},
-	itemTrash: {
-		alignSelf: "center"
-	},
 	bookItem: {
 		flex: 1,
 		marginLeft: 5,
@@ -1238,9 +1225,6 @@ export const dark = StyleSheet.create({
 	signUpInput: {
 		backgroundColor: "#000",
 		color: "#FFF"
-	},
-	selectedItem: {
-		backgroundColor: "#141723"
 	},
 	openLibraryBanner: {
 		borderBottomColor: "#444444"
