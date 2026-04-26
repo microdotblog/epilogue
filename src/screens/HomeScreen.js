@@ -439,46 +439,43 @@ export function HomeScreen({ navigation }) {
 	function onShowProfile() {
 		navigation.navigate("Profile");
 	}
+
+	function searchResultItems(new_books, searchText) {
+		var new_items = [];
+
+		for (b of new_books) {
+			new_items.push({
+				id: b.id,
+				isbn: b.isbn,
+				title: b.title,
+				image: b.cover_url,
+				author: b.author,
+				description: b.description,
+				date: "",
+				is_search: true
+			});
+		}
+
+		if (new_items.length == 0) {
+			new_items.push({
+				id: "new-book",
+				is_new_book_row: true,
+				searchText: searchText
+			});
+		}
+
+		return new_items;
+	}
 		
 	function sendSearch(searchText) {
 		if (Book.isISBN(searchText)) {
 			Book.searchOpenLibrary(searchText, function(new_books) {
 				if (new_books.length > 0) {				
-					var new_items = [];
-
-					for (b of new_books) {
-						new_items.push({
-							id: b.id,
-							isbn: b.isbn,
-							title: b.title,
-							image: b.cover_url,
-							author: b.author,
-							description: b.description,
-							date: "",
-							is_search: true
-						});
-					}
-
-					setBooks(new_items);
+					setBooks(searchResultItems(new_books, searchText));
 				}
 				else {
 					Book.searchMicroBooks(searchText, function(new_books) {
-						var new_items = [];
-					
-						for (b of new_books) {
-							new_items.push({
-								id: b.id,
-								isbn: b.isbn,
-								title: b.title,
-								image: b.cover_url,
-								author: b.author,
-								description: b.description,
-								date: "",
-								is_search: true
-							});
-						}
-						
-						setBooks(new_items);
+						setBooks(searchResultItems(new_books, searchText));
 					});
 				}
 				
@@ -486,24 +483,19 @@ export function HomeScreen({ navigation }) {
 		}
 		else {		
 			Book.searchMicroBooks(searchText, function(new_books) {
-				var new_items = [];
-			
-				for (b of new_books) {
-					new_items.push({
-						id: b.id,
-						isbn: b.isbn,
-						title: b.title,
-						image: b.cover_url,
-						author: b.author,
-						description: b.description,
-						date: "",
-						is_search: true
-					});
-				}
-				
-				setBooks(new_items);
+				setBooks(searchResultItems(new_books, searchText));
 			});
 		}
+	}
+
+	function onAddBookInfoPressed(searchText) {
+		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+			const params = {
+				bookshelf_id: current_bookshelf.id,
+				isbn: Book.isISBN(searchText) ? searchText : ""
+			};
+			navigation.navigate("AddBookInfo", params);
+		});
 	}
 	
 	function onShowBookPressed(item) {
@@ -581,6 +573,14 @@ export function HomeScreen({ navigation }) {
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
+				item.is_new_book_row ? (
+					<View style={styles.bookSearchEmptyRow}>
+						<Text style={styles.bookSearchEmptyText}>Can't find a book? Try searching for its ISBN or add a new book.</Text>
+						<Pressable style={styles.micropubButton} onPress={() => { onAddBookInfoPressed(item.searchText); }}>
+							<Text style={styles.micropubButtonTitle}>New Book</Text>
+						</Pressable>
+					</View>
+				) : (
 				<BookSwipeableRow bookID={item.id} onRemove={removeFromBookshelf} styles={styles}>
 					<Pressable onPress={() => {
 						onShowBookPressed(item);
@@ -603,6 +603,7 @@ export function HomeScreen({ navigation }) {
 						</View>
 					</Pressable>
 				</BookSwipeableRow>
+				)
 				}
 				keyExtractor = { item => item.id }
 			/>

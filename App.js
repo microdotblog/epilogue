@@ -20,6 +20,8 @@ import { SignInScreen } from "./src/screens/SignInScreen";
 import { BlogsScreen } from "./src/screens/BlogsScreen";
 import { ProfileScreen } from "./src/screens/ProfileScreen";
 import { ExternalScreen } from "./src/screens/ExternalScreen";
+import { AddBookInfoScreen } from "./src/screens/AddBookInfoScreen";
+import { EditBookInfoScreen } from "./src/screens/EditBookInfoScreen";
 import { EditGoalScreen } from "./src/screens/EditGoalScreen";
 import { CreateAccountScreen } from "./src/screens/CreateAccountScreen";
 import { OpenEditionsScreen } from "./src/screens/OpenEditionsScreen";
@@ -192,6 +194,22 @@ const App: () => Node = () => {
             })} />
             <Stack.Screen name="External" component={ExternalScreen} options={({ navigation, route }) => ({
               title: "",
+              headerLeft: () => (
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                </Pressable>
+              )
+            })} />
+            <Stack.Screen name="EditBookInfo" component={EditBookInfoScreen} options={({ navigation, route }) => ({
+              title: "Edit Book",
+              headerLeft: () => (
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                </Pressable>
+              )
+            })} />
+            <Stack.Screen name="AddBookInfo" component={AddBookInfoScreen} options={({ navigation, route }) => ({
+              title: "Add Book",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />

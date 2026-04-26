@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, useColorScheme } from "react-native";
+import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, Platform, useColorScheme } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { MenuView } from "@react-native-menu/menu";
 import ContextMenu from "react-native-context-menu-view";
@@ -71,6 +71,11 @@ export function BookDetailsScreen({ route, navigation }) {
 					title: "Set Finished Date"
 				});
 			}
+
+			edit_actions.push({
+				id: "editbook",
+				title: "Edit Book"
+			});
 
 			edit_actions.push({
 				id: "setopenlibrary",
@@ -241,6 +246,17 @@ export function BookDetailsScreen({ route, navigation }) {
 		};
 		navigation.navigate("Covers", params);
 	}
+
+	function showEditBookInfo() {
+		let params = {
+			id: id,
+			bookshelf_id: current_bookshelf.id,
+			title: title,
+			author: author,
+			isbn: isbn
+		};
+		navigation.navigate("EditBookInfo", params);
+	}
 	
 	function viewBookOn(service) {
 		var url;
@@ -262,6 +278,9 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 		else if (service == "Set Finished Date") {
 			showDatePicker();
+		}
+		else if (service == "Edit Book") {
+			showEditBookInfo();
 		}
 		else if (service == "Set Cover from Open Library") {
 			showCovers();

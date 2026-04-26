@@ -266,43 +266,41 @@ export function DiscoverScreen({ navigation }) {
 		});
 	}
 
+	function searchResultItems(new_books, searchText) {
+		var new_items = [];
+
+		for (b of new_books) {
+			new_items.push({
+				id: b.id,
+				isbn: b.isbn,
+				title: b.title,
+				image: b.cover_url,
+				author: b.author,
+				description: b.description,
+				is_search: true
+			});
+		}
+
+		if (new_items.length == 0) {
+			new_items.push({
+				id: "new-book",
+				is_new_book_row: true,
+				searchText: searchText
+			});
+		}
+
+		return new_items;
+	}
+
 	function sendSearch(searchText) {
 		if (Book.isISBN(searchText)) {
 			Book.searchOpenLibrary(searchText, function(new_books) {				
 				if (new_books.length > 0) {				
-					var new_items = [];
-	
-					for (b of new_books) {
-						new_items.push({
-							id: b.id,
-							isbn: b.isbn,
-							title: b.title,
-							image: b.cover_url,
-							author: b.author,
-							description: b.description,
-							is_search: true
-						});
-					}
-	
-					setBooks(new_items);
+					setBooks(searchResultItems(new_books, searchText));
 				}
 				else {
 					Book.searchMicroBooks(searchText, function(new_books) {
-						var new_items = [];
-					
-						for (b of new_books) {
-							new_items.push({
-								id: b.id,
-								isbn: b.isbn,
-								title: b.title,
-								image: b.cover_url,
-								author: b.author,
-								description: b.description,
-								is_search: true
-							});
-						}
-						
-						setBooks(new_items);
+						setBooks(searchResultItems(new_books, searchText));
 					});
 				}
 				
@@ -310,23 +308,19 @@ export function DiscoverScreen({ navigation }) {
 		}
 		else {		
 			Book.searchMicroBooks(searchText, function(new_books) {
-				var new_items = [];
-			
-				for (b of new_books) {
-					new_items.push({
-						id: b.id,
-						isbn: b.isbn,
-						title: b.title,
-						image: b.cover_url,
-						author: b.author,
-						description: b.description,
-						is_search: true
-					});
-				}
-				
-				setBooks(new_items);
+				setBooks(searchResultItems(new_books, searchText));
 			});
 		}
+	}
+
+	function onAddBookInfoPressed(searchText) {
+		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+			const params = {
+				bookshelf_id: current_bookshelf.id,
+				isbn: Book.isISBN(searchText) ? searchText : ""
+			};
+			navigation.navigate("AddBookInfo", params);
+		});
 	}
 
 	const BookCover = ({ url, title, author, id }) => {
@@ -389,6 +383,14 @@ export function DiscoverScreen({ navigation }) {
 
 
 	const renderSearchItem = ({item}) => (
+		item.is_new_book_row ? (
+			<View style={styles.bookSearchEmptyRow}>
+				<Text style={styles.bookSearchEmptyText}>Can't find a book? Try searching for its ISBN or add a new book.</Text>
+				<Pressable style={styles.micropubButton} onPress={() => { onAddBookInfoPressed(item.searchText); }}>
+					<Text style={styles.micropubButtonTitle}>New Book</Text>
+				</Pressable>
+			</View>
+		) : (
 		<Pressable onPress={() => { onShowBookPressed(item) }}>
 			<View style={styles.item}>
 				<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
@@ -398,6 +400,7 @@ export function DiscoverScreen({ navigation }) {
 				</View>
 			</View>
 		</Pressable>
+		)
 	);
 	
 	return (

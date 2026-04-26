@@ -63,6 +63,18 @@ export const light = StyleSheet.create({
 		paddingLeft: 7,
 		color: "#777777"
 	},
+	bookSearchEmptyRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 16,
+		paddingBottom: 16
+	},
+	bookSearchEmptyText: {
+		flex: 1,
+		color: "#777777"
+	},
 	bookSecondary: {
 		paddingTop: 4,
 		paddingLeft: 7,
@@ -874,6 +886,28 @@ export const light = StyleSheet.create({
 	coverResultsButtonProgress: {
 		flexDirection: "row",	
 	},
+	editBookInfoForm: {
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 20
+	},
+	editBookInfoLabel: {
+		fontWeight: "bold",
+		marginBottom: 6
+	},
+	editBookInfoInput: {
+		borderStyle: "solid",
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderWidth: 0.5,
+		borderRadius: 4,
+		height: 44,
+		marginBottom: 16,
+		paddingLeft: 10,
+		paddingRight: 10,
+		paddingTop: 0,
+		paddingBottom: 0,
+		backgroundColor: "#FFFFFF"
+	},
 	useThisCoverButton: {
 		justifyContent: "center",
 		height: 34,
@@ -937,6 +971,9 @@ export const dark = StyleSheet.create({
 	bookAuthor: {
 		color: "#777777"
 	},		
+	bookSearchEmptyText: {
+		color: "#E5E7EB"
+	},
 	navbarBookshelfIcon: {
 		tintColor: "#FFFFFF"
 	},
@@ -1217,6 +1254,14 @@ export const dark = StyleSheet.create({
 	openLibraryStatusButton: {
 		color: "#FFFFFF",
 		borderRadius: 20
+	},
+	editBookInfoLabel: {
+		color: "#FFFFFF"
+	},
+	editBookInfoInput: {
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		color: "#FFFFFF",
+		backgroundColor: "#000000"
 	},
 	openLibraryEditionsBar: {
 		borderBottomColor: "#444444",
