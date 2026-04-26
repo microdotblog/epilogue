@@ -1,50 +1,92 @@
 import React, { useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
 
+import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
+import epilogueStorage from "../Storage";
 
 export function EditBookInfoScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
 	const [ title, setTitle ] = useState(route.params?.title || "");
 	const [ author, setAuthor ] = useState(route.params?.author || "");
 	const [ isbn, setISBN ] = useState(route.params?.isbn || "");
+	const [ isSaving, setIsSaving ] = useState(false);
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
 				headerRight: () => (
-					<Pressable onPress={() => { onSavePressed(); }}>
+					<Pressable onPress={() => { onSavePressed(); }} disabled={isSaving}>
 						<Text style={styles.navbarSubmit}>Update Book</Text>
 					</Pressable>
 				)
 		});
-	}, [navigation, title, author, isbn, styles]);
+	}, [navigation, title, author, isbn, isSaving, styles]);
 
 	function onSavePressed() {
-		if (!hasRequiredFields()) {
-			Alert.alert("Title, author, and ISBN are required.");
+		if (isSaving) {
 			return;
 		}
 
 		saveBookInfo({
 			id: route.params?.id,
-			bookshelf_id: route.params?.bookshelf_id,
-			title: title.trim(),
-			author: author.trim(),
-			isbn: isbn.trim()
+			title: title,
+			author: author,
+			isbn: isbn
 		});
 	}
 
-	function hasRequiredFields() {
-		return (
-			title.trim().length > 0 &&
-			author.trim().length > 0 &&
-			isbn.trim().length > 0
-		);
-	}
-
 	function saveBookInfo(bookInfo) {
-		// Placeholder for future POST wiring.
-		Alert.alert("Saving book info is not available yet.");
+		const updatedBookInfo = {
+			id: bookInfo.id,
+			title: bookInfo.title.trim(),
+			author: bookInfo.author.trim(),
+			isbn: bookInfo.isbn.trim()
+		};
+
+		if (
+			updatedBookInfo.title.length === 0 ||
+			updatedBookInfo.author.length === 0 ||
+			updatedBookInfo.isbn.length === 0
+		) {
+			Alert.alert("Title, author, and ISBN are required.");
+			return;
+		}
+
+		const params = new URLSearchParams({
+			title: updatedBookInfo.title,
+			author: updatedBookInfo.author,
+			isbn: updatedBookInfo.isbn
+		});
+
+		if (updatedBookInfo.id != null) {
+			params.append("id", updatedBookInfo.id);
+		}
+
+		setIsSaving(true);
+
+		epilogueStorage.get(keys.authToken).then(auth_token => {
+			const options = {
+				method: "POST",
+				body: params.toString(),
+				headers: {
+					"Authorization": "Bearer " + auth_token,
+					"Content-Type": "application/x-www-form-urlencoded"
+				}
+			};
+
+			fetch("https://micro.blog/books", options).then(response => {
+				if (!response.ok) {
+					throw new Error("Could not update book.");
+				}
+				navigation.goBack();
+			}).catch(() => {
+				setIsSaving(false);
+				Alert.alert("Could not update this book.");
+			});
+		}).catch(() => {
+			setIsSaving(false);
+			Alert.alert("Could not update this book.");
+		});
 	}
 
 	return (
