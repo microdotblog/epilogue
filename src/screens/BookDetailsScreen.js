@@ -308,7 +308,7 @@ export function BookDetailsScreen({ route, navigation }) {
 
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
-			<View style={styles.container}>
+			<View style={[styles.container, styles.bookDetailsContainer]}>
 				<ContextMenu
 						title="View on..."
 						onPress={({nativeEvent}) => {

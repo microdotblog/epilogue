@@ -88,7 +88,10 @@ export const light = StyleSheet.create({
 	},
 	bookDetails: {
 		alignItems: "center",
-		marginTop: 5
+		marginTop: 0
+	},
+	bookDetailsContainer: {
+		paddingTop: 0
 	},
 	bookDetailsColumns: {
 		flexDirection: "row",
@@ -100,7 +103,7 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: "#DEDEDE",
 		marginBottom: 20,
-		marginTop: 20,
+		marginTop: 0,
 		paddingLeft: 20,
 		paddingRight: 20,
 		paddingTop: 10,
@@ -111,7 +114,11 @@ export const light = StyleSheet.create({
 		flex: 1,
 	},
 	bookDetailsTop: {
-		alignItems: "center"
+		alignItems: "center",
+		backgroundColor: "#EEF1F4",
+		paddingBottom: 25,
+		paddingTop: 25,
+		width: "100%"
 	},
 	bookDetailsCover: {
 		width: 200,
@@ -1009,6 +1016,9 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#141723",
 		borderTopColor: "#353A44",
 		borderBottomColor: "#353A44"
+	},
+	bookDetailsTop: {
+		backgroundColor: "#000000"
 	},
 	bookDetailsButton: {
 		backgroundColor: "#141723"
