@@ -145,7 +145,12 @@ export function ExternalScreen({ navigation }) {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.micropubIntro} >Post to an external blog via Micropub:</Text>
-			<TextInput style={styles.micropubURL} value={url} onChangeText={setURL} onEndEditing={onSendURL} returnKeyType="done" placeholder="Your blog URL" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
+			<View style={styles.externalURLField}>
+				<TextInput style={styles.externalURLInput} value={url} onChangeText={setURL} onEndEditing={onSendURL} returnKeyType="done" autoCapitalize="none" autoCorrect={false} autoFocus={true} />
+				{ !url &&
+					<Text accessible={false} pointerEvents="none" style={styles.externalURLPlaceholder}>Your blog URL</Text>
+				}
+			</View>
 		</View>
 	);
 }

@@ -455,6 +455,21 @@ export const light = StyleSheet.create({
 		marginLeft: 12,
 		marginTop: 16
 	},
+	externalURLField: {
+		marginLeft: 12,
+		marginTop: 16,
+		height: 44,
+		justifyContent: "center"
+	},
+	externalURLInput: {
+		height: 44,
+		paddingTop: 0,
+		paddingBottom: 0
+	},
+	externalURLPlaceholder: {
+		position: "absolute",
+		color: "#777777"
+	},
 	bookDetailsMore: {
 		marginTop: 15,
 		marginBottom: 25,
@@ -1053,6 +1068,12 @@ export const dark = StyleSheet.create({
 	},
 	micropubURL: {
 		color: "#E5E7EB"
+	},
+	externalURLInput: {
+		color: "#E5E7EB"
+	},
+	externalURLPlaceholder: {
+		color: "#777777"
 	},
 	plainButton: {
 		backgroundColor: "#272f3d"
