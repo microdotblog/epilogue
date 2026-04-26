@@ -62,6 +62,7 @@ export function HomeScreen({ navigation }) {
 	const [ books, setBooks ] = useState();
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
+	const [ isSearching, setIsSearching ] = useState(false);
 	const searchFieldRef = useRef();
     
 	React.useEffect(() => {
@@ -86,6 +87,18 @@ export function HomeScreen({ navigation }) {
 			setupBookshelves(navigation, bookshelves, currentBookshelfTitle);
 		}
 	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
+
+	React.useEffect(() => {
+		navigation.setOptions({
+			headerRight: () => (
+				isSearching ? (
+					<View style={{ marginRight: 24 }}>
+						<ActivityIndicator size="small" color={is_dark ? "#FFFFFF" : "#000000"} />
+					</View>
+				) : null
+			)
+		});
+	}, [navigation, isSearching, is_dark]);
   
 	function onFocus(navigation) {
 		if (currentBookshelfTitle && bookshelves.length > 0) {
@@ -462,14 +475,18 @@ export function HomeScreen({ navigation }) {
 	}
 		
 	function sendSearch(searchText) {
+		setIsSearching(true);
+
 		if (Book.isISBN(searchText)) {
 			Book.searchOpenLibrary(searchText, function(new_books) {
 				if (new_books.length > 0) {				
 					setBooks(searchResultItems(new_books, searchText));
+					setIsSearching(false);
 				}
 				else {
 					Book.searchMicroBooks(searchText, function(new_books) {
 						setBooks(searchResultItems(new_books, searchText));
+						setIsSearching(false);
 					});
 				}
 				
@@ -478,6 +495,7 @@ export function HomeScreen({ navigation }) {
 		else {		
 			Book.searchMicroBooks(searchText, function(new_books) {
 				setBooks(searchResultItems(new_books, searchText));
+				setIsSearching(false);
 			});
 		}
 	}
