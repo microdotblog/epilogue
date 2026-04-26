@@ -7,12 +7,15 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import FastImage from "react-native-fast-image";
+import RNFS from "react-native-fs";
 
 import { keys, errors } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
+
+const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
 
 function BookSwipeableRow({ bookID, children, onRemove, styles }) {
 	const swipeableRef = useRef(null);
@@ -328,28 +331,45 @@ export function HomeScreen({ navigation }) {
 			};
 						
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
-				var new_items = [];
-				for (let item of data.items) {
-					var author_name = "";
-					if (item.authors.length > 0) {
-						author_name = item.authors[0].name;
-					}
-					new_items.push({
-						id: item.id,
-						isbn: item._microblog.isbn,
-						title: item.title,
-						image: item.image,
-						author: author_name,
-						description: item.content_text,
-						date: item.date_published,
-						is_search: false
-					});					
-				}
-				
-				setBooks(new_items);
+				setBooks(booksFromJSONFeed(data));
+				writeLatestBooksCache(data);
 				handler();
 			});		
 		});
+	}
+
+	function loadCachedBooks() {
+		RNFS.readFile(latestBooksCachePath, "utf8").then(contents => {
+			setBooks(booksFromJSONFeed(JSON.parse(contents)));
+		}).catch(() => {
+		});
+	}
+
+	function writeLatestBooksCache(data) {
+		RNFS.writeFile(latestBooksCachePath, JSON.stringify(data), "utf8").catch(() => {
+		});
+	}
+
+	function booksFromJSONFeed(data) {
+		var new_items = [];
+		for (let item of data.items || []) {
+			const metadata = item._microblog || {};
+			var author_name = "";
+			if ((item.authors != undefined) && (item.authors.length > 0)) {
+				author_name = item.authors[0].name;
+			}
+			new_items.push({
+				id: item.id,
+				isbn: metadata.isbn,
+				title: item.title,
+				image: item.image,
+				author: author_name,
+				description: item.content_text,
+				date: item.date_published,
+				is_search: false
+			});
+		}
+		return new_items;
 	}
   
 	function loadBookshelves(navigation) {
@@ -547,16 +567,10 @@ export function HomeScreen({ navigation }) {
 	}
 
 	function onChangeSearch(text) {		
-		// if we're clearing the text, wait a second and then send it
-		// otherwise the user is still typing
 		if (text.length == 0) {
-			setTimeout(function() {
-				epilogueStorage.remove(keys.currentSearch).then(() => {
-					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-						loadBooks(current_bookshelf.id);
-					});				
-				});
-			}, 500);
+			epilogueStorage.remove(keys.currentSearch).then(() => {
+				loadCachedBooks();
+			});
 		}
 		else {
 			epilogueStorage.set(keys.currentSearch, text);
@@ -571,9 +585,7 @@ export function HomeScreen({ navigation }) {
 			}
 			else {
 				epilogueStorage.remove(keys.currentSearch).then(() => {
-					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-						loadBooks(current_bookshelf.id);
-					});				
+					loadCachedBooks();
 				});
 			}
 		});
