@@ -72,15 +72,19 @@ export function BookDetailsScreen({ route, navigation }) {
 				});
 			}
 
-			edit_actions.push({
-				id: "editbook",
-				title: "Edit Book"
-			});
+			if (!is_search) {
+				edit_actions.push({
+					id: "editbook",
+					title: "Edit Book"
+				});
+			}
 
-			edit_actions.push({
-				id: "setopenlibrary",
-				title: "Set Cover from Open Library"
-			});
+			if (!is_search) {
+				edit_actions.push({
+					id: "setopenlibrary",
+					title: "Set Cover from Open Library"
+				});
+			}
 
 			share_actions.push({
 				id: "sharebutton",

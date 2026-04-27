@@ -63,6 +63,7 @@ export function HomeScreen({ navigation }) {
 	const colorScheme = useColorScheme();
 	const is_dark = (colorScheme == "dark");
 	const [ books, setBooks ] = useState();
+	const [ latestBooks, setLatestBooks ] = useState([]);
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
 	const [ isSearching, setIsSearching ] = useState(false);
@@ -331,7 +332,9 @@ export function HomeScreen({ navigation }) {
 			};
 						
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
-				setBooks(booksFromJSONFeed(data));
+				const new_books = booksFromJSONFeed(data);
+				setBooks(new_books);
+				setLatestBooks(new_books);
 				writeLatestBooksCache(data);
 				handler();
 			});		
@@ -340,7 +343,9 @@ export function HomeScreen({ navigation }) {
 
 	function loadCachedBooks() {
 		RNFS.readFile(latestBooksCachePath, "utf8").then(contents => {
-			setBooks(booksFromJSONFeed(JSON.parse(contents)));
+			const new_books = booksFromJSONFeed(JSON.parse(contents));
+			setBooks(new_books);
+			setLatestBooks(new_books);
 		}).catch(() => {
 			epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 				if (current_bookshelf != null) {
@@ -472,10 +477,18 @@ export function HomeScreen({ navigation }) {
 		navigation.navigate("Profile");
 	}
 
-	function searchResultItems(new_books, searchText) {
+	function searchResultItems(new_books, searchText, local_books = []) {
 		var new_items = [];
 
-		for (b of new_books) {
+		for (let b of local_books) {
+			new_items.push(b);
+		}
+
+		for (let b of new_books) {
+			if (local_books.some(local_book => local_book.isbn == b.isbn || local_book.id == b.id)) {
+				continue;
+			}
+
 			new_items.push({
 				id: b.id,
 				isbn: b.isbn,
@@ -498,19 +511,37 @@ export function HomeScreen({ navigation }) {
 
 		return new_items;
 	}
+
+	function localBookshelfMatches(searchText) {
+		const query = searchText.trim().toLowerCase();
+		if (query.length == 0) {
+			return [];
+		}
+
+		return latestBooks.filter(book => {
+			const book_title = (book.title || "").toLowerCase();
+			const book_author = (book.author || "").toLowerCase();
+			return book_title.includes(query) || book_author.includes(query);
+		}).map(book => ({
+			...book,
+			is_bookshelf_match: true,
+			bookshelf_name: currentBookshelfTitle
+		}));
+	}
 		
 	function sendSearch(searchText) {
 		setIsSearching(true);
+		const local_books = localBookshelfMatches(searchText);
 
 		if (Book.isISBN(searchText)) {
 			Book.searchOpenLibrary(searchText, function(new_books) {
 				if (new_books.length > 0) {				
-					setBooks(searchResultItems(new_books, searchText));
+					setBooks(searchResultItems(new_books, searchText, local_books));
 					setIsSearching(false);
 				}
 				else {
 					Book.searchMicroBooks(searchText, function(new_books) {
-						setBooks(searchResultItems(new_books, searchText));
+						setBooks(searchResultItems(new_books, searchText, local_books));
 						setIsSearching(false);
 					});
 				}
@@ -519,7 +550,7 @@ export function HomeScreen({ navigation }) {
 		}
 		else {		
 			Book.searchMicroBooks(searchText, function(new_books) {
-				setBooks(searchResultItems(new_books, searchText));
+				setBooks(searchResultItems(new_books, searchText, local_books));
 				setIsSearching(false);
 			});
 		}
@@ -624,6 +655,9 @@ export function HomeScreen({ navigation }) {
 							<View style={styles.bookItem}>
 								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
 								<Text style={styles.bookAuthor}>{item.author}</Text>
+								{ item.is_bookshelf_match &&
+									<Text style={styles.bookSecondary}>📚 {item.bookshelf_name}</Text>
+								}
 							</View>
 						</View>
 					</Pressable>
