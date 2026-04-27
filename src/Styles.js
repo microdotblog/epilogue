@@ -935,20 +935,27 @@ export const light = StyleSheet.create({
 		color: "#000000"
 	},
 	finishedDatePicker: {
+		alignItems: "center",
 		marginTop: 3,
 		marginBottom: 20,
 		paddingBottom: 25,
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
+	finishedDatePickerControl: {
+		width: 360
+	},
 	finishedTimePickerRow: {		
+		alignItems: "center",
 		flexDirection: "row",
-		marginLeft: 20
+		justifyContent: "center"
+	},
+	finishedTimePicker: {
+		marginLeft: 0,
+		width: 140
 	},
 	finishedProgress: {
-		flex: 1,
-		alignItems: "flex-end",
-		marginRight: 20
+		marginLeft: 10
 	},
 	episodeDetailsPoster: {
 		width: "100%",
@@ -1312,6 +1319,9 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsNotesTitle: {
 		color: "#FFFFFF"
+	},
+	finishedDatePicker: {
+		borderBottomColor: "#353A44"
 	},
 	noteCell: {
 		borderBottomColor: "#444444"		

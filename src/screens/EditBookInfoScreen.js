@@ -83,7 +83,15 @@ export function EditBookInfoScreen({ route, navigation }) {
 				}
 				RNFS.unlink(latestBooksCachePath).catch(() => {
 				}).then(() => {
-					navigation.goBack();
+					navigation.navigate({
+						name: "Details",
+						params: {
+							title: updatedBookInfo.title,
+							author: updatedBookInfo.author,
+							isbn: updatedBookInfo.isbn
+						},
+						merge: true
+					});
 				});
 			}).catch(() => {
 				setIsSaving(false);
