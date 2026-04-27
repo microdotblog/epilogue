@@ -527,6 +527,10 @@ export function HomeScreen({ navigation }) {
 
 	function onAddBookInfoPressed(searchText) {
 		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+			if (current_bookshelf == null) {
+				return;
+			}
+
 			const params = {
 				bookshelf_id: current_bookshelf.id,
 				bookshelf_title: current_bookshelf.title,

@@ -105,6 +105,8 @@ export class Book {
 			}
 
 			handler(results);
+		}).catch(() => {
+			handler([]);
 		});
 	}
 	
