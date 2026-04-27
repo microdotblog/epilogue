@@ -342,6 +342,11 @@ export function HomeScreen({ navigation }) {
 		RNFS.readFile(latestBooksCachePath, "utf8").then(contents => {
 			setBooks(booksFromJSONFeed(JSON.parse(contents)));
 		}).catch(() => {
+			epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+				if (current_bookshelf != null) {
+					loadBooks(current_bookshelf.id);
+				}
+			});
 		});
 	}
 

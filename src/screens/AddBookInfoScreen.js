@@ -28,6 +28,7 @@ export function AddBookInfoScreen({ route, navigation }) {
 		}
 
 		addBookInfo({
+			bookshelf_id: route.params?.bookshelf_id,
 			title: title,
 			author: author,
 			isbn: isbn
@@ -36,6 +37,7 @@ export function AddBookInfoScreen({ route, navigation }) {
 
 	function addBookInfo(bookInfo) {
 		const newBookInfo = {
+			bookshelf_id: bookInfo.bookshelf_id,
 			title: bookInfo.title.trim(),
 			author: bookInfo.author.trim(),
 			isbn: bookInfo.isbn.trim()
@@ -55,6 +57,10 @@ export function AddBookInfoScreen({ route, navigation }) {
 			author: newBookInfo.author,
 			isbn: newBookInfo.isbn
 		});
+
+		if (newBookInfo.bookshelf_id != null) {
+			params.append("bookshelf_id", newBookInfo.bookshelf_id);
+		}
 
 		setIsSaving(true);
 
