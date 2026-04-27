@@ -108,6 +108,7 @@ export function DateScreen({ route, navigation }) {
 			<View style={styles.finishedDatePicker}>
 				<DateTimePicker				
 					testID="datePicker"
+					style={styles.finishedDatePickerControl}
 					value={date}
 					mode="date"
 					display="inline"
@@ -117,6 +118,7 @@ export function DateScreen({ route, navigation }) {
 			<View style={styles.finishedTimePickerRow}>
 				<DateTimePicker
 					testID="timePicker"
+					style={styles.finishedTimePicker}
 					value={time}
 					mode="time"
 					onChange={onChangeTime}

@@ -37,19 +37,6 @@ export const light = StyleSheet.create({
 		paddingBottom: 5,
 		marginBottom: 5
 	},
-	selectedItem: {
-		flexDirection: "row",
-		height: 90,
-		paddingLeft: 20,
-		paddingRight: 20,
-		paddingTop: 5,
-		paddingBottom: 5,
-		marginBottom: 5,
-		backgroundColor: "#DEDEDE"
-	},
-	itemTrash: {
-		alignSelf: "center"
-	},
 	bookItem: {
 		flex: 1,
 		marginLeft: 5,
@@ -61,6 +48,18 @@ export const light = StyleSheet.create({
 	bookAuthor: {
 		paddingTop: 4,
 		paddingLeft: 7,
+		color: "#777777"
+	},
+	bookSearchEmptyRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 16,
+		paddingBottom: 16
+	},
+	bookSearchEmptyText: {
+		flex: 1,
 		color: "#777777"
 	},
 	bookSecondary: {
@@ -76,7 +75,10 @@ export const light = StyleSheet.create({
 	},
 	bookDetails: {
 		alignItems: "center",
-		marginTop: 5
+		marginTop: 0
+	},
+	bookDetailsContainer: {
+		paddingTop: 0
 	},
 	bookDetailsColumns: {
 		flexDirection: "row",
@@ -88,7 +90,7 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: "#DEDEDE",
 		marginBottom: 20,
-		marginTop: 20,
+		marginTop: 0,
 		paddingLeft: 20,
 		paddingRight: 20,
 		paddingTop: 10,
@@ -99,7 +101,11 @@ export const light = StyleSheet.create({
 		flex: 1,
 	},
 	bookDetailsTop: {
-		alignItems: "center"
+		alignItems: "center",
+		backgroundColor: "#EEF1F4",
+		paddingBottom: 25,
+		paddingTop: 25,
+		width: "100%"
 	},
 	bookDetailsCover: {
 		width: 200,
@@ -174,18 +180,23 @@ export const light = StyleSheet.create({
 		tintColor: "#337AB7"
 	},
 	removeAction: {
-		backgroundColor: "#AAAAAA",
-		width: 100,
 		alignItems: "center",
-		marginBottom: 20
+		height: "100%",
+		justifyContent: "center",
+		width: 74
 	},
 	removeContainer: {
-		flex: 1,
-		flexDirection: "row",
-		alignItems: "center"
+		alignItems: "stretch",
+		justifyContent: "center"
 	},
-	removeText: {
-		color: "#FFFFFF"
+	removeCircle: {
+		alignItems: "center",
+		backgroundColor: "#FF3B30",
+		borderRadius: 22,
+		height: 44,
+		justifyContent: "center",
+		transform: [{ translateY: -6 }],
+		width: 44
 	},
 	searchField: {
 		height: 36,
@@ -376,7 +387,8 @@ export const light = StyleSheet.create({
 	},
 	profilePostCover: {
 		width: 50,
-		height: 70
+		height: 70,
+		borderRadius: 4
 	},
 	profilePostContent: {
 		flex: 1,
@@ -448,6 +460,21 @@ export const light = StyleSheet.create({
 	micropubURL: {
 		marginLeft: 12,
 		marginTop: 16
+	},
+	externalURLField: {
+		marginLeft: 12,
+		marginTop: 16,
+		height: 44,
+		justifyContent: "center"
+	},
+	externalURLInput: {
+		height: 44,
+		paddingTop: 0,
+		paddingBottom: 0
+	},
+	externalURLPlaceholder: {
+		position: "absolute",
+		color: "#777777"
 	},
 	bookDetailsMore: {
 		marginTop: 15,
@@ -628,11 +655,11 @@ export const light = StyleSheet.create({
 		marginTop: 10,
 		marginLeft: 20,
 		marginRight: 10,
-		paddingTop: 10,
+		paddingTop: 0,
 		paddingLeft: 10,
 		paddingRight: 10,
-		paddingBottom: 10,
-		height: 44,
+		paddingBottom: 0,
+		height: 54,
 		backgroundColor: "#FFFFFF",
 		borderRadius: 5		
 	},
@@ -643,10 +670,10 @@ export const light = StyleSheet.create({
 		flexDirection: "row"
 	},
 	editGoalButton: {
-		height: 44,
+		height: 54,
 		marginTop: 10,
 		marginRight: 20,
-		paddingVertical: 14,
+		justifyContent: "center",
 		paddingHorizontal: 14,
 		borderRadius: 5,
 		marginBottom: 6,
@@ -853,6 +880,45 @@ export const light = StyleSheet.create({
 	coverResultsButtonProgress: {
 		flexDirection: "row",	
 	},
+	editBookInfoForm: {
+		paddingLeft: 20,
+		paddingRight: 20,
+		paddingTop: 20
+	},
+	editBookInfoLabel: {
+		fontWeight: "bold",
+		marginBottom: 6
+	},
+	editBookInfoInput: {
+		borderStyle: "solid",
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderWidth: 0.5,
+		borderRadius: 4,
+		height: 44,
+		marginBottom: 16,
+		paddingLeft: 10,
+		paddingRight: 10,
+		paddingTop: 0,
+		paddingBottom: 0,
+		backgroundColor: "#FFFFFF"
+	},
+	editBookInfoPicker: {
+		alignItems: "center",
+		backgroundColor: "#FFFFFF",
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderRadius: 4,
+		borderStyle: "solid",
+		borderWidth: 0.5,
+		flexDirection: "row",
+		height: 44,
+		marginBottom: 16,
+		paddingLeft: 10,
+		paddingRight: 10
+	},
+	editBookInfoPickerText: {
+		flex: 1,
+		color: "#000000"
+	},
 	useThisCoverButton: {
 		justifyContent: "center",
 		height: 34,
@@ -869,20 +935,27 @@ export const light = StyleSheet.create({
 		color: "#000000"
 	},
 	finishedDatePicker: {
+		alignItems: "center",
 		marginTop: 3,
 		marginBottom: 20,
 		paddingBottom: 25,
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
+	finishedDatePickerControl: {
+		width: 360
+	},
 	finishedTimePickerRow: {		
+		alignItems: "center",
 		flexDirection: "row",
-		marginLeft: 20
+		justifyContent: "center"
+	},
+	finishedTimePicker: {
+		marginLeft: 0,
+		width: 140
 	},
 	finishedProgress: {
-		flex: 1,
-		alignItems: "flex-end",
-		marginRight: 20
+		marginLeft: 10
 	},
 	episodeDetailsPoster: {
 		width: "100%",
@@ -916,6 +989,9 @@ export const dark = StyleSheet.create({
 	bookAuthor: {
 		color: "#777777"
 	},		
+	bookSearchEmptyText: {
+		color: "#E5E7EB"
+	},
 	navbarBookshelfIcon: {
 		tintColor: "#FFFFFF"
 	},
@@ -951,6 +1027,9 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#141723",
 		borderTopColor: "#353A44",
 		borderBottomColor: "#353A44"
+	},
+	bookDetailsTop: {
+		backgroundColor: "#000000"
 	},
 	bookDetailsButton: {
 		backgroundColor: "#141723"
@@ -1047,6 +1126,12 @@ export const dark = StyleSheet.create({
 	},
 	micropubURL: {
 		color: "#E5E7EB"
+	},
+	externalURLInput: {
+		color: "#E5E7EB"
+	},
+	externalURLPlaceholder: {
+		color: "#777777"
 	},
 	plainButton: {
 		backgroundColor: "#272f3d"
@@ -1165,9 +1250,6 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#000",
 		color: "#FFF"
 	},
-	selectedItem: {
-		backgroundColor: "#141723"
-	},
 	openLibraryBanner: {
 		borderBottomColor: "#444444"
 	},
@@ -1190,6 +1272,21 @@ export const dark = StyleSheet.create({
 	openLibraryStatusButton: {
 		color: "#FFFFFF",
 		borderRadius: 20
+	},
+	editBookInfoLabel: {
+		color: "#FFFFFF"
+	},
+	editBookInfoInput: {
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		color: "#FFFFFF",
+		backgroundColor: "#000000"
+	},
+	editBookInfoPicker: {
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		backgroundColor: "#000000"
+	},
+	editBookInfoPickerText: {
+		color: "#FFFFFF"
 	},
 	openLibraryEditionsBar: {
 		borderBottomColor: "#444444",
@@ -1222,6 +1319,9 @@ export const dark = StyleSheet.create({
 	},
 	bookDetailsNotesTitle: {
 		color: "#FFFFFF"
+	},
+	finishedDatePicker: {
+		borderBottomColor: "#353A44"
 	},
 	noteCell: {
 		borderBottomColor: "#444444"		

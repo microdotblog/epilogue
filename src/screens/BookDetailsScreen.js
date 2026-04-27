@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, useColorScheme } from "react-native";
+import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, Platform, useColorScheme } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { MenuView } from "@react-native-menu/menu";
 import ContextMenu from "react-native-context-menu-view";
@@ -24,13 +24,18 @@ export function BookDetailsScreen({ route, navigation }) {
 	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
+		setupBookDetails();
+		refreshNotes();
+	}, [navigation, route.params]);
+
+	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
-			onFocus(navigation);
+			refreshNotes();
 		});
 		return unsubscribe;
-	}, [navigation]);
+	}, [navigation, isbn]);
 	
-	function onFocus(navigation) {
+	function setupBookDetails() {
 		let bookshelf_title = current_bookshelf.title;
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
 		epilogueStorage.set(keys.currentTitle, "");
@@ -65,17 +70,26 @@ export function BookDetailsScreen({ route, navigation }) {
 			var edit_actions = [];
 			var share_actions = [];
 
+			if (!is_search) {
+				edit_actions.push({
+					id: "editbook",
+					title: "Edit Title & Author"
+				});
+			}
+
+			if (!is_search) {
+				edit_actions.push({
+					id: "setopenlibrary",
+					title: "Set Cover from Open Library"
+				});
+			}
+
 			if (current_bookshelf.type == "finished") {
 				edit_actions.push({
 					id: "setfinisheddate",
 					title: "Set Finished Date"
 				});
 			}
-
-			edit_actions.push({
-				id: "setopenlibrary",
-				title: "Set Cover from Open Library"
-			});
 
 			share_actions.push({
 				id: "sharebutton",
@@ -99,8 +113,9 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 		
 		setMenuActions(menu_items);
+	}
 
-		// check for notes key and refresh notes if available
+	function refreshNotes() {
 		Note.hasSecretKey().then((hasKey) => {
 			setHasSecretKey(hasKey)
 			if (hasKey) {
@@ -241,6 +256,17 @@ export function BookDetailsScreen({ route, navigation }) {
 		};
 		navigation.navigate("Covers", params);
 	}
+
+	function showEditBookInfo() {
+		let params = {
+			id: id,
+			bookshelf_id: current_bookshelf.id,
+			title: title,
+			author: author,
+			isbn: isbn
+		};
+		navigation.navigate("EditBookInfo", params);
+	}
 	
 	function viewBookOn(service) {
 		var url;
@@ -262,6 +288,9 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 		else if (service == "Set Finished Date") {
 			showDatePicker();
+		}
+		else if (service == "Edit Title & Author") {
+			showEditBookInfo();
 		}
 		else if (service == "Set Cover from Open Library") {
 			showCovers();
@@ -289,7 +318,7 @@ export function BookDetailsScreen({ route, navigation }) {
 
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
-			<View style={styles.container}>
+			<View style={[styles.container, styles.bookDetailsContainer]}>
 				<ContextMenu
 						title="View on..."
 						onPress={({nativeEvent}) => {

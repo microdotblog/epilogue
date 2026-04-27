@@ -63,6 +63,8 @@ export class Book {
 			}
 		
 			handler(results);
+		}).catch(() => {
+			handler([]);
 		});
 	}
 
@@ -103,6 +105,8 @@ export class Book {
 			}
 
 			handler(results);
+		}).catch(() => {
+			handler([]);
 		});
 	}
 	

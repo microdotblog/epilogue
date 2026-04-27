@@ -1,4 +1,4 @@
-import React, { Component, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import FastImage from "react-native-fast-image";
+import RNFS from "react-native-fs";
 
 import { keys, errors } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
@@ -14,16 +15,59 @@ import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
 
+const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
+
+function BookSwipeableRow({ bookID, children, onRemove, styles }) {
+	const swipeableRef = useRef(null);
+
+	const renderRightActions = (progress) => {
+		const actionOpacity = progress.interpolate({
+			inputRange: [0, 0.2, 0.85, 1],
+			outputRange: [0, 0, 1, 1],
+			extrapolate: "clamp",
+		});
+
+		return (
+			<View style={styles.removeContainer}>
+				<RectButton style={styles.removeAction} onPress={() => {
+					swipeableRef.current?.close?.();
+					onRemove(bookID);
+				}}>
+					<Animated.View style={{ opacity: actionOpacity }}>
+						<View style={styles.removeCircle}>
+							<Icon name="trash" color="#FFFFFF" size={18} />
+						</View>
+					</Animated.View>
+				</RectButton>
+			</View>
+		);
+	};
+
+	return (
+		<Swipeable
+			enableTrackpadTwoFingerGesture={true}
+			friction={1}
+			overshootFriction={8}
+			overshootRight={false}
+			ref={swipeableRef}
+			renderRightActions={renderRightActions}
+			rightThreshold={40}
+		>
+			{children}
+		</Swipeable>
+	);
+}
+
 export function HomeScreen({ navigation }) {
 	const styles = useEpilogueStyle()
 	const colorScheme = useColorScheme();
 	const is_dark = (colorScheme == "dark");
 	const [ books, setBooks ] = useState();
+	const [ latestBooks, setLatestBooks ] = useState([]);
 	const [ bookshelves, setBookshelves ] = useState([]);
-	const [ selectedRow, setSelectedRow ] = useState();
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
+	const [ isSearching, setIsSearching ] = useState(false);
 	const searchFieldRef = useRef();
-	var bookRowReferences = [];
     
 	React.useEffect(() => {
 		const unsubscribe_focus = navigation.addListener("focus", () => {
@@ -47,6 +91,18 @@ export function HomeScreen({ navigation }) {
 			setupBookshelves(navigation, bookshelves, currentBookshelfTitle);
 		}
 	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
+
+	React.useEffect(() => {
+		navigation.setOptions({
+			headerRight: () => (
+				isSearching ? (
+					<View style={{ marginRight: 24 }}>
+						<ActivityIndicator size="small" color={is_dark ? "#FFFFFF" : "#000000"} />
+					</View>
+				) : null
+			)
+		});
+	}, [navigation, isSearching, is_dark]);
   
 	function onFocus(navigation) {
 		if (currentBookshelfTitle && bookshelves.length > 0) {
@@ -89,7 +145,6 @@ export function HomeScreen({ navigation }) {
 		
 		const linking_sub = setupLinking();
 		setupProfileIcon();
-		clearSelection();
 		
 		// cleanup
 		return () => {
@@ -125,10 +180,6 @@ export function HomeScreen({ navigation }) {
 			const u = event && event.url ? event.url : undefined;
 			loadURL(u);
 		});
-	}
-  
-	function clearSelection() {
-		setSelectedRow(0);
 	}
   
 	function loadURL(url) {
@@ -281,28 +332,54 @@ export function HomeScreen({ navigation }) {
 			};
 						
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
-				var new_items = [];
-				for (let item of data.items) {
-					var author_name = "";
-					if (item.authors.length > 0) {
-						author_name = item.authors[0].name;
-					}
-					new_items.push({
-						id: item.id,
-						isbn: item._microblog.isbn,
-						title: item.title,
-						image: item.image,
-						author: author_name,
-						description: item.content_text,
-						date: item.date_published,
-						is_search: false
-					});					
-				}
-				
-				setBooks(new_items);
+				const new_books = booksFromJSONFeed(data);
+				setBooks(new_books);
+				setLatestBooks(new_books);
+				writeLatestBooksCache(data);
 				handler();
 			});		
 		});
+	}
+
+	function loadCachedBooks() {
+		RNFS.readFile(latestBooksCachePath, "utf8").then(contents => {
+			const new_books = booksFromJSONFeed(JSON.parse(contents));
+			setBooks(new_books);
+			setLatestBooks(new_books);
+		}).catch(() => {
+			epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+				if (current_bookshelf != null) {
+					loadBooks(current_bookshelf.id);
+				}
+			});
+		});
+	}
+
+	function writeLatestBooksCache(data) {
+		RNFS.writeFile(latestBooksCachePath, JSON.stringify(data), "utf8").catch(() => {
+		});
+	}
+
+	function booksFromJSONFeed(data) {
+		var new_items = [];
+		for (let item of data.items || []) {
+			const metadata = item._microblog || {};
+			var author_name = "";
+			if ((item.authors != undefined) && (item.authors.length > 0)) {
+				author_name = item.authors[0].name;
+			}
+			new_items.push({
+				id: item.id,
+				isbn: metadata.isbn,
+				title: item.title,
+				image: item.image,
+				author: author_name,
+				description: item.content_text,
+				date: item.date_published,
+				is_search: false
+			});
+		}
+		return new_items;
 	}
   
 	function loadBookshelves(navigation) {
@@ -399,46 +476,73 @@ export function HomeScreen({ navigation }) {
 	function onShowProfile() {
 		navigation.navigate("Profile");
 	}
+
+	function searchResultItems(new_books, searchText, local_books = []) {
+		var new_items = [];
+
+		for (let b of local_books) {
+			new_items.push(b);
+		}
+
+		for (let b of new_books) {
+			if (local_books.some(local_book => local_book.isbn == b.isbn || local_book.id == b.id)) {
+				continue;
+			}
+
+			new_items.push({
+				id: b.id,
+				isbn: b.isbn,
+				title: b.title,
+				image: b.cover_url,
+				author: b.author,
+				description: b.description,
+				date: "",
+				is_search: true
+			});
+		}
+
+		if (new_items.length == 0) {
+			new_items.push({
+				id: "new-book",
+				is_new_book_row: true,
+				searchText: searchText
+			});
+		}
+
+		return new_items;
+	}
+
+	function localBookshelfMatches(searchText) {
+		const query = searchText.trim().toLowerCase();
+		if (query.length == 0) {
+			return [];
+		}
+
+		return latestBooks.filter(book => {
+			const book_title = (book.title || "").toLowerCase();
+			const book_author = (book.author || "").toLowerCase();
+			return book_title.includes(query) || book_author.includes(query);
+		}).map(book => ({
+			...book,
+			is_bookshelf_match: true,
+			bookshelf_name: currentBookshelfTitle
+		}));
+	}
 		
 	function sendSearch(searchText) {
+		setIsSearching(true);
+		const local_books = localBookshelfMatches(searchText);
+
 		if (Book.isISBN(searchText)) {
 			Book.searchOpenLibrary(searchText, function(new_books) {
 				if (new_books.length > 0) {				
-					var new_items = [];
-
-					for (b of new_books) {
-						new_items.push({
-							id: b.id,
-							isbn: b.isbn,
-							title: b.title,
-							image: b.cover_url,
-							author: b.author,
-							description: b.description,
-							date: "",
-							is_search: true
-						});
-					}
-
-					setBooks(new_items);
+					setBooks(searchResultItems(new_books, searchText, local_books));
+					setIsSearching(false);
 				}
 				else {
 					Book.searchMicroBooks(searchText, function(new_books) {
-						var new_items = [];
-					
-						for (b of new_books) {
-							new_items.push({
-								id: b.id,
-								isbn: b.isbn,
-								title: b.title,
-								image: b.cover_url,
-								author: b.author,
-								description: b.description,
-								date: "",
-								is_search: true
-							});
-						}
-						
-						setBooks(new_items);
+						setBooks(searchResultItems(new_books, searchText, local_books));
+						setIsSearching(false);
 					});
 				}
 				
@@ -446,24 +550,25 @@ export function HomeScreen({ navigation }) {
 		}
 		else {		
 			Book.searchMicroBooks(searchText, function(new_books) {
-				var new_items = [];
-			
-				for (b of new_books) {
-					new_items.push({
-						id: b.id,
-						isbn: b.isbn,
-						title: b.title,
-						image: b.cover_url,
-						author: b.author,
-						description: b.description,
-						date: "",
-						is_search: true
-					});
-				}
-				
-				setBooks(new_items);
+				setBooks(searchResultItems(new_books, searchText, local_books));
+				setIsSearching(false);
 			});
 		}
+	}
+
+	function onAddBookInfoPressed(searchText) {
+		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+			if (current_bookshelf == null) {
+				return;
+			}
+
+			const params = {
+				bookshelf_id: current_bookshelf.id,
+				bookshelf_title: current_bookshelf.title,
+				isbn: Book.isISBN(searchText) ? searchText : ""
+			};
+			navigation.navigate("AddBookInfo", params);
+		});
 	}
 	
 	function onShowBookPressed(item) {
@@ -503,16 +608,10 @@ export function HomeScreen({ navigation }) {
 	}
 
 	function onChangeSearch(text) {		
-		// if we're clearing the text, wait a second and then send it
-		// otherwise the user is still typing
 		if (text.length == 0) {
-			setTimeout(function() {
-				epilogueStorage.remove(keys.currentSearch).then(() => {
-					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-						loadBooks(current_bookshelf.id);
-					});				
-				});
-			}, 500);
+			epilogueStorage.remove(keys.currentSearch).then(() => {
+				loadCachedBooks();
+			});
 		}
 		else {
 			epilogueStorage.set(keys.currentSearch, text);
@@ -527,56 +626,10 @@ export function HomeScreen({ navigation }) {
 			}
 			else {
 				epilogueStorage.remove(keys.currentSearch).then(() => {
-					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-						loadBooks(current_bookshelf.id);
-					});				
+					loadCachedBooks();
 				});
 			}
 		});
-	}
-
-	function collectRowRefs(ref) {
-		bookRowReferences.push(ref);
-	}
-
-	class BookSwipeableRow extends Component {
-		constructor(props) {
-			super(props);
-			this.bookID = props.book;
-		}
-
-		renderRightActions = (progress) => {
-			const x = 60;
-			const trans = progress.interpolate({
-				inputRange: [0, 1],
-				outputRange: [x, 0]
-			});
-					
-			return (
-				<RectButton style={styles.removeAction} onPress={() => {
-					removeFromBookshelf(this.bookID);
-					for (let ref of bookRowReferences) {
-						ref.close();
-					}
-				}}>
-				<View style={styles.removeContainer}>
-					<Animated.Text style={[ styles.removeText, {
-						transform: [{ translateX: trans }],
-					}]}>
-						Remove
-					</Animated.Text>
-					</View>
-				</RectButton>
-			);
-		};
-		
-		render() {
-			return (
-				<Swipeable friction={1} overshootFriction={8} renderRightActions={this.renderRightActions} ref={collectRowRefs}>
-					{this.props.children}
-				</Swipeable>
-			);
-		}
 	}
 
 	return (
@@ -585,28 +638,31 @@ export function HomeScreen({ navigation }) {
 			<FlatList
 				data = {books}
 				renderItem = { ({item}) => 
-				<BookSwipeableRow book={item.id}>
+				item.is_new_book_row ? (
+					<View style={styles.bookSearchEmptyRow}>
+						<Text style={styles.bookSearchEmptyText}>Can't find a book? Try searching for its ISBN or add a new book.</Text>
+						<Pressable style={styles.micropubButton} onPress={() => { onAddBookInfoPressed(item.searchText); }}>
+							<Text style={styles.micropubButtonTitle}>New Book</Text>
+						</Pressable>
+					</View>
+				) : (
+				<BookSwipeableRow bookID={item.id} onRemove={removeFromBookshelf} styles={styles}>
 					<Pressable onPress={() => {
 						onShowBookPressed(item);
-					}} onLongPress={() => {
-						setSelectedRow(item.id);
 					}}>
-						<View style={selectedRow == item.id ? styles.selectedItem : styles.item}>
+						<View style={styles.item}>
 							<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>
 								<Text style={styles.bookTitle} ellipsizeMode="tail" numberOfLines={2}>{item.title}</Text>
 								<Text style={styles.bookAuthor}>{item.author}</Text>
+								{ item.is_bookshelf_match &&
+									<Text style={styles.bookSecondary}>📚 {item.bookshelf_name}</Text>
+								}
 							</View>
-							{ selectedRow == item.id && 
-								<Pressable onPress={() => {
-									removeFromBookshelf(item.id);
-								}} style={styles.itemTrash}>
-									<Icon name="trash" color={is_dark ? "#FFFFFF" : "#000000"} size={25} />
-								</Pressable>
-							}
 						</View>
 					</Pressable>
 				</BookSwipeableRow>
+				)
 				}
 				keyExtractor = { item => item.id }
 			/>
