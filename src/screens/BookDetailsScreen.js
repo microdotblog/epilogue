@@ -24,13 +24,18 @@ export function BookDetailsScreen({ route, navigation }) {
 	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search } = route.params;
 
 	React.useEffect(() => {
+		setupBookDetails();
+		refreshNotes();
+	}, [navigation, route.params]);
+
+	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
-			onFocus(navigation);
+			refreshNotes();
 		});
 		return unsubscribe;
-	}, [navigation]);
+	}, [navigation, isbn]);
 	
-	function onFocus(navigation) {
+	function setupBookDetails() {
 		let bookshelf_title = current_bookshelf.title;
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
 		epilogueStorage.set(keys.currentTitle, "");
@@ -108,8 +113,9 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 		
 		setMenuActions(menu_items);
+	}
 
-		// check for notes key and refresh notes if available
+	function refreshNotes() {
 		Note.hasSecretKey().then((hasKey) => {
 			setHasSecretKey(hasKey)
 			if (hasKey) {
