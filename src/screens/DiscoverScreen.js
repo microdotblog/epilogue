@@ -317,6 +317,7 @@ export function DiscoverScreen({ navigation }) {
 		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 			const params = {
 				bookshelf_id: current_bookshelf.id,
+				bookshelf_title: current_bookshelf.title,
 				isbn: Book.isISBN(searchText) ? searchText : ""
 			};
 			navigation.navigate("AddBookInfo", params);

@@ -1,16 +1,39 @@
 import React, { useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, TextInput, useColorScheme, View } from "react-native";
+import { MenuView } from "@react-native-menu/menu";
 
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
+import { Icon } from "../Icon";
 
 export function AddBookInfoScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
+	const is_dark = (useColorScheme() == "dark");
 	const [ title, setTitle ] = useState("");
 	const [ author, setAuthor ] = useState("");
 	const [ isbn, setISBN ] = useState(route.params?.isbn || "");
+	const [ bookshelves, setBookshelves ] = useState([]);
+	const [ bookshelfID, setBookshelfID ] = useState(route.params?.bookshelf_id);
+	const [ bookshelfTitle, setBookshelfTitle ] = useState(route.params?.bookshelf_title || "");
 	const [ isSaving, setIsSaving ] = useState(false);
+
+	React.useEffect(() => {
+		if (route.params?.bookshelf_id == null) {
+			return;
+		}
+
+		epilogueStorage.get(keys.allBookshelves).then(saved_bookshelves => {
+			const new_bookshelves = saved_bookshelves || [];
+			const current_bookshelf = new_bookshelves.find(item => item.id == route.params.bookshelf_id);
+
+			setBookshelves(new_bookshelves);
+			if (current_bookshelf != undefined) {
+				setBookshelfID(current_bookshelf.id);
+				setBookshelfTitle(current_bookshelf.title);
+			}
+		});
+	}, [route.params?.bookshelf_id, route.params?.bookshelf_title]);
 
 	React.useLayoutEffect(() => {
 		navigation.setOptions({
@@ -28,11 +51,26 @@ export function AddBookInfoScreen({ route, navigation }) {
 		}
 
 		addBookInfo({
-			bookshelf_id: route.params?.bookshelf_id,
+			bookshelf_id: bookshelfID,
 			title: title,
 			author: author,
 			isbn: isbn
 		});
+	}
+
+	function onBookshelfPressed(shelf_id) {
+		const new_bookshelf = bookshelves.find(item => item.id == shelf_id);
+		if (new_bookshelf != undefined) {
+			setBookshelfID(new_bookshelf.id);
+			setBookshelfTitle(new_bookshelf.title);
+		}
+	}
+
+	function bookshelfMenuActions() {
+		return bookshelves.map(item => ({
+			id: item.id.toString(),
+			title: item.title
+		}));
 	}
 
 	function addBookInfo(bookInfo) {
@@ -90,7 +128,7 @@ export function AddBookInfoScreen({ route, navigation }) {
 	}
 
 	return (
-		<View style={styles.container}>
+		<ScrollView style={styles.container}>
 			<View style={styles.editBookInfoForm}>
 				<Text style={styles.editBookInfoLabel}>Title</Text>
 				<TextInput
@@ -122,7 +160,25 @@ export function AddBookInfoScreen({ route, navigation }) {
 					autoCapitalize="none"
 					autoCorrect={false}
 				/>
+
+				{ bookshelfID != null && bookshelfTitle.length > 0 &&
+					<>
+						<Text style={styles.editBookInfoLabel}>Bookshelf</Text>
+						<MenuView
+							accessibilityLabel={bookshelfTitle}
+							onPressAction={({ nativeEvent }) => {
+								onBookshelfPressed(nativeEvent.event);
+							}}
+							actions={bookshelfMenuActions()}
+						>
+							<Pressable style={styles.editBookInfoPicker}>
+								<Text style={styles.editBookInfoPickerText}>{bookshelfTitle}</Text>
+								<Icon name="popup-triangle" color={is_dark ? "#FFFFFF" : "#000000"} size={12} />
+							</Pressable>
+						</MenuView>
+					</>
+				}
 			</View>
-		</View>
+		</ScrollView>
 	);
 }

@@ -902,6 +902,23 @@ export const light = StyleSheet.create({
 		paddingBottom: 0,
 		backgroundColor: "#FFFFFF"
 	},
+	editBookInfoPicker: {
+		alignItems: "center",
+		backgroundColor: "#FFFFFF",
+		borderColor: "rgba(0, 0, 0, 0.20)",
+		borderRadius: 4,
+		borderStyle: "solid",
+		borderWidth: 0.5,
+		flexDirection: "row",
+		height: 44,
+		marginBottom: 16,
+		paddingLeft: 10,
+		paddingRight: 10
+	},
+	editBookInfoPickerText: {
+		flex: 1,
+		color: "#000000"
+	},
 	useThisCoverButton: {
 		justifyContent: "center",
 		height: 34,
@@ -1256,6 +1273,13 @@ export const dark = StyleSheet.create({
 		borderColor: "rgba(255, 255, 255, 0.1)",
 		color: "#FFFFFF",
 		backgroundColor: "#000000"
+	},
+	editBookInfoPicker: {
+		borderColor: "rgba(255, 255, 255, 0.1)",
+		backgroundColor: "#000000"
+	},
+	editBookInfoPickerText: {
+		color: "#FFFFFF"
 	},
 	openLibraryEditionsBar: {
 		borderBottomColor: "#444444",
