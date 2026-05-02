@@ -1,4 +1,19 @@
 buildscript {
+    def resolveNodeExecutable = {
+        def configuredNode = System.getenv("NODE_BINARY")
+
+        if (configuredNode) {
+            return configuredNode
+        }
+
+        def commonNodeLocations = [
+            "/opt/homebrew/bin/node",
+            "/usr/local/bin/node"
+        ]
+
+        return commonNodeLocations.find { file(it).exists() } ?: "node"
+    }
+
     ext {
         buildToolsVersion = "35.0.0"
         minSdkVersion = 24
@@ -7,6 +22,8 @@ buildscript {
         ndkVersion = "29.0.14206865"
         kotlinVersion = "2.0.21"
         androidXBrowser = "1.8.0"
+        nodeExecutable = resolveNodeExecutable()
+        REACT_NATIVE_NODE_MODULES_DIR = file("$rootDir/../node_modules/react-native").absolutePath
     }
     repositories {
         google()
