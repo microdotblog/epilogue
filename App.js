@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Alert, LogBox, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Platform } from "react-native";
+import { Alert, LogBox, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Platform, StatusBar } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { MenuView } from "@react-native-menu/menu";
@@ -47,16 +47,24 @@ const EpilogueDarkTheme = {
 const App: () => Node = () => {	
   const styles = useEpilogueStyle()
   const is_dark = (useColorScheme() == "dark");
+  const systemBarBackgroundColor = is_dark ? "#141723" : "#FFFFFF";
+  const statusBarStyle = is_dark ? "light-content" : "dark-content";
 
   LogBox.ignoreAllLogs();
   epilogueStorage.remove(keys.currentSearch);
   
   if (Platform.OS == "android") {
-    changeNavigationBarColor(is_dark ? "#141723" : "#FFFFFF");
+    changeNavigationBarColor(systemBarBackgroundColor, !is_dark);
   }
 
   return (
-    <NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
+    <>
+      <StatusBar
+        backgroundColor={systemBarBackgroundColor}
+        barStyle={statusBarStyle}
+        translucent={false}
+      />
+      <NavigationContainer theme={is_dark ? EpilogueDarkTheme : DefaultTheme}>
       <Stack.Navigator
         screenOptions={{
           headerLeftContainerStyle: { paddingLeft: 15 },
@@ -272,7 +280,8 @@ const App: () => Node = () => {
             })}/>
           </Stack.Group>
       </Stack.Navigator>
-    </NavigationContainer>
+      </NavigationContainer>
+    </>
   	
   );
 }
