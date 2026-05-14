@@ -16,6 +16,7 @@ export function DiscoverScreen({ navigation }) {
 	const windowSize = useWindowDimensions();
 	
 	const height = Platform.isPad ? 260 : 180 // book cover height
+	const coverHeight = height - 4
 	
 	const [ data, setData ] = useState()
 	const [ refreshing , setRefreshing ] = useState(false)
@@ -369,7 +370,7 @@ export function DiscoverScreen({ navigation }) {
 				<TouchableOpacity 
 					onPress={() => { onOpen(item.url) }}
 					onLongPress={() => { return null }}
-					style={ [styles.bookContainer, {height: height}] }>
+					style={ [styles.bookContainer, {height: coverHeight}] }>
 					
 					<View style={[styles.addingBookSpinner, {opacity: itemUpdating === item.id.toString() ? 0.5 : 0.0, backgroundColor: itemUpdating === item.id.toString() ? '#111' : null, zIndex: itemUpdating === item.id.toString() ? 5 : 0}]}>
 						<ActivityIndicator color={'#fff'} animating={itemUpdating===item.id.toString()} hidesWhenStopped={true}/>

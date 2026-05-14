@@ -586,8 +586,8 @@ export const light = StyleSheet.create({
 		height: 160,
 		justifyContent: 'center',
 		backgroundColor: '#DEDEDE',
-		marginLeft: 8,
-		marginRight: 8,
+		marginLeft: 10,
+		marginRight: 10,
 		marginBottom: 14
 	},
 	placeholderTitleText: {
