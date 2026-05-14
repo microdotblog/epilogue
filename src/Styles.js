@@ -107,7 +107,18 @@ export const light = StyleSheet.create({
 		paddingTop: 25,
 		width: "100%"
 	},
+	bookDetailsCoverSlot: {
+		width: 200,
+		height: 200,
+		alignItems: "center",
+		justifyContent: "center"
+	},
 	bookDetailsCover: {
+		borderRadius: 4,
+		overflow: "hidden",
+		resizeMode: "cover"
+	},
+	bookDetailsCoverLoading: {
 		width: 200,
 		height: 200,
 		resizeMode: "contain"
