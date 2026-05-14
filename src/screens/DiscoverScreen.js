@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share, Modal, useWindowDimensions } from 'react-native';
+import { useScrollToTop } from "@react-navigation/native";
 import ContextMenu from "react-native-context-menu-view";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -26,6 +27,9 @@ export function DiscoverScreen({ navigation }) {
 	const [ menuActions, setMenuActions] = useState([])	
 	const [ books, setBooks ] = useState()
 	const [ itemUpdating, setItemUpdating ] = useState('')
+	const discoverListRef = React.useRef(null);
+
+	useScrollToTop(discoverListRef);
 			
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -415,6 +419,7 @@ export function DiscoverScreen({ navigation }) {
 				<View style={styles.discoverView}> 
 					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" />
 					<FlatList
+						ref={discoverListRef}
 						data = {books}
 						key = "BooksList"
 						renderItem = {renderSearchItem}
@@ -426,6 +431,7 @@ export function DiscoverScreen({ navigation }) {
 				<View style={styles.discoverView}> 
 					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" />
 					<FlatList
+						ref={discoverListRef}
 						data={data}
 						key={columns}
 						keyExtractor={(item) => item.id.toString()}

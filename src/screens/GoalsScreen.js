@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, useColorScheme, useWindowDimensions } from 'react-native';
+import { useScrollToTop } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
@@ -15,6 +16,9 @@ export function GoalsScreen({ navigation }) {
 	const [ bannerYear, setBannerYear ] = useState();
 	const [ bannerCount, setBannerCount ] = useState();
 	const [ bannerBooks, setBannerBooks ] = useState([]);
+	const goalsListRef = React.useRef(null);
+
+	useScrollToTop(goalsListRef);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -184,6 +188,7 @@ export function GoalsScreen({ navigation }) {
 		<View style={styles.goalsContainer}>
 			<BannerView year={bannerYear} count={bannerCount} />
 			<FlatList
+				ref={goalsListRef}
 				data = {goals}
 				renderItem = { ({item}) => 
 					<Pressable style={styles.goalItem} onPress={() => { onSelectGoal(item) }}>
