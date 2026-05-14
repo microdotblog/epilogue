@@ -214,6 +214,7 @@ export function ProfileScreen({ navigation }) {
 		epilogueStorage.remove(keys.currentUsername);		
 		epilogueStorage.remove(keys.currentBlogID);
 		epilogueStorage.remove(keys.currentBlogName);
+		epilogueStorage.remove(keys.blogCount);
 		epilogueStorage.remove(keys.currentBookshelf);
 		epilogueStorage.remove(keys.currentSearch);
 		epilogueStorage.remove(keys.currentText);

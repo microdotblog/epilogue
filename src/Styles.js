@@ -299,10 +299,19 @@ export const light = StyleSheet.create({
 		flex: 1,
 		marginLeft: 15
 	},
-	postHostnameText: {
+	postHostnameCenter: {
 		flex: 3,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	postHostnameText: {
 		paddingTop: 2,
 		textAlign: "center"
+	},
+	postHostnameChevron: {
+		marginLeft: 5,
+		transform: [{ translateY: 1 }]
 	},
 	postHostnameProgress: {
 		flex: 1,

@@ -130,18 +130,24 @@ export function HomeScreen({ navigation }) {
 			else {
 				// if nothing set yet, verify token and load books
 				epilogueStorage.get(keys.currentBlogID).then(blog_id => {
-					if ((blog_id == null) || (blog_id.length == 0)) {
-						verifyToken(auth_token);
-					}
-					else {
-						// no search yet, load bookshelves
-						epilogueStorage.get(keys.currentSearch).then(current_search => {
-							if ((current_search == null) || (current_search.length == 0)) {
-								searchFieldRef.current.clear();
-								loadBookshelves(navigation);
+					epilogueStorage.get(keys.blogCount).then(blog_count => {
+						if ((blog_id == null) || (blog_id.length == 0)) {
+							verifyToken(auth_token);
+						}
+						else {
+							if ((blog_count == null) || (blog_count == 0)) {
+								loadBlogs();
 							}
-						});
-					}
+
+							// no search yet, load bookshelves
+							epilogueStorage.get(keys.currentSearch).then(current_search => {
+								if ((current_search == null) || (current_search.length == 0)) {
+									searchFieldRef.current.clear();
+									loadBookshelves(navigation);
+								}
+							});
+						}
+					});
 				});
 			}
 		});
@@ -301,12 +307,13 @@ export function HomeScreen({ navigation }) {
 					fetch(use_url, options).then(response => response.json()).then(data => {
 						var blog_id = "";
 						var blog_name = "";
+						const destinations = data.destination || [];
 						
-						if (data.destination.length > 0) {
-							blog_id = data.destination[0].uid;
-							blog_name = data.destination[0].name;
+						if (destinations.length > 0) {
+							blog_id = destinations[0].uid;
+							blog_name = destinations[0].name;
 							
-							for (let blog of data.destination) {								
+							for (let blog of destinations) {
 								if (blog["microblog-default"] == true) {
 									blog_id = blog.uid;
 									blog_name = blog.name;								
@@ -316,6 +323,7 @@ export function HomeScreen({ navigation }) {
 
 						epilogueStorage.set(keys.currentBlogID, blog_id);
 						epilogueStorage.set(keys.currentBlogName, blog_name);
+						epilogueStorage.set(keys.blogCount, destinations.length);
 					});
 				});
 			});

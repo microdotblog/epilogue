@@ -7,6 +7,7 @@ import FastImage from "react-native-fast-image";
 import { keys } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
+import { Icon } from "../Icon";
 
 export function PostScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
@@ -16,6 +17,7 @@ export function PostScreen({ route, navigation }) {
 	const [ title, setTitle ] = useState();
 	const [ blogID, setBlogID ] = useState();
 	const [ blogName, setBlogName ] = useState();
+	const [ blogCount, setBlogCount ] = useState(0);
 	const [ postURL, setPostURL ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
 	const { books } = route.params;
@@ -111,6 +113,10 @@ export function PostScreen({ route, navigation }) {
 		
 		epilogueStorage.get(keys.currentBlogID).then(blog_id => {
 			setBlogID(blog_id);
+		});
+
+		epilogueStorage.get(keys.blogCount).then(blog_count => {
+			setBlogCount(blog_count || 0);
 		});
 
 		epilogueStorage.get(keys.currentPostURL).then(post_url => {
@@ -303,7 +309,12 @@ export function PostScreen({ route, navigation }) {
 		<View style={styles.postTextBox}>
 			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
 				<Text style={styles.postHostnameLeft}></Text>
-				<Text style={styles.postHostnameText}>{blogName}</Text>
+				<View style={styles.postHostnameCenter}>
+					<Text style={styles.postHostnameText}>{blogName}</Text>
+					{ blogCount > 1 ? (
+						<Icon name="popup-triangle" color="#777777" size={10} style={styles.postHostnameChevron} />
+					) : null }
+				</View>
 				<ActivityIndicator style={styles.postHostnameProgress} size="small" animating={progressAnimating} />
 			</Pressable>
 			<PostTitleField title={title} />
