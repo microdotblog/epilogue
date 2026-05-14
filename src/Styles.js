@@ -512,6 +512,9 @@ export const light = StyleSheet.create({
 		borderTopWidth: 1,
 		borderTopColor: "#DEDEDE"
 	},
+	mediaDetailsTop: {
+		backgroundColor: "#EEF1F4"
+	},
 	bookDetailsNoDescription: {		
 	},
 	bookDetailsNotesSection: {
@@ -1159,6 +1162,9 @@ export const dark = StyleSheet.create({
 		paddingBottom: 4,
 		borderTopWidth: 1,
 		borderTopColor: "#444444"
+	},
+	mediaDetailsTop: {
+		backgroundColor: "#212936"
 	},
 	placeholderTitleText: {
 		color: "#E5E7EB"
