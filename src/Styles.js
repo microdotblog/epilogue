@@ -588,13 +588,7 @@ export const light = StyleSheet.create({
 		backgroundColor: '#DEDEDE',
 		marginLeft: 8,
 		marginRight: 8,
-		marginBottom: 14,
-		shadowColor: '#000',
-		shadowOffset: {
-			height: 2
-		},
-		shadowRadius: 2,
-		shadowOpacity: 0.1,
+		marginBottom: 14
 	},
 	placeholderTitleText: {
 		textAlign: 'center',
@@ -1184,8 +1178,7 @@ export const dark = StyleSheet.create({
 		color: "#E5E7EB"
 	},
 	bookContainer: {
-		backgroundColor: '#141723',
-		shadowOpacity: 0.75
+		backgroundColor: '#141723'
 	},
 	discoverView: {
 		backgroundColor: '#212936'
