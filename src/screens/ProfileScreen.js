@@ -12,6 +12,11 @@ import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 
 const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
+const profilePostSources = [
+	{ filter: "micro.blog/books/", media_type: "book" },
+	{ filter: "themoviedb.org", media_type: "movie" },
+	{ filter: "letterboxd.com", media_type: "letterboxd" }
+];
 
 export function ProfileScreen({ navigation }) {
 	const styles = useEpilogueStyle()
@@ -81,10 +86,30 @@ export function ProfileScreen({ navigation }) {
 		epilogueStorage.set(keys.currentTextExtra, "");				
 	}
 
-	function loadPosts(offset = 0, previous_posts = [], filter = "micro.blog/books/", media_type = "book") {
+	function loadPosts() {
+		const sources = profilePostSources.map(source => {
+			return {
+				...source,
+				offset: 0,
+				is_done: false
+			};
+		});
+
+		loadNextPostsPage(sources, 0, [], false);
+	}
+
+	function loadNextPostsPage(sources, source_index, previous_posts, did_initial_update) {
 		if (isCancelDownload) {
 			return;
 		}
+
+		if (source_index == -1) {
+			setPosts(sortPosts(previous_posts));
+			setDownloading(false);
+			return;
+		}
+
+		const source = sources[source_index];
 		
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			var use_token = auth_token;
@@ -99,101 +124,124 @@ export function ProfileScreen({ navigation }) {
 					}
 				};
 	
-				epilogueStorage.get(keys.micropubURL).then(micropub_url => {
-					epilogueStorage.get(keys.currentBlogID).then(blog_id => {
-						var use_url = micropub_url;
-						if (use_url == undefined) {
-							use_url = "https://micro.blog/micropub";
-						}
+					epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+						epilogueStorage.get(keys.currentBlogID).then(blog_id => {
+							var use_url = micropub_url;
+							if (use_url == undefined) {
+								use_url = "https://micro.blog/micropub";
+							}
 
-						if (use_url.includes("?")) {
-							use_url = use_url + "&q=source&offset=" + offset;
-						}
-						else {
-							use_url = use_url + "?q=source&offset=" + offset;
-						}
-						use_url = use_url + "&filter=" + encodeURIComponent(filter);
+							if (use_url.includes("?")) {
+								use_url = use_url + "&q=source&offset=" + source.offset;
+							}
+							else {
+								use_url = use_url + "?q=source&offset=" + source.offset;
+							}
+							use_url = use_url + "&filter=" + encodeURIComponent(source.filter);
 
-						if ((blog_id != null) && (blog_id.length > 0)) {
-							use_url = use_url + "&mp-destination=" + encodeURIComponent(blog_id);
-						}
+							if ((blog_id != null) && (blog_id.length > 0)) {
+								use_url = use_url + "&mp-destination=" + encodeURIComponent(blog_id);
+							}
 
-						fetch(use_url, options).then(response => response.json()).then(data => {
-							var new_items = previous_posts;
-							const html_parser = new DOMParser({ onError: (error) => {
-								// silently ignore errors
-							}});							
-							const md_parser = new showdown.Converter();
-							const num_posts = data.items.length;
-							
-							for (let item of data.items) {
-								const markdown = item.properties.content[0];
-								if (markdown.includes(filter)) {
-									// convert from Markdown and parse HTML
-									const html = "<html>" + md_parser.makeHtml(markdown) + "</html>";
-									const doc = html_parser.parseFromString(html, "text/html");
-									const text = doc.documentElement.textContent;
-									const replace_emojis = [ "📚", "🍿", "📺", "🎥", "🎬" ];
-									let display_text = text;
-									for (const emoji of replace_emojis) {
-										display_text = display_text.replaceAll(emoji, "");
-									}
-									const published_at = item.properties.published[0];
-									const date_s = published_at.slice(0, 10);
-																		
-									// try to get the book ISBN
-									let isbn = "";
-									let cover_url = "";
-									if (media_type == "book") {
-										const a_tags = doc.getElementsByTagName("a");
-										for (let i = 0; i < a_tags.length; i++) {
-											if (isbn.length == 0) {
-												const a_tag = a_tags[i];
-												const href = a_tag.getAttribute("href");
-												if (href && href.includes("micro.blog/books/")) {
-													const pieces = href.split("/");
-													isbn = pieces[pieces.length - 1];
-													cover_url = `https://micro.blog/books/${isbn}/cover.jpg`;
+							fetch(use_url, options).then(response => response.json()).then(data => {
+								var new_items = previous_posts;
+								const html_parser = new DOMParser({ onError: (error) => {
+									// silently ignore errors
+								}});
+								const md_parser = new showdown.Converter();
+								const num_posts = data.items.length;
+
+								for (let item of data.items) {
+									const markdown = item.properties.content[0];
+									if (markdown.includes(source.filter)) {
+										// convert from Markdown and parse HTML
+										const html = "<html>" + md_parser.makeHtml(markdown) + "</html>";
+										const doc = html_parser.parseFromString(html, "text/html");
+										const text = doc.documentElement.textContent;
+										const replace_emojis = [ "📚", "🍿", "📺", "🎥", "🎬" ];
+										let display_text = text;
+										for (const emoji of replace_emojis) {
+											display_text = display_text.replaceAll(emoji, "");
+										}
+										const published_at = item.properties.published[0];
+										const date_s = published_at.slice(0, 10);
+
+										// try to get the book ISBN
+										let isbn = "";
+										let cover_url = "";
+										if (source.media_type == "book") {
+											const a_tags = doc.getElementsByTagName("a");
+											for (let i = 0; i < a_tags.length; i++) {
+												if (isbn.length == 0) {
+													const a_tag = a_tags[i];
+													const href = a_tag.getAttribute("href");
+													if (href && href.includes("micro.blog/books/")) {
+														const pieces = href.split("/");
+														isbn = pieces[pieces.length - 1];
+														cover_url = `https://micro.blog/books/${isbn}/cover.jpg`;
+													}
 												}
 											}
 										}
+
+										new_items.push({
+											id: item.properties.uid[0],
+											url: item.properties.url[0],
+											text: markdown,
+											display_text: display_text,
+											posted_at: date_s,
+											published_at: published_at,
+											media_type: source.media_type,
+											isbn: isbn,
+											cover_url: cover_url
+										});
 									}
-																		
-									new_items.push({
-										id: item.properties.uid[0],
-										url: item.properties.url[0],
-										text: markdown,
-										display_text: display_text,
-										posted_at: date_s,
-										published_at: published_at,
-										media_type: media_type,
-										isbn: isbn,
-										cover_url: cover_url
-									});
 								}
-							}
-	
-							if (num_posts == 0) {
-								if (media_type == "book") {
-									loadPosts(0, new_items, "themoviedb.org", "movie");
+
+								const new_sources = sources.slice();
+								if (num_posts == 0) {
+									new_sources[source_index] = {
+										...source,
+										is_done: true
+									};
 								}
 								else {
-									// got all the posts, refresh list
-									setPosts(sortPosts(new_items));
-									setDownloading(false);
+									new_sources[source_index] = {
+										...source,
+										offset: source.offset + num_posts
+									};
 								}
-							}
-							else {
-								// keep paging through more posts
+
+								const should_update = !did_initial_update && initialPostPagesLoaded(new_sources);
+								if (should_update) {
+									setPosts(sortPosts(new_items));
+								}
+
 								setTimeout(function() {
-									const new_offset = offset + num_posts;
-									loadPosts(new_offset, new_items, filter, media_type);
+									const next_source_index = nextPostSourceIndex(new_sources, source_index);
+									loadNextPostsPage(new_sources, next_source_index, new_items, did_initial_update || should_update);
 								}, 500);
-							}
-						});
+							});
 					});
 				});
 			});
+		});
+	}
+
+	function nextPostSourceIndex(sources, current_index) {
+		for (let i = 1; i <= sources.length; i++) {
+			const index = (current_index + i) % sources.length;
+			if (!sources[index].is_done) {
+				return index;
+			}
+		}
+
+		return -1;
+	}
+
+	function initialPostPagesLoaded(sources) {
+		return sources.every(source => {
+			return source.is_done || source.offset > 0;
 		});
 	}
 
