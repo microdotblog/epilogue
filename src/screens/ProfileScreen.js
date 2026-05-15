@@ -81,7 +81,7 @@ export function ProfileScreen({ navigation }) {
 		epilogueStorage.set(keys.currentTextExtra, "");				
 	}
 
-	function loadPosts(offset = 0, previous_posts = []) {
+	function loadPosts(offset = 0, previous_posts = [], filter = "micro.blog/books/", media_type = "book") {
 		if (isCancelDownload) {
 			return;
 		}
@@ -105,20 +105,19 @@ export function ProfileScreen({ navigation }) {
 						if (use_url == undefined) {
 							use_url = "https://micro.blog/micropub";
 						}
-						
+
 						if (use_url.includes("?")) {
 							use_url = use_url + "&q=source&offset=" + offset;
 						}
 						else {
 							use_url = use_url + "?q=source&offset=" + offset;
 						}
-						
-						use_url = use_url + "&filter=" + encodeURIComponent("micro.blog/books/")
-						
-						if ((blog_id != null) && (blog_id.length > 0)) {							
+						use_url = use_url + "&filter=" + encodeURIComponent(filter);
+
+						if ((blog_id != null) && (blog_id.length > 0)) {
 							use_url = use_url + "&mp-destination=" + encodeURIComponent(blog_id);
 						}
-											
+
 						fetch(use_url, options).then(response => response.json()).then(data => {
 							var new_items = previous_posts;
 							const html_parser = new DOMParser({ onError: (error) => {
@@ -129,26 +128,33 @@ export function ProfileScreen({ navigation }) {
 							
 							for (let item of data.items) {
 								const markdown = item.properties.content[0];
-								if (markdown.includes("micro.blog/books/")) {
+								if (markdown.includes(filter)) {
 									// convert from Markdown and parse HTML
 									const html = "<html>" + md_parser.makeHtml(markdown) + "</html>";
 									const doc = html_parser.parseFromString(html, "text/html");
 									const text = doc.documentElement.textContent;
-									const display_text = text.replace("📚", "");
-									const date_s = item.properties.published[0].slice(0, 10);
+									const replace_emojis = [ "📚", "🍿", "📺", "🎥", "🎬" ];
+									let display_text = text;
+									for (const emoji of replace_emojis) {
+										display_text = display_text.replaceAll(emoji, "");
+									}
+									const published_at = item.properties.published[0];
+									const date_s = published_at.slice(0, 10);
 																		
 									// try to get the book ISBN
 									let isbn = "";
 									let cover_url = "";
-									const a_tags = doc.getElementsByTagName("a");
-									for (let i = 0; i < a_tags.length; i++) {
-										if (isbn.length == 0) {
-											const a_tag = a_tags[i];
-											const href = a_tag.getAttribute("href");
-											if (href && href.includes("micro.blog/books/")) {
-												const pieces = href.split("/");
-												isbn = pieces[pieces.length - 1];
-												cover_url = `https://micro.blog/books/${isbn}/cover.jpg`;
+									if (media_type == "book") {
+										const a_tags = doc.getElementsByTagName("a");
+										for (let i = 0; i < a_tags.length; i++) {
+											if (isbn.length == 0) {
+												const a_tag = a_tags[i];
+												const href = a_tag.getAttribute("href");
+												if (href && href.includes("micro.blog/books/")) {
+													const pieces = href.split("/");
+													isbn = pieces[pieces.length - 1];
+													cover_url = `https://micro.blog/books/${isbn}/cover.jpg`;
+												}
 											}
 										}
 									}
@@ -159,33 +165,41 @@ export function ProfileScreen({ navigation }) {
 										text: markdown,
 										display_text: display_text,
 										posted_at: date_s,
+										published_at: published_at,
+										media_type: media_type,
 										isbn: isbn,
 										cover_url: cover_url
 									});
 								}
 							}
 	
-							if (offset == 0) {
-								// if first hit, show recent posts right away
-								setPosts(new_items);
-							}
-	
 							if (num_posts == 0) {
-								// got all the posts, refresh list
-								setPosts(new_items);
-								setDownloading(false);
+								if (media_type == "book") {
+									loadPosts(0, new_items, "themoviedb.org", "movie");
+								}
+								else {
+									// got all the posts, refresh list
+									setPosts(sortPosts(new_items));
+									setDownloading(false);
+								}
 							}
 							else {
 								// keep paging through more posts
 								setTimeout(function() {
 									const new_offset = offset + num_posts;
-									loadPosts(new_offset, new_items);
+									loadPosts(new_offset, new_items, filter, media_type);
 								}, 500);
 							}
 						});
 					});
 				});
 			});
+		});
+	}
+
+	function sortPosts(items) {
+		return items.slice().sort((a, b) => {
+			return (b.published_at || "").localeCompare(a.published_at || "");
 		});
 	}
 	
@@ -299,7 +313,11 @@ export function ProfileScreen({ navigation }) {
 				renderItem = { ({item}) => 
 				<Pressable onPress={() => { onEditPost(item) }}>
 					<View style={styles.profilePost}>
-						<FastImage style={styles.profilePostCover} source={{ uri: item.cover_url }} />
+						{ item.cover_url.length > 0 ? (
+							<FastImage style={styles.profilePostCover} source={{ uri: item.cover_url }} />
+						) : (
+							<View style={styles.profilePostCover} />
+						)}
 						<View style={styles.profilePostContent}>
 							<Text style={styles.profilePostText} ellipsizeMode="tail" numberOfLines={4}>{item.display_text}</Text>
 							<Text style={styles.profilePostDate}>{item.posted_at}</Text>
