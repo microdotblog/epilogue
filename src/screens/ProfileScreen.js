@@ -183,6 +183,12 @@ export function ProfileScreen({ navigation }) {
 												}
 											}
 										}
+										else if (source.media_type == "movie") {
+											const thumbnail = item.properties["micropub-thumbnail"]?.[0];
+											if ((thumbnail != null) && (thumbnail.length > 0)) {
+												cover_url = thumbnail;
+											}
+										}
 
 										new_items.push({
 											id: item.properties.uid[0],
