@@ -305,25 +305,29 @@ export function HomeScreen({ navigation }) {
 					}
 					
 					fetch(use_url, options).then(response => response.json()).then(data => {
-						var blog_id = "";
-						var blog_name = "";
 						const destinations = data.destination || [];
-						
-						if (destinations.length > 0) {
-							blog_id = destinations[0].uid;
-							blog_name = destinations[0].name;
+						epilogueStorage.set(keys.blogCount, destinations.length);
+
+						epilogueStorage.get(keys.currentBlogID).then(current_blog_id => {
+							var default_blog = destinations.length > 0 ? destinations[0] : null;
+							var selected_blog = null;
 							
 							for (let blog of destinations) {
 								if (blog["microblog-default"] == true) {
-									blog_id = blog.uid;
-									blog_name = blog.name;								
+									default_blog = blog;
+								}
+
+								if ((current_blog_id != null) && (blog.uid == current_blog_id)) {
+									selected_blog = blog;
 								}
 							}
-						}
 
-						epilogueStorage.set(keys.currentBlogID, blog_id);
-						epilogueStorage.set(keys.currentBlogName, blog_name);
-						epilogueStorage.set(keys.blogCount, destinations.length);
+							const blog = selected_blog || default_blog;
+							if (blog != null) {
+								epilogueStorage.set(keys.currentBlogID, blog.uid);
+								epilogueStorage.set(keys.currentBlogName, blog.name);
+							}
+						});
 					});
 				});
 			});
