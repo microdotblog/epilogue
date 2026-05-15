@@ -51,7 +51,8 @@ export function BlogsScreen({ navigation }) {
 							
 					fetch(use_url, options).then(response => response.json()).then(data => {
 						var new_items = [];
-						for (blog of data.destination) {
+						const destinations = data.destination || [];
+						for (let blog of destinations) {
 							new_items.push({
 								id: blog.uid,
 								name: blog.name
@@ -59,6 +60,7 @@ export function BlogsScreen({ navigation }) {
 						}
 						
 						setBlogs(new_items);
+						epilogueStorage.set(keys.blogCount, new_items.length);
 					});
 				});
 			});

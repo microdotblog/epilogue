@@ -13,6 +13,9 @@ import { Icon } from "../Icon";
 import { Note } from "../models/Note";
 import CryptoUtils from '../utils/crypto';
 
+const BOOK_DETAILS_COVER_MAX_WIDTH = 200;
+const BOOK_DETAILS_COVER_MAX_HEIGHT = 200;
+
 export function BookDetailsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle()
 	const is_dark = (useColorScheme() == "dark");
@@ -21,12 +24,18 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ menuActions, setMenuActions] = useState([])	
 	const [ notes, setNotes] = useState([])
 	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
+	const [ coverSize, setCoverSize ] = useState(null)
 	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search } = route.params;
+	const coverURL = image.replace("http://", "https://");
 
 	React.useEffect(() => {
 		setupBookDetails();
 		refreshNotes();
 	}, [navigation, route.params]);
+
+	React.useEffect(() => {
+		setCoverSize(null);
+	}, [coverURL]);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -316,6 +325,37 @@ export function BookDetailsScreen({ route, navigation }) {
 		navigation.navigate("Note", params);
 	}
 
+	function calculateCoverSize(width, height) {
+		if ((width == null) || (height == null) || (width <= 0) || (height <= 0)) {
+			return null;
+		}
+
+		let cover_ratio = width / height;
+		let max_ratio = BOOK_DETAILS_COVER_MAX_WIDTH / BOOK_DETAILS_COVER_MAX_HEIGHT;
+
+		if (cover_ratio > max_ratio) {
+			return {
+				width: BOOK_DETAILS_COVER_MAX_WIDTH,
+				height: BOOK_DETAILS_COVER_MAX_WIDTH / cover_ratio
+			};
+		}
+		else {
+			return {
+				width: BOOK_DETAILS_COVER_MAX_HEIGHT * cover_ratio,
+				height: BOOK_DETAILS_COVER_MAX_HEIGHT
+			};
+		}
+	}
+
+	function onCoverLoad(event) {
+		let source = event.nativeEvent?.source;
+		let new_size = calculateCoverSize(source?.width, source?.height);
+
+		if (new_size != null) {
+			setCoverSize(new_size);
+		}
+	}
+
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={[styles.container, styles.bookDetailsContainer]}>
@@ -334,7 +374,17 @@ export function BookDetailsScreen({ route, navigation }) {
 				>
 					<View style={styles.bookDetails}>
 						<View style={styles.bookDetailsTop}>
-							<Image style={styles.bookDetailsCover} source={{ uri: image.replace("http://", "https://") }} />
+							<View style={styles.bookDetailsCoverSlot}>
+								<Image
+									style={[
+										styles.bookDetailsCover,
+										coverSize || styles.bookDetailsCoverLoading,
+										{ opacity: coverSize == null ? 0 : 1 }
+									]}
+									source={{ uri: coverURL }}
+									onLoad={onCoverLoad}
+								/>
+							</View>
 						</View>
 						<View style={styles.bookDetailsColumns}>
 							<View style={styles.bookDetailsFields}>

@@ -107,7 +107,18 @@ export const light = StyleSheet.create({
 		paddingTop: 25,
 		width: "100%"
 	},
+	bookDetailsCoverSlot: {
+		width: 200,
+		height: 200,
+		alignItems: "center",
+		justifyContent: "center"
+	},
 	bookDetailsCover: {
+		borderRadius: 4,
+		overflow: "hidden",
+		resizeMode: "cover"
+	},
+	bookDetailsCoverLoading: {
 		width: 200,
 		height: 200,
 		resizeMode: "contain"
@@ -288,10 +299,19 @@ export const light = StyleSheet.create({
 		flex: 1,
 		marginLeft: 15
 	},
-	postHostnameText: {
+	postHostnameCenter: {
 		flex: 3,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	postHostnameText: {
 		paddingTop: 2,
 		textAlign: "center"
+	},
+	postHostnameChevron: {
+		marginLeft: 5,
+		transform: [{ translateY: 1 }]
 	},
 	postHostnameProgress: {
 		flex: 1,
@@ -575,15 +595,9 @@ export const light = StyleSheet.create({
 		height: 160,
 		justifyContent: 'center',
 		backgroundColor: '#DEDEDE',
-		marginLeft: 8,
-		marginRight: 8,
-		marginBottom: 14,
-		shadowColor: '#000',
-		shadowOffset: {
-			height: 2
-		},
-		shadowRadius: 2,
-		shadowOpacity: 0.1,
+		marginLeft: 10,
+		marginRight: 10,
+		marginBottom: 14
 	},
 	placeholderTitleText: {
 		textAlign: 'center',
@@ -1173,8 +1187,7 @@ export const dark = StyleSheet.create({
 		color: "#E5E7EB"
 	},
 	bookContainer: {
-		backgroundColor: '#141723',
-		shadowOpacity: 0.75
+		backgroundColor: '#141723'
 	},
 	discoverView: {
 		backgroundColor: '#212936'

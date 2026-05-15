@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Pressable, Text, TextInput, View } from "react-native";
+import { useScrollToTop } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
@@ -14,6 +15,9 @@ export function MoviesScreen({ navigation }) {
 	const [ searching, setSearching ] = useState(false);
 	const [ hideCredits, setHideCredits ] = useState(false);
 	const hideCreditsTimeout = useRef(null);
+	const moviesListRef = useRef(null);
+
+	useScrollToTop(moviesListRef);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -196,6 +200,7 @@ export function MoviesScreen({ navigation }) {
 					</View>
 				) : (
 					<FlatList
+						ref={moviesListRef}
 						data={movies}
 						keyExtractor={(item, index) => item.id ?? index.toString()}
 						renderItem={renderMovie}

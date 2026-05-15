@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useScrollToTop } from "@react-navigation/native";
 import { MenuView } from "@react-native-menu/menu";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
@@ -68,6 +68,9 @@ export function HomeScreen({ navigation }) {
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
 	const [ isSearching, setIsSearching ] = useState(false);
 	const searchFieldRef = useRef();
+	const booksListRef = useRef(null);
+
+	useScrollToTop(booksListRef);
     
 	React.useEffect(() => {
 		const unsubscribe_focus = navigation.addListener("focus", () => {
@@ -127,18 +130,24 @@ export function HomeScreen({ navigation }) {
 			else {
 				// if nothing set yet, verify token and load books
 				epilogueStorage.get(keys.currentBlogID).then(blog_id => {
-					if ((blog_id == null) || (blog_id.length == 0)) {
-						verifyToken(auth_token);
-					}
-					else {
-						// no search yet, load bookshelves
-						epilogueStorage.get(keys.currentSearch).then(current_search => {
-							if ((current_search == null) || (current_search.length == 0)) {
-								searchFieldRef.current.clear();
-								loadBookshelves(navigation);
+					epilogueStorage.get(keys.blogCount).then(blog_count => {
+						if ((blog_id == null) || (blog_id.length == 0)) {
+							verifyToken(auth_token);
+						}
+						else {
+							if ((blog_count == null) || (blog_count == 0)) {
+								loadBlogs();
 							}
-						});
-					}
+
+							// no search yet, load bookshelves
+							epilogueStorage.get(keys.currentSearch).then(current_search => {
+								if ((current_search == null) || (current_search.length == 0)) {
+									searchFieldRef.current.clear();
+									loadBookshelves(navigation);
+								}
+							});
+						}
+					});
 				});
 			}
 		});
@@ -296,23 +305,29 @@ export function HomeScreen({ navigation }) {
 					}
 					
 					fetch(use_url, options).then(response => response.json()).then(data => {
-						var blog_id = "";
-						var blog_name = "";
-						
-						if (data.destination.length > 0) {
-							blog_id = data.destination[0].uid;
-							blog_name = data.destination[0].name;
+						const destinations = data.destination || [];
+						epilogueStorage.set(keys.blogCount, destinations.length);
+
+						epilogueStorage.get(keys.currentBlogID).then(current_blog_id => {
+							var default_blog = destinations.length > 0 ? destinations[0] : null;
+							var selected_blog = null;
 							
-							for (let blog of data.destination) {								
+							for (let blog of destinations) {
 								if (blog["microblog-default"] == true) {
-									blog_id = blog.uid;
-									blog_name = blog.name;								
+									default_blog = blog;
+								}
+
+								if ((current_blog_id != null) && (blog.uid == current_blog_id)) {
+									selected_blog = blog;
 								}
 							}
-						}
 
-						epilogueStorage.set(keys.currentBlogID, blog_id);
-						epilogueStorage.set(keys.currentBlogName, blog_name);
+							const blog = selected_blog || default_blog;
+							if (blog != null) {
+								epilogueStorage.set(keys.currentBlogID, blog.uid);
+								epilogueStorage.set(keys.currentBlogName, blog.name);
+							}
+						});
 					});
 				});
 			});
@@ -636,6 +651,7 @@ export function HomeScreen({ navigation }) {
 		<View style={styles.container}>
 			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" ref={searchFieldRef} />
 			<FlatList
+				ref={booksListRef}
 				data = {books}
 				renderItem = { ({item}) => 
 				item.is_new_book_row ? (
