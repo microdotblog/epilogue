@@ -92,7 +92,7 @@ export function BookDetailsScreen({ route, navigation }) {
 			});
 		}
 
-		if (current_bookshelf.type == "finished") {
+		if (!is_search && current_bookshelf.type == "finished") {
 			edit_actions.push({
 				id: "setfinisheddate",
 				title: "Set Finished Date"
