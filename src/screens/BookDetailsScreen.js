@@ -75,37 +75,37 @@ export function BookDetailsScreen({ route, navigation }) {
 			},
 		];
 		
+		var edit_actions = [];
+		var share_actions = [];
+
+		if (!is_search) {
+			edit_actions.push({
+				id: "editbook",
+				title: "Edit Title & Author"
+			});
+		}
+
+		if (!is_search) {
+			edit_actions.push({
+				id: "setopenlibrary",
+				title: "Set Cover from Open Library"
+			});
+		}
+
+		if (current_bookshelf.type == "finished") {
+			edit_actions.push({
+				id: "setfinisheddate",
+				title: "Set Finished Date"
+			});
+		}
+
+		share_actions.push({
+			id: "sharebutton",
+			title: "Share",
+			systemIcon: "square.and.arrow.up"
+		})
+
 		if (Platform.OS === "ios") {
-			var edit_actions = [];
-			var share_actions = [];
-
-			if (!is_search) {
-				edit_actions.push({
-					id: "editbook",
-					title: "Edit Title & Author"
-				});
-			}
-
-			if (!is_search) {
-				edit_actions.push({
-					id: "setopenlibrary",
-					title: "Set Cover from Open Library"
-				});
-			}
-
-			if (current_bookshelf.type == "finished") {
-				edit_actions.push({
-					id: "setfinisheddate",
-					title: "Set Finished Date"
-				});
-			}
-
-			share_actions.push({
-				id: "sharebutton",
-				title: "Share",
-				systemIcon: "square.and.arrow.up"
-			})
-
 			menu_items.push({
 				id: "edit",
 				title: "Edit Book...",
@@ -119,6 +119,15 @@ export function BookDetailsScreen({ route, navigation }) {
 				inlineChildren: true,
 				actions: share_actions
 			})
+		}
+		else {
+			menu_items.push({
+				id: "separator",
+				title: "────────────────────",
+				disabled: true
+			});
+			menu_items.push(...edit_actions);
+			menu_items.push(...share_actions);
 		}
 		
 		setMenuActions(menu_items);
