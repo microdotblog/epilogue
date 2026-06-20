@@ -210,19 +210,20 @@ export const light = StyleSheet.create({
 		width: 44
 	},
 	searchField: {
-		height: 36,
+		height: 40,
 		marginTop: 1,
 		marginBottom: 5,
 		marginLeft: 20,
 		marginRight: 20,
-		paddingTop: 7,
-		paddingBottom: 7,
-		paddingLeft: 12,
-		paddingRight: 12,
-		borderRadius: 18,
+		paddingTop: 8,
+		paddingBottom: 8,
+		paddingLeft: 15,
+		paddingRight: 15,
+		borderRadius: 20,
 		borderColor: "#ced3d8",
 		borderWidth: 0.5,
-		backgroundColor: "#FFFFFF"
+		backgroundColor: "#FFFFFF",
+		fontSize: 16
 	},
 	discoverSearchField: {
 		height: 36,
