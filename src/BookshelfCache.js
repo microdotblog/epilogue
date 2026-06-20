@@ -5,6 +5,7 @@ import epilogueStorage from "./Storage";
 
 const bookshelvesCacheDirectory = RNFS.CachesDirectoryPath + "/Bookshelves";
 const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
+const minimumLocalSearchLength = 3;
 
 var isWarmingBookshelfCaches = false;
 var hasWarmedBookshelfCaches = false;
@@ -115,7 +116,7 @@ export function refreshAllBookshelfCachesInBackground(bookshelves = null) {
 
 export function searchCachedBookshelves(searchText, fallbackBooks = [], fallbackBookshelf = null) {
 	const query = searchText.trim().toLowerCase();
-	if (query.length == 0) {
+	if (query.length < minimumLocalSearchLength) {
 		return Promise.resolve([]);
 	}
 
