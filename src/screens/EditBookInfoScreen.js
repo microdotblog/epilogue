@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
-import RNFS from "react-native-fs";
 
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
-
-const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
+import { deleteLatestBooksCache, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 export function EditBookInfoScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
@@ -81,8 +79,8 @@ export function EditBookInfoScreen({ route, navigation }) {
 				if (!response.ok) {
 					throw new Error("Could not update book.");
 				}
-				RNFS.unlink(latestBooksCachePath).catch(() => {
-				}).then(() => {
+				deleteLatestBooksCache().then(() => {
+					refreshAllBookshelfCachesInBackground();
 					navigation.navigate({
 						name: "Details",
 						params: {

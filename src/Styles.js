@@ -1,5 +1,10 @@
 import { StyleSheet } from "react-native";
 
+export const BOOK_COVER_WIDTH = 50;
+export const BOOK_COVER_HEIGHT = 70;
+export const MOVIE_POSTER_WIDTH = 50;
+export const MOVIE_POSTER_HEIGHT = 70;
+
 export const light = StyleSheet.create({
 	container: {
 		flex: 1,
@@ -69,8 +74,8 @@ export const light = StyleSheet.create({
 	},
 	bookCover: {
 		marginTop: 5,
-		width: 50,
-		height: 70,
+		width: BOOK_COVER_WIDTH,
+		height: BOOK_COVER_HEIGHT,
 		borderRadius: 4
 	},
 	bookDetails: {
@@ -163,12 +168,16 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsButton: {
 		flexDirection: "row",
+		alignItems: "center",
 		paddingVertical: 14,
 		paddingHorizontal: 14,
 		borderRadius: 5,
 		marginBottom: 6,
 		backgroundColor: "#DEDEDE"
 	},	
+	bookDetailsBookshelfCheck: {
+		marginRight: 8
+	},
 	bookDetailsButtonPressed: {
 		backgroundColor: "#BBBBBB",
 	},
@@ -210,19 +219,20 @@ export const light = StyleSheet.create({
 		width: 44
 	},
 	searchField: {
-		height: 36,
+		height: 40,
 		marginTop: 1,
 		marginBottom: 5,
 		marginLeft: 20,
 		marginRight: 20,
-		paddingTop: 7,
-		paddingBottom: 7,
-		paddingLeft: 12,
-		paddingRight: 12,
-		borderRadius: 18,
+		paddingTop: 8,
+		paddingBottom: 8,
+		paddingLeft: 15,
+		paddingRight: 15,
+		borderRadius: 20,
 		borderColor: "#ced3d8",
 		borderWidth: 0.5,
-		backgroundColor: "#FFFFFF"
+		backgroundColor: "#FFFFFF",
+		fontSize: 16
 	},
 	discoverSearchField: {
 		height: 36,
@@ -269,6 +279,10 @@ export const light = StyleSheet.create({
 		paddingRight: 14,
 		paddingTop: 14,
 		paddingBottom: 14
+	},
+	postEditorTextInput: {
+		fontSize: 17,
+		lineHeight: 24
 	},
 	postTextNotice: {
 		paddingLeft: 14,
@@ -406,8 +420,8 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 0.5
 	},
 	profilePostCover: {
-		width: 50,
-		height: 70,
+		width: BOOK_COVER_WIDTH,
+		height: BOOK_COVER_HEIGHT,
 		borderRadius: 4
 	},
 	profilePostContent: {
@@ -568,6 +582,12 @@ export const light = StyleSheet.create({
 		paddingTop: 10
 	},
 	moviesCreditPane: {
+		position: "absolute",
+		left: 0,
+		right: 0,
+		bottom: 0,
+		zIndex: 1,
+		elevation: 2,
 		flexDirection: "row",
 		alignItems: "center",
 		paddingLeft: 16,
@@ -643,8 +663,8 @@ export const light = StyleSheet.create({
 		paddingLeft: 20
 	},
 	goalCoverThumbnail: {		
-		width: 50,
-		height: 70,
+		width: BOOK_COVER_WIDTH,
+		height: BOOK_COVER_HEIGHT,
 		marginRight: 5,
 		borderRadius: 4
 	},
@@ -676,7 +696,7 @@ export const light = StyleSheet.create({
 		paddingLeft: 10,
 		paddingRight: 10,
 		paddingBottom: 0,
-		height: 54,
+		height: 44,
 		backgroundColor: "#FFFFFF",
 		borderRadius: 5		
 	},
@@ -687,7 +707,7 @@ export const light = StyleSheet.create({
 		flexDirection: "row"
 	},
 	editGoalButton: {
-		height: 54,
+		height: 44,
 		marginTop: 10,
 		marginRight: 20,
 		justifyContent: "center",
@@ -978,7 +998,11 @@ export const light = StyleSheet.create({
 		width: "100%",
 		height: "150",
 		resizeMode: "contain",
-		marginBottom: 10
+		marginBottom: 20
+	},
+	episodeDetailsTop: {
+		paddingBottom: 12,
+		width: "100%"
 	},
 	episodeDetails: {
 		alignItems: "center",

@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { Alert, Pressable, ScrollView, Text, TextInput, useColorScheme, View } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
-import RNFS from "react-native-fs";
 
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
-
-const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
+import { deleteLatestBooksCache, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 export function AddBookInfoScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
@@ -119,8 +117,8 @@ export function AddBookInfoScreen({ route, navigation }) {
 				if (!response.ok) {
 					throw new Error("Could not add book.");
 				}
-				RNFS.unlink(latestBooksCachePath).catch(() => {
-				}).then(() => {
+				deleteLatestBooksCache().then(() => {
+					refreshAllBookshelfCachesInBackground();
 					navigation.goBack();
 				});
 			}).catch(() => {

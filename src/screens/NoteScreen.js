@@ -65,7 +65,7 @@ export function NoteScreen({ route, navigation }) {
   return (
     <View style={styles.postTextBox}>
       <TextInput
-        style={styles.postTextInput}
+        style={[styles.postTextInput, styles.postEditorTextInput]}
         value={text}
         onChangeText={onChangeText}
         placeholder=""

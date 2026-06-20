@@ -12,6 +12,7 @@ import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Note } from "../models/Note";
 import CryptoUtils from '../utils/crypto';
+import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 const BOOK_DETAILS_COVER_MAX_WIDTH = 200;
 const BOOK_DETAILS_COVER_MAX_HEIGHT = 200;
@@ -25,7 +26,9 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ notes, setNotes] = useState([])
 	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
 	const [ coverSize, setCoverSize ] = useState(null)
-	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search } = route.params;
+	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
+	const initial_bookshelf_ids_with_book = bookshelf_ids_with_book || ((!is_search && current_bookshelf?.id != null) ? [current_bookshelf.id] : []);
+	const bookshelfIDsWithBook = new Set(initial_bookshelf_ids_with_book.map(shelf_id => String(shelf_id)));
 	const coverURL = image.replace("http://", "https://");
 
 	React.useEffect(() => {
@@ -144,6 +147,10 @@ export function BookDetailsScreen({ route, navigation }) {
 		})
 	}
 
+	function bookIsOnBookshelf(shelf) {
+		return bookshelfIDsWithBook.has(String(shelf.id));
+	}
+
 	function fetchNotesForBook() {
 		// fetch notes for this book
 		epilogueStorage.get(keys.authToken).then(auth_token => {
@@ -224,6 +231,7 @@ export function BookDetailsScreen({ route, navigation }) {
 			setProgressAnimating(true);
 		
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id + "/assign", options).then(response => response.json()).then(data => {
+				refreshAllBookshelfCachesInBackground();
 				navigation.goBack();
 			});
 		});
@@ -249,6 +257,7 @@ export function BookDetailsScreen({ route, navigation }) {
 			setProgressAnimating(true);
 		
 			fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
+				refreshAllBookshelfCachesInBackground();
 				epilogueStorage.remove(keys.currentSearch).then(() => {
 					navigation.goBack();
 				});
@@ -419,11 +428,15 @@ export function BookDetailsScreen({ route, navigation }) {
 				{
 					bookshelves.map((shelf) => {
 						if (shelf.type != "loans" && shelf.type != "holds") {
+							const is_on_bookshelf = bookIsOnBookshelf(shelf);
 							return (
 								<Pressable key={shelf.id} onPress={() => { addToBookshelf(shelf.id); }} style={({ pressed }) => [
 									styles.bookDetailsButton,
 									(pressed ? styles.bookDetailsButtonPressed : styles.bookDetailsButton)
 								]}>
+									{is_on_bookshelf ? (
+										<Icon name="check-circle" size={17} color={is_dark ? "#E5E7EB" : "#303030"} style={styles.bookDetailsBookshelfCheck} accessibilityLabel="book already on bookshelf" />
+									) : null}
 									<Text style={styles.bookDetailsBookshelfTitle}>{shelf.title}</Text>
 									<Text style={styles.bookDetailsBookshelfCount}>{shelf.books_count}</Text>
 								</Pressable>

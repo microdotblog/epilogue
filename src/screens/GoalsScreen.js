@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, useColorScheme, useWindowDimensions } from 'react-native';
+import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, RefreshControl, useColorScheme, useWindowDimensions } from 'react-native';
 import { useScrollToTop } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
@@ -16,6 +16,7 @@ export function GoalsScreen({ navigation }) {
 	const [ bannerYear, setBannerYear ] = useState();
 	const [ bannerCount, setBannerCount ] = useState();
 	const [ bannerBooks, setBannerBooks ] = useState([]);
+	const [ refreshing, setRefreshing ] = useState(false);
 	const goalsListRef = React.useRef(null);
 
 	useScrollToTop(goalsListRef);
@@ -39,14 +40,14 @@ export function GoalsScreen({ navigation }) {
 		let this_month = new Date().getMonth();
 		var has_banner = false;
 		
-		epilogueStorage.get("auth_token").then(auth_token => {
+		return epilogueStorage.get("auth_token").then(auth_token => {
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + auth_token
 				}
 			};
 			
-			fetch("https://micro.blog/books/goals", options).then(response => response.json()).then(data => {
+			return fetch("https://micro.blog/books/goals", options).then(response => response.json()).then(data => {
 				var new_goals = [];
 				for (let item of data.items) {
 					var g = {
@@ -94,6 +95,17 @@ export function GoalsScreen({ navigation }) {
 			});
 		});
 	}
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		loadGoals()
+			.catch(error => {
+				console.log("Error refreshing goals", error);
+			})
+			.finally(() => {
+				setRefreshing(false);
+			});
+	}, []);
 
 	function onSelectGoal(item) {		
 		var params = {
@@ -186,7 +198,6 @@ export function GoalsScreen({ navigation }) {
 
 	return (
 		<View style={styles.goalsContainer}>
-			<BannerView year={bannerYear} count={bannerCount} />
 			<FlatList
 				ref={goalsListRef}
 				data = {goals}
@@ -208,6 +219,12 @@ export function GoalsScreen({ navigation }) {
 							/>
 						</View>
 					</Pressable>
+				}
+				ListHeaderComponent = {
+					<BannerView year={bannerYear} count={bannerCount} />
+				}
+				refreshControl = {
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
 				}
 				keyExtractor = { item => item.id }
 			/>

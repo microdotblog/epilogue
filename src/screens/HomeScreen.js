@@ -7,17 +7,24 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import FastImage from "react-native-fast-image";
-import RNFS from "react-native-fs";
 
 import { keys, errors } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
+import {
+	booksFromJSONFeed,
+	cacheBookshelfDataForID,
+	readLatestBooksCache,
+	readBookshelfIDsContainingBook,
+	searchCachedBookshelves,
+	warmAllBookshelfCachesInBackground,
+	refreshAllBookshelfCachesInBackground,
+	writeLatestBooksCache
+} from "../BookshelfCache";
 
-const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
-
-function BookSwipeableRow({ bookID, children, onRemove, styles }) {
+function BookSwipeableRow({ bookID, bookshelfID, children, onRemove, styles }) {
 	const swipeableRef = useRef(null);
 
 	const renderRightActions = (progress) => {
@@ -31,7 +38,7 @@ function BookSwipeableRow({ bookID, children, onRemove, styles }) {
 			<View style={styles.removeContainer}>
 				<RectButton style={styles.removeAction} onPress={() => {
 					swipeableRef.current?.close?.();
-					onRemove(bookID);
+					onRemove(bookID, bookshelfID);
 				}}>
 					<Animated.View style={{ opacity: actionOpacity }}>
 						<View style={styles.removeCircle}>
@@ -351,14 +358,15 @@ export function HomeScreen({ navigation }) {
 				setBooks(new_books);
 				setLatestBooks(new_books);
 				writeLatestBooksCache(data);
+				cacheBookshelfDataForID(bookshelf_id, data);
 				handler();
 			});		
 		});
 	}
 
 	function loadCachedBooks() {
-		RNFS.readFile(latestBooksCachePath, "utf8").then(contents => {
-			const new_books = booksFromJSONFeed(JSON.parse(contents));
+		readLatestBooksCache().then(data => {
+			const new_books = booksFromJSONFeed(data);
 			setBooks(new_books);
 			setLatestBooks(new_books);
 		}).catch(() => {
@@ -370,33 +378,6 @@ export function HomeScreen({ navigation }) {
 		});
 	}
 
-	function writeLatestBooksCache(data) {
-		RNFS.writeFile(latestBooksCachePath, JSON.stringify(data), "utf8").catch(() => {
-		});
-	}
-
-	function booksFromJSONFeed(data) {
-		var new_items = [];
-		for (let item of data.items || []) {
-			const metadata = item._microblog || {};
-			var author_name = "";
-			if ((item.authors != undefined) && (item.authors.length > 0)) {
-				author_name = item.authors[0].name;
-			}
-			new_items.push({
-				id: item.id,
-				isbn: metadata.isbn,
-				title: item.title,
-				image: item.image,
-				author: author_name,
-				description: item.content_text,
-				date: item.date_published,
-				is_search: false
-			});
-		}
-		return new_items;
-	}
-  
 	function loadBookshelves(navigation) {
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			var options = {
@@ -425,22 +406,24 @@ export function HomeScreen({ navigation }) {
 				}
 				
 				setBookshelves(new_items);
-				epilogueStorage.set(keys.allBookshelves, new_items);
-				
-				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-					if (current_bookshelf == null) {
-						let first_bookshelf = new_items[0];
-						epilogueStorage.set(keys.currentBookshelf, first_bookshelf).then(() => {
-							loadBooks(first_bookshelf.id);
-							setCurrentBookshelfTitle(first_bookshelf.title);
-							setupBookshelves(navigation, new_items, first_bookshelf.title);
-						});
-					}
-					else {
-						loadBooks(current_bookshelf.id);
-						setCurrentBookshelfTitle(current_bookshelf.title);
-						setupBookshelves(navigation, new_items, current_bookshelf.title);
-					}
+				epilogueStorage.set(keys.allBookshelves, new_items).then(() => {
+					warmAllBookshelfCachesInBackground(new_items);
+
+					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+						if (current_bookshelf == null) {
+							let first_bookshelf = new_items[0];
+							epilogueStorage.set(keys.currentBookshelf, first_bookshelf).then(() => {
+								loadBooks(first_bookshelf.id);
+								setCurrentBookshelfTitle(first_bookshelf.title);
+								setupBookshelves(navigation, new_items, first_bookshelf.title);
+							});
+						}
+						else {
+							loadBooks(current_bookshelf.id);
+							setCurrentBookshelfTitle(current_bookshelf.title);
+							setupBookshelves(navigation, new_items, current_bookshelf.title);
+						}
+					});
 				});
 			});		
 		});
@@ -528,47 +511,41 @@ export function HomeScreen({ navigation }) {
 	}
 
 	function localBookshelfMatches(searchText) {
-		const query = searchText.trim().toLowerCase();
-		if (query.length == 0) {
-			return [];
-		}
-
-		return latestBooks.filter(book => {
-			const book_title = (book.title || "").toLowerCase();
-			const book_author = (book.author || "").toLowerCase();
-			return book_title.includes(query) || book_author.includes(query);
-		}).map(book => ({
-			...book,
-			is_bookshelf_match: true,
-			bookshelf_name: currentBookshelfTitle
-		}));
+		return epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+			return searchCachedBookshelves(searchText, latestBooks, current_bookshelf);
+		});
 	}
 		
 	function sendSearch(searchText) {
 		setIsSearching(true);
-		const local_books = localBookshelfMatches(searchText);
-
-		if (Book.isISBN(searchText)) {
-			Book.searchOpenLibrary(searchText, function(new_books) {
-				if (new_books.length > 0) {				
-					setBooks(searchResultItems(new_books, searchText, local_books));
-					setIsSearching(false);
-				}
-				else {
-					Book.searchMicroBooks(searchText, function(new_books) {
+		localBookshelfMatches(searchText).then(local_books => {
+			if (Book.isISBN(searchText)) {
+				Book.searchOpenLibrary(searchText, function(new_books) {
+					if (new_books.length > 0) {
 						setBooks(searchResultItems(new_books, searchText, local_books));
 						setIsSearching(false);
-					});
-				}
-				
-			});
-		}
-		else {		
+					}
+					else {
+						Book.searchMicroBooks(searchText, function(new_books) {
+							setBooks(searchResultItems(new_books, searchText, local_books));
+							setIsSearching(false);
+						});
+					}
+
+				});
+			}
+			else {
+				Book.searchMicroBooks(searchText, function(new_books) {
+					setBooks(searchResultItems(new_books, searchText, local_books));
+					setIsSearching(false);
+				});
+			}
+		}).catch(() => {
 			Book.searchMicroBooks(searchText, function(new_books) {
-				setBooks(searchResultItems(new_books, searchText, local_books));
+				setBooks(searchResultItems(new_books, searchText));
 				setIsSearching(false);
 			});
-		}
+		});
 	}
 
 	function onAddBookInfoPressed(searchText) {
@@ -588,24 +565,44 @@ export function HomeScreen({ navigation }) {
 	
 	function onShowBookPressed(item) {
 		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-			var params = {
-				id: item.id,
-				isbn: item.isbn,
-				title: item.title,
-				image: item.image,
-				author: item.author,
-				description: item.description,
-				date: item.date,
-				bookshelves: bookshelves,
-				current_bookshelf: current_bookshelf,
-				is_search: item.is_search
-			};
-			navigation.navigate("Details", params);
+			const item_bookshelf = item.bookshelf || (item.bookshelf_id ? {
+				id: item.bookshelf_id,
+				title: item.bookshelf_name,
+				type: item.bookshelf_type
+			} : null);
+			const selected_bookshelf = item_bookshelf || current_bookshelf;
+			bookshelfMembershipIDsForItem(item, selected_bookshelf).then(bookshelf_ids_with_book => {
+				var params = {
+					id: item.id,
+					isbn: item.isbn,
+					title: item.title,
+					image: item.image,
+					author: item.author,
+					description: item.description,
+					date: item.date,
+					bookshelves: bookshelves,
+					current_bookshelf: selected_bookshelf,
+					is_search: item.is_search,
+					bookshelf_ids_with_book: bookshelf_ids_with_book
+				};
+				navigation.navigate("Details", params);
+			});
+		});
+	}
+
+	function bookshelfMembershipIDsForItem(item, selected_bookshelf) {
+		const fallback_ids = (!item.is_search && selected_bookshelf?.id != null) ? [String(selected_bookshelf.id)] : [];
+		return readBookshelfIDsContainingBook(item.isbn, item.id).then(ids => {
+			const all_ids = fallback_ids.concat(ids.map(shelf_id => String(shelf_id)));
+			return Array.from(new Set(all_ids));
+		}).catch(() => {
+			return fallback_ids;
 		});
 	}
   
-	function removeFromBookshelf(bookID) {
+	function removeFromBookshelf(bookID, bookshelfID = null) {
 		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+			const target_bookshelf_id = bookshelfID || current_bookshelf.id;
 			epilogueStorage.get("auth_token").then(auth_token => {
 				var options = {
 					method: "DELETE",
@@ -614,9 +611,17 @@ export function HomeScreen({ navigation }) {
 					}
 				};
 
-				let url = "https://micro.blog/books/bookshelves/" + current_bookshelf.id + "/remove/" + bookID;						
+				let url = "https://micro.blog/books/bookshelves/" + target_bookshelf_id + "/remove/" + bookID;
 				fetch(url, options).then(response => response.json()).then(data => {
-					loadBooks(current_bookshelf.id);
+					refreshAllBookshelfCachesInBackground();
+					if (target_bookshelf_id == current_bookshelf.id) {
+						loadBooks(current_bookshelf.id);
+					}
+					else {
+						setBooks(current_books => (current_books || []).filter(item => {
+							return !(item.id == bookID && item.bookshelf_id == target_bookshelf_id);
+						}));
+					}
 				});
 			});
 		});
@@ -662,7 +667,7 @@ export function HomeScreen({ navigation }) {
 						</Pressable>
 					</View>
 				) : (
-				<BookSwipeableRow bookID={item.id} onRemove={removeFromBookshelf} styles={styles}>
+				<BookSwipeableRow bookID={item.id} bookshelfID={item.bookshelf_id} onRemove={removeFromBookshelf} styles={styles}>
 					<Pressable onPress={() => {
 						onShowBookPressed(item);
 					}}>
@@ -680,7 +685,7 @@ export function HomeScreen({ navigation }) {
 				</BookSwipeableRow>
 				)
 				}
-				keyExtractor = { item => item.id }
+				keyExtractor = { item => item.list_id || item.id }
 			/>
 		</View>
 	);

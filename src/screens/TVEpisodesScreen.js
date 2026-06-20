@@ -21,8 +21,7 @@ export function TVEpisodesScreen({ navigation, route }) {
 
 	useFocusEffect(
 		React.useCallback(() => {
-			// const title = seasonTitle || showTitle || "Episodes";
-			// navigation.setOptions({ title: title });
+			navigation.setOptions({ title: titleForSeason(seasonTitle) });
 			setupPostButton(postText);
 
 			if (tmdbId && seasonNumber != null) {
@@ -63,6 +62,24 @@ export function TVEpisodesScreen({ navigation, route }) {
 				setLoading(false);
 			});
 		});
+	}
+
+	function titleForSeason(title) {
+		if (!title) {
+			return "Episodes";
+		}
+
+		const trimmed_title = title.trim();
+		if (trimmed_title.length == 0) {
+			return "Episodes";
+		}
+
+		const words = trimmed_title.split(/\s+/);
+		if (words.length <= 2) {
+			return trimmed_title;
+		}
+
+		return words.slice(0, 2).join(" ") + "...";
 	}
 
 	function setupPostButton(text) {

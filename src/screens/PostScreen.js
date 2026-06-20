@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
+import { BOOK_COVER_HEIGHT, BOOK_COVER_WIDTH } from "../Styles";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
@@ -276,7 +277,7 @@ export function PostScreen({ route, navigation }) {
 		renderItem({item}) {
 			let cover_url = "https://micro.blog/books/" + item.isbn + "/cover.jpg";
 			return (
-				<FastImage style={{width: 50, height: 70, marginLeft: 5, marginRight: 5, marginBottom: 10}} source={{ 
+				<FastImage style={{width: BOOK_COVER_WIDTH, height: BOOK_COVER_HEIGHT, marginLeft: 5, marginRight: 5, marginBottom: 10}} source={{
 					uri: cover_url
 				}}/>
 			)
@@ -320,13 +321,13 @@ export function PostScreen({ route, navigation }) {
 			<PostTitleField title={title} />
 
 			{Platform.OS === "ios" && <>
-				<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} inputAccessoryViewID={keyboardNoticeID} />
+				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} inputAccessoryViewID={keyboardNoticeID} />
 				<InputAccessoryView nativeID={keyboardNoticeID}>
 					<PostNoticeField title={title} />
 				</InputAccessoryView>
 			</>}
 			{Platform.OS === "android" && <>
-				<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} />
+				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} />
 				<PostNoticeField title={title} />
 			</>}
 			

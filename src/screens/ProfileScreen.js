@@ -4,14 +4,13 @@ import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleShe
 import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 import FastImage from "react-native-fast-image";
-import RNFS from "react-native-fs";
 var showdown  = require("showdown");
 
 import { keys } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
+import { clearBookCaches } from "../BookshelfCache";
 
-const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
 const profilePostSources = [
 	{ filter: "micro.blog/books/", media_type: "book" },
 	{ filter: "themoviedb.org", media_type: "movie" },
@@ -297,8 +296,7 @@ export function ProfileScreen({ navigation }) {
 		epilogueStorage.remove(keys.lastMicropubToken);
 		epilogueStorage.remove(keys.appleUserID);
 		epilogueStorage.remove(keys.appleIdentityToken);
-		RNFS.unlink(latestBooksCachePath).catch(() => {
-		});
+		clearBookCaches();
 	}
 
 	function setupSignOutButton() {
