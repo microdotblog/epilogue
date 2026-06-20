@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Pressable, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Animated, FlatList, Image, Pressable, Text, TextInput, View } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import FastImage from "react-native-fast-image";
@@ -16,6 +16,9 @@ export function MoviesScreen({ navigation }) {
 	const [ searching, setSearching ] = useState(false);
 	const [ hideCredits, setHideCredits ] = useState(false);
 	const hideCreditsTimeout = useRef(null);
+	const creditsHeight = useRef(0);
+	const creditsAnimating = useRef(false);
+	const creditsTranslateY = useRef(new Animated.Value(0)).current;
 	const searchTextRef = useRef("");
 	const hasLoadedDiscoverRef = useRef(false);
 	const moviesListRef = useRef(null);
@@ -37,8 +40,9 @@ export function MoviesScreen({ navigation }) {
 			if (hideCreditsTimeout.current) {
 				clearTimeout(hideCreditsTimeout.current);
 			}
+			creditsTranslateY.stopAnimation();
 		};
-	}, []);
+	}, [creditsTranslateY]);
 
 	function setupProfileIcon() {
 		epilogueStorage.get(keys.currentUsername).then(username => {
@@ -176,6 +180,29 @@ export function MoviesScreen({ navigation }) {
 		}
 	}
 
+	function hideCreditsPane() {
+		if (hideCredits || creditsAnimating.current) {
+			return;
+		}
+
+		if (hideCreditsTimeout.current) {
+			clearTimeout(hideCreditsTimeout.current);
+			hideCreditsTimeout.current = null;
+		}
+
+		creditsAnimating.current = true;
+		Animated.timing(creditsTranslateY, {
+			toValue: creditsHeight.current || 120,
+			duration: 250,
+			useNativeDriver: true
+		}).start(({ finished }) => {
+			creditsAnimating.current = false;
+			if (finished) {
+				setHideCredits(true);
+			}
+		});
+	}
+
 	function hostnameForURL(url) {
 		if (url == null) {
 			return "";
@@ -229,12 +256,12 @@ export function MoviesScreen({ navigation }) {
 	};
 
 	return (
-		<View style={styles.discoverView}>
+		<View style={[styles.discoverView, { overflow: "hidden" }]}>
 			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} onFocus={() => {
 				if (hideCreditsTimeout.current) {
 					clearTimeout(hideCreditsTimeout.current);
 				}
-				hideCreditsTimeout.current = setTimeout(() => setHideCredits(true), 1000);
+				hideCreditsTimeout.current = setTimeout(hideCreditsPane, 1000);
 			}} returnKeyType="search" placeholder="Search for movies or TV shows" placeholderTextColor="#6d6d72" clearButtonMode="always" />
 			<View style={{ flex: 1 }}>
 				{loading ? (
@@ -247,7 +274,7 @@ export function MoviesScreen({ navigation }) {
 						data={movies}
 						keyExtractor={(item, index) => item.id ?? index.toString()}
 						renderItem={renderMovie}
-						onScrollBeginDrag={() => setHideCredits(true)}
+						onScrollBeginDrag={hideCreditsPane}
 						ListEmptyComponent={() => (
 							<View style={{ padding: 20 }}>
 								<Text style={{ textAlign: "center", color: "#5f5f5f" }}>{searching ? "Searching..." : ""}</Text>
@@ -257,10 +284,15 @@ export function MoviesScreen({ navigation }) {
 				)}
 			</View>
 			{hideCredits ? null : (
-				<View style={styles.moviesCreditPane}>
+				<Animated.View
+					onLayout={(event) => {
+						creditsHeight.current = event.nativeEvent.layout.height;
+					}}
+					style={[styles.moviesCreditPane, { transform: [{ translateY: creditsTranslateY }] }]}
+				>
 					<Image style={styles.moviesCreditImage} source={require("../../images/tmdb.png")} />
 					<Text style={styles.moviesCreditText}>Micro.blog and Epilogue use TMDB but are not endorsed, certified, or otherwise approved by TMDB.</Text>
-				</View>
+				</Animated.View>
 			)}
 		</View>
 	)

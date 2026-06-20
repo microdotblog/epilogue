@@ -578,6 +578,12 @@ export const light = StyleSheet.create({
 		paddingTop: 10
 	},
 	moviesCreditPane: {
+		position: "absolute",
+		left: 0,
+		right: 0,
+		bottom: 0,
+		zIndex: 1,
+		elevation: 2,
 		flexDirection: "row",
 		alignItems: "center",
 		paddingLeft: 16,
