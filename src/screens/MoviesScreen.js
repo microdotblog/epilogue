@@ -21,6 +21,7 @@ export function MoviesScreen({ navigation }) {
 	const creditsTranslateY = useRef(new Animated.Value(0)).current;
 	const searchTextRef = useRef("");
 	const hasLoadedDiscoverRef = useRef(false);
+	const activeMoviesRequestRef = useRef(0);
 	const moviesListRef = useRef(null);
 
 	useScrollToTop(moviesListRef);
@@ -64,6 +65,7 @@ export function MoviesScreen({ navigation }) {
 	function onChangeSearch(text) {
 		searchTextRef.current = text;
 		if (text.length == 0) {
+			activeMoviesRequestRef.current += 1;
 			clearResults();
 		}
 	}
@@ -83,7 +85,7 @@ export function MoviesScreen({ navigation }) {
 	}
 
 	function fetchDiscover() {
-		hasLoadedDiscoverRef.current = true;
+		const request_id = ++activeMoviesRequestRef.current;
 		setLoading(true);
 		setSearching(false);
 		epilogueStorage.get(keys.authToken).then(auth_token => {
@@ -95,6 +97,15 @@ export function MoviesScreen({ navigation }) {
 			}
 
 			fetch("https://micro.blog/movies/discover", options).then(response => response.json()).then(data => {
+				if (request_id != activeMoviesRequestRef.current) {
+					return;
+				}
+
+				if (searchTextRef.current.trim().length > 0) {
+					setLoading(false);
+					return;
+				}
+
 				const items = data.items || [];
 				const new_movies = items.map((item, index) => {
 					const metadata = item._microblog || {};
@@ -118,14 +129,19 @@ export function MoviesScreen({ navigation }) {
 					};
 				});
 				setMovies(new_movies);
+				hasLoadedDiscoverRef.current = true;
 				setLoading(false);
 			}).catch(() => {
-				setLoading(false);
+				if (request_id == activeMoviesRequestRef.current) {
+					hasLoadedDiscoverRef.current = false;
+					setLoading(false);
+				}
 			});
 		});
 	}
 
 	function fetchSearch(query) {
+		const request_id = ++activeMoviesRequestRef.current;
 		setSearching(true);
 		setLoading(true);
 		epilogueStorage.get(keys.authToken).then(auth_token => {
@@ -137,6 +153,10 @@ export function MoviesScreen({ navigation }) {
 			}
 			const params = new URLSearchParams({ q: query }).toString();
 			fetch("https://micro.blog/movies/search?" + params, options).then(response => response.json()).then(data => {
+				if ((request_id != activeMoviesRequestRef.current) || (searchTextRef.current.trim() != query)) {
+					return;
+				}
+
 				const items = data.items || [];
 				const new_movies = items.map((item, index) => {
 					const metadata = item._microblog || {};
@@ -158,8 +178,10 @@ export function MoviesScreen({ navigation }) {
 				setLoading(false);
 				setSearching(false);
 			}).catch(() => {
-				setLoading(false);
-				setSearching(false);
+				if (request_id == activeMoviesRequestRef.current) {
+					setLoading(false);
+					setSearching(false);
+				}
 			});
 		});
 	}
