@@ -994,7 +994,11 @@ export const light = StyleSheet.create({
 		width: "100%",
 		height: "150",
 		resizeMode: "contain",
-		marginBottom: 10
+		marginBottom: 20
+	},
+	episodeDetailsTop: {
+		paddingBottom: 12,
+		width: "100%"
 	},
 	episodeDetails: {
 		alignItems: "center",
