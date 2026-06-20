@@ -147,6 +147,46 @@ export function searchCachedBookshelves(searchText, fallbackBooks = [], fallback
 	});
 }
 
+export function readBookshelfIDsContainingBook(isbn, bookID = null) {
+	const target_isbn = normalizedBookKey(isbn).replace(/[-\s]/g, "");
+	const target_id = normalizedBookKey(bookID);
+	if ((target_isbn.length == 0) && (target_id.length == 0)) {
+		return Promise.resolve([]);
+	}
+
+	return RNFS.readDir(bookshelvesCacheDirectory).then(entries => {
+		const json_files = entries.filter(entry => entry.isFile() && entry.name.endsWith(".json"));
+		const reads = json_files.map(entry => {
+			return RNFS.readFile(entry.path, "utf8")
+				.then(contents => {
+					const cached = JSON.parse(contents);
+					const feed = cached.feed || cached;
+					const bookshelf = cached.bookshelf || {};
+					if (bookshelf.id == null) {
+						return null;
+					}
+
+					const contains_book = (feed.items || []).some(item => {
+						const metadata = item._microblog || {};
+						const item_isbn = normalizedBookKey(metadata.isbn).replace(/[-\s]/g, "");
+						const item_id = normalizedBookKey(item.id);
+						return ((target_isbn.length > 0) && (item_isbn == target_isbn)) ||
+							((target_id.length > 0) && (item_id == target_id));
+					});
+
+					return contains_book ? bookshelf.id : null;
+				})
+				.catch(() => {
+					return null;
+				});
+		});
+
+		return Promise.all(reads).then(results => results.filter(id => id != null));
+	}).catch(() => {
+		return [];
+	});
+}
+
 function bookshelfCachePath(bookshelf) {
 	return bookshelvesCacheDirectory + "/" + bookshelfCacheFilename(bookshelf.title);
 }
@@ -236,6 +276,14 @@ function bookMatchesQuery(book, query) {
 	const book_title = (book.title || "").toLowerCase();
 	const book_author = (book.author || "").toLowerCase();
 	return book_title.includes(query) || book_author.includes(query);
+}
+
+function normalizedBookKey(value) {
+	if (value == null) {
+		return "";
+	}
+
+	return String(value).trim().toLowerCase();
 }
 
 function mergeBookMatches(cacheMatches, fallbackMatches) {

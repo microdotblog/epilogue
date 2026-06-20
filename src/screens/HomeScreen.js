@@ -17,6 +17,7 @@ import {
 	booksFromJSONFeed,
 	cacheBookshelfDataForID,
 	readLatestBooksCache,
+	readBookshelfIDsContainingBook,
 	searchCachedBookshelves,
 	warmAllBookshelfCachesInBackground,
 	refreshAllBookshelfCachesInBackground,
@@ -570,19 +571,32 @@ export function HomeScreen({ navigation }) {
 				type: item.bookshelf_type
 			} : null);
 			const selected_bookshelf = item_bookshelf || current_bookshelf;
-			var params = {
-				id: item.id,
-				isbn: item.isbn,
-				title: item.title,
-				image: item.image,
-				author: item.author,
-				description: item.description,
-				date: item.date,
-				bookshelves: bookshelves,
-				current_bookshelf: selected_bookshelf,
-				is_search: item.is_search
-			};
-			navigation.navigate("Details", params);
+			bookshelfMembershipIDsForItem(item, selected_bookshelf).then(bookshelf_ids_with_book => {
+				var params = {
+					id: item.id,
+					isbn: item.isbn,
+					title: item.title,
+					image: item.image,
+					author: item.author,
+					description: item.description,
+					date: item.date,
+					bookshelves: bookshelves,
+					current_bookshelf: selected_bookshelf,
+					is_search: item.is_search,
+					bookshelf_ids_with_book: bookshelf_ids_with_book
+				};
+				navigation.navigate("Details", params);
+			});
+		});
+	}
+
+	function bookshelfMembershipIDsForItem(item, selected_bookshelf) {
+		const fallback_ids = (!item.is_search && selected_bookshelf?.id != null) ? [String(selected_bookshelf.id)] : [];
+		return readBookshelfIDsContainingBook(item.isbn, item.id).then(ids => {
+			const all_ids = fallback_ids.concat(ids.map(shelf_id => String(shelf_id)));
+			return Array.from(new Set(all_ids));
+		}).catch(() => {
+			return fallback_ids;
 		});
 	}
   

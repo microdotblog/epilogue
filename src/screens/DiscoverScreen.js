@@ -11,7 +11,7 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Book } from "../models/Book";
-import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
+import { readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();
@@ -221,19 +221,32 @@ export function DiscoverScreen({ navigation }) {
 	function onShowBookPressed(item) {
 		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
 			epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-				var params = {
-					id: item.id,
-					isbn: item.isbn,
-					title: item.title,
-					image: item.image,
-					author: item.author,
-					description: item.description,
-					bookshelves: bookshelves,
-					current_bookshelf: current_bookshelf,
-					is_search: item.is_search
-				};
-				navigation.navigate("Details", params);
+				bookshelfMembershipIDsForItem(item, current_bookshelf).then(bookshelf_ids_with_book => {
+					var params = {
+						id: item.id,
+						isbn: item.isbn,
+						title: item.title,
+						image: item.image,
+						author: item.author,
+						description: item.description,
+						bookshelves: bookshelves,
+						current_bookshelf: current_bookshelf,
+						is_search: item.is_search,
+						bookshelf_ids_with_book: bookshelf_ids_with_book
+					};
+					navigation.navigate("Details", params);
+				});
 			});
+		});
+	}
+
+	function bookshelfMembershipIDsForItem(item, current_bookshelf) {
+		const fallback_ids = (!item.is_search && current_bookshelf?.id != null) ? [String(current_bookshelf.id)] : [];
+		return readBookshelfIDsContainingBook(item.isbn, item.id).then(ids => {
+			const all_ids = fallback_ids.concat(ids.map(shelf_id => String(shelf_id)));
+			return Array.from(new Set(all_ids));
+		}).catch(() => {
+			return fallback_ids;
 		});
 	}
 	

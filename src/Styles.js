@@ -168,12 +168,16 @@ export const light = StyleSheet.create({
 	},
 	bookDetailsButton: {
 		flexDirection: "row",
+		alignItems: "center",
 		paddingVertical: 14,
 		paddingHorizontal: 14,
 		borderRadius: 5,
 		marginBottom: 6,
 		backgroundColor: "#DEDEDE"
 	},	
+	bookDetailsBookshelfCheck: {
+		marginRight: 8
+	},
 	bookDetailsButtonPressed: {
 		backgroundColor: "#BBBBBB",
 	},
