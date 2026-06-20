@@ -5,18 +5,19 @@ import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
+import { MOVIE_POSTER_HEIGHT, MOVIE_POSTER_WIDTH } from "../Styles";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 
 export function MoviesScreen({ navigation }) {
 	const styles = useEpilogueStyle();
-	const [ searchText, setSearchText ] = useState("");
 	const [ movies, setMovies ] = useState([]);
 	const [ loading, setLoading ] = useState(true);
 	const [ searching, setSearching ] = useState(false);
 	const [ hideCredits, setHideCredits ] = useState(false);
 	const hideCreditsTimeout = useRef(null);
 	const searchTextRef = useRef("");
+	const hasLoadedDiscoverRef = useRef(false);
 	const moviesListRef = useRef(null);
 
 	useScrollToTop(moviesListRef);
@@ -24,7 +25,7 @@ export function MoviesScreen({ navigation }) {
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			setupProfileIcon();
-			if (searchTextRef.current.trim().length == 0) {
+			if (!hasLoadedDiscoverRef.current) {
 				fetchDiscover();
 			}
 		});
@@ -58,9 +59,8 @@ export function MoviesScreen({ navigation }) {
 
 	function onChangeSearch(text) {
 		searchTextRef.current = text;
-		setSearchText(text);
 		if (text.length == 0) {
-			fetchDiscover();
+			clearResults();
 		}
 	}
 
@@ -72,7 +72,14 @@ export function MoviesScreen({ navigation }) {
 		fetchSearch(s);
 	}
 
+	function clearResults() {
+		setLoading(false);
+		setSearching(false);
+		setMovies([]);
+	}
+
 	function fetchDiscover() {
+		hasLoadedDiscoverRef.current = true;
 		setLoading(true);
 		setSearching(false);
 		epilogueStorage.get(keys.authToken).then(auth_token => {
@@ -174,12 +181,20 @@ export function MoviesScreen({ navigation }) {
 			return "";
 		}
 
-		try {
-			return new URL(url).hostname;
-		}
-		catch {
+		const s = String(url).trim();
+		if (s.length == 0) {
 			return "";
 		}
+
+		// regex to parse out the hostname
+		const without_protocol = s.replace(/^[a-z][a-z0-9+.-]*:\/\//i, "");
+		const host_with_auth = without_protocol.split(/[/?#]/)[0];
+		const host = host_with_auth.includes("@") ? host_with_auth.split("@").pop() : host_with_auth;
+		if (host == null) {
+			return "";
+		}
+
+		return host.replace(/:\d+$/, "");
 	}
 
 	const renderMovie = ({ item }) => {
@@ -187,9 +202,9 @@ export function MoviesScreen({ navigation }) {
 			<Pressable onPress={() => { onSelectMovie(item); }}>
 				<View style={{ flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, alignItems: "center", marginLeft: 5 }}>
 					{item.image ? (
-						<FastImage style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
+						<FastImage style={{ width: MOVIE_POSTER_WIDTH, height: MOVIE_POSTER_HEIGHT, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
 					) : (
-						<View style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
+						<View style={{ width: MOVIE_POSTER_WIDTH, height: MOVIE_POSTER_HEIGHT, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
 					)}
 					<View style={{ flex: 1 }}>
 						<Text style={styles.movieTitle} numberOfLines={2}>{item.title}</Text>
@@ -232,6 +247,7 @@ export function MoviesScreen({ navigation }) {
 						data={movies}
 						keyExtractor={(item, index) => item.id ?? index.toString()}
 						renderItem={renderMovie}
+						onScrollBeginDrag={() => setHideCredits(true)}
 						ListEmptyComponent={() => (
 							<View style={{ padding: 20 }}>
 								<Text style={{ textAlign: "center", color: "#5f5f5f" }}>{searching ? "Searching..." : ""}</Text>

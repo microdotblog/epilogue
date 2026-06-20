@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Pressable, Text, View, useColorScheme } fr
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
+import { MOVIE_POSTER_HEIGHT, MOVIE_POSTER_WIDTH } from "../Styles";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
@@ -16,8 +17,7 @@ export function TVSeasonsScreen({ navigation, route }) {
 	const tmdbId = show?.tmdbId;
 
 	React.useEffect(() => {
-		// const title = show?.title || "Seasons";
-		// navigation.setOptions({ title: title });
+		navigation.setOptions({ title: titleForShow(show?.title) });
 		setupPostButton(show?.postText);
 	}, [navigation, show]);
 
@@ -63,6 +63,24 @@ export function TVSeasonsScreen({ navigation, route }) {
 		});
 	}
 
+	function titleForShow(title) {
+		if (!title) {
+			return "Seasons";
+		}
+
+		const trimmed_title = title.trim();
+		if (trimmed_title.length == 0) {
+			return "Seasons";
+		}
+
+		const words = trimmed_title.split(/\s+/);
+		if (words.length <= 2) {
+			return trimmed_title;
+		}
+
+		return words.slice(0, 2).join(" ") + "...";
+	}
+
 	function setupPostButton(text) {
 		navigation.setOptions({
 			headerRight: () => (
@@ -99,9 +117,9 @@ export function TVSeasonsScreen({ navigation, route }) {
 			<Pressable onPress={() => { onSelectSeason(item); }}>
 				<View style={{ flexDirection: "row", paddingVertical: 12, paddingHorizontal: 16, alignItems: "center", marginLeft: 5 }}>
 					{item.image ? (
-						<FastImage style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
+						<FastImage style={{ width: MOVIE_POSTER_WIDTH, height: MOVIE_POSTER_HEIGHT, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} source={{ uri: item.image }} />
 					) : (
-						<View style={{ width: 60, height: 90, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
+						<View style={{ width: MOVIE_POSTER_WIDTH, height: MOVIE_POSTER_HEIGHT, borderRadius: 4, backgroundColor: "#ddd", marginRight: 12 }} />
 					)}
 					<View style={{ flex: 1 }}>
 						<Text style={styles.movieTitle} numberOfLines={2}>{item.title}</Text>

@@ -1,5 +1,10 @@
 import { StyleSheet } from "react-native";
 
+export const BOOK_COVER_WIDTH = 50;
+export const BOOK_COVER_HEIGHT = 70;
+export const MOVIE_POSTER_WIDTH = 50;
+export const MOVIE_POSTER_HEIGHT = 70;
+
 export const light = StyleSheet.create({
 	container: {
 		flex: 1,
@@ -69,8 +74,8 @@ export const light = StyleSheet.create({
 	},
 	bookCover: {
 		marginTop: 5,
-		width: 50,
-		height: 70,
+		width: BOOK_COVER_WIDTH,
+		height: BOOK_COVER_HEIGHT,
 		borderRadius: 4
 	},
 	bookDetails: {
@@ -411,8 +416,8 @@ export const light = StyleSheet.create({
 		borderBottomWidth: 0.5
 	},
 	profilePostCover: {
-		width: 50,
-		height: 70,
+		width: BOOK_COVER_WIDTH,
+		height: BOOK_COVER_HEIGHT,
 		borderRadius: 4
 	},
 	profilePostContent: {
@@ -648,8 +653,8 @@ export const light = StyleSheet.create({
 		paddingLeft: 20
 	},
 	goalCoverThumbnail: {		
-		width: 50,
-		height: 70,
+		width: BOOK_COVER_WIDTH,
+		height: BOOK_COVER_HEIGHT,
 		marginRight: 5,
 		borderRadius: 4
 	},
