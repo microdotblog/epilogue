@@ -187,7 +187,7 @@ export function MoviesScreen({ navigation }) {
 
 	return (
 		<View style={styles.discoverView}>
-			<TextInput style={styles.searchField} value={searchText} onChangeText={onChangeSearch} onEndEditing={onRunSearch} onFocus={() => {
+			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} onFocus={() => {
 				if (hideCreditsTimeout.current) {
 					clearTimeout(hideCreditsTimeout.current);
 				}
