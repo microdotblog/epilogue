@@ -270,6 +270,10 @@ export const light = StyleSheet.create({
 		paddingTop: 14,
 		paddingBottom: 14
 	},
+	postEditorTextInput: {
+		fontSize: 17,
+		lineHeight: 24
+	},
 	postTextNotice: {
 		paddingLeft: 14,
 		paddingRight: 14,

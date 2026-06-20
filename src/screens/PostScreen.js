@@ -320,13 +320,13 @@ export function PostScreen({ route, navigation }) {
 			<PostTitleField title={title} />
 
 			{Platform.OS === "ios" && <>
-				<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} inputAccessoryViewID={keyboardNoticeID} />
+				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} inputAccessoryViewID={keyboardNoticeID} />
 				<InputAccessoryView nativeID={keyboardNoticeID}>
 					<PostNoticeField title={title} />
 				</InputAccessoryView>
 			</>}
 			{Platform.OS === "android" && <>
-				<TextInput style={styles.postTextInput} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} />
+				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} autoFocus={true} />
 				<PostNoticeField title={title} />
 			</>}
 			
