@@ -11,6 +11,7 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Book } from "../models/Book";
+import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();
@@ -162,6 +163,7 @@ export function DiscoverScreen({ navigation }) {
 			// setProgressAnimating(true);
 		
 			fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
+				refreshAllBookshelfCachesInBackground();
 				console.log("Copied");
 			});
 			setTimeout(() => {

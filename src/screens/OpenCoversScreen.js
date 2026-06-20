@@ -8,6 +8,7 @@ import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Book } from "../models/Book";
 import { Icon } from "../Icon";
+import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 export function OpenCoversScreen({ route, navigation }) {
 	const is_dark = (useColorScheme() == "dark");
@@ -101,6 +102,7 @@ export function OpenCoversScreen({ route, navigation }) {
 
 			let url = `https://micro.blog/books/bookshelves/${bookshelf_id}/cover/${book_id}`;
 			fetch(url, options).then(response => response.json()).then(data => {
+				refreshAllBookshelfCachesInBackground();
 				navigation.pop();
 			});
 		});

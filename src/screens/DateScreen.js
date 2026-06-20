@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
+import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 var editing_date = new Date();
 var editing_time = new Date();
@@ -82,6 +83,7 @@ export function DateScreen({ route, navigation }) {
 					
 			let url = `https://micro.blog/books/bookshelves/${bookshelf_id}/save/${id}`;
 			fetch(url, options).then(response => response.json()).then(data => {
+				refreshAllBookshelfCachesInBackground();
 				navigation.goBack();
 			});
 		});

@@ -12,6 +12,7 @@ import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Note } from "../models/Note";
 import CryptoUtils from '../utils/crypto';
+import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 const BOOK_DETAILS_COVER_MAX_WIDTH = 200;
 const BOOK_DETAILS_COVER_MAX_HEIGHT = 200;
@@ -224,6 +225,7 @@ export function BookDetailsScreen({ route, navigation }) {
 			setProgressAnimating(true);
 		
 			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id + "/assign", options).then(response => response.json()).then(data => {
+				refreshAllBookshelfCachesInBackground();
 				navigation.goBack();
 			});
 		});
@@ -249,6 +251,7 @@ export function BookDetailsScreen({ route, navigation }) {
 			setProgressAnimating(true);
 		
 			fetch("https://micro.blog/books", options).then(response => response.json()).then(data => {
+				refreshAllBookshelfCachesInBackground();
 				epilogueStorage.remove(keys.currentSearch).then(() => {
 					navigation.goBack();
 				});
