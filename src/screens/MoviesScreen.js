@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Pressable, Text, TextInput, View } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
+import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
@@ -15,6 +16,7 @@ export function MoviesScreen({ navigation }) {
 	const [ searching, setSearching ] = useState(false);
 	const [ hideCredits, setHideCredits ] = useState(false);
 	const hideCreditsTimeout = useRef(null);
+	const searchTextRef = useRef("");
 	const moviesListRef = useRef(null);
 
 	useScrollToTop(moviesListRef);
@@ -22,9 +24,9 @@ export function MoviesScreen({ navigation }) {
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			setupProfileIcon();
-			setLoading(false);
-			setSearching(false);
-			// fetchDiscover();
+			if (searchTextRef.current.trim().length == 0) {
+				fetchDiscover();
+			}
 		});
 		return unsubscribe;
 	}, [navigation]);
@@ -55,26 +57,19 @@ export function MoviesScreen({ navigation }) {
 	}
 
 	function onChangeSearch(text) {
+		searchTextRef.current = text;
 		setSearchText(text);
+		if (text.length == 0) {
+			fetchDiscover();
+		}
 	}
 
 	function onRunSearch() {
-		let s = searchText.trim();
-		if (s.length === 0) {
-			// fetchDiscover();
-			clearResults();
-			return;
-		}
+		let s = searchTextRef.current.trim();
 		if (s.length <= 2) {
 			return;
 		}
 		fetchSearch(s);
-	}
-
-	function clearResults() {
-		setLoading(false);
-		setSearching(false);
-		setMovies([]);
 	}
 
 	function fetchDiscover() {
@@ -93,17 +88,22 @@ export function MoviesScreen({ navigation }) {
 				const new_movies = items.map((item, index) => {
 					const metadata = item._microblog || {};
 					const first_author = (item.authors && item.authors.length > 0) ? item.authors[0] : {};
+					const author_metadata = first_author._microblog || {};
+					const post_url = metadata.link_url || item.url;
 					return {
 						id: item.id?.toString() || item.url || (item.title + "-" + index),
 						title: item.title,
-						image: item.image,
-						url: item.url,
-						username: first_author._microblog ? first_author._microblog.username : null,
+						image: metadata.poster_url || item.image,
+						url: post_url,
+						username: metadata.username || author_metadata.username,
+						avatar: metadata.user_avatar_url || first_author.avatar,
+						hostname: hostnameForURL(post_url),
 						year: metadata.year,
 						director: metadata.director,
 						seasonsCount: metadata.seasons_count,
 						tmdbId: metadata.tmdb_id,
 						overview: metadata.overview,
+						isDiscover: true
 					};
 				});
 				setMovies(new_movies);
@@ -140,6 +140,7 @@ export function MoviesScreen({ navigation }) {
 						tmdbId: metadata.tmdb_id,
 						postText: metadata.post_text,
 						overview: metadata.overview,
+						isDiscover: false
 					};
 				});
 				setMovies(new_movies);
@@ -153,11 +154,31 @@ export function MoviesScreen({ navigation }) {
 	}
 
 	function onSelectMovie(item) {
+		if (item.isDiscover && item.url) {
+			InAppBrowser.open(item.url, {
+				animated: true
+			});
+			return;
+		}
+
 		if ((item.seasonsCount != null) && (item.seasonsCount > 0)) {
 			navigation.navigate("TVSeasons", { movie: item });
 		}
 		else {
 			navigation.navigate("MovieDetails", { movie: item });
+		}
+	}
+
+	function hostnameForURL(url) {
+		if (url == null) {
+			return "";
+		}
+
+		try {
+			return new URL(url).hostname;
+		}
+		catch {
+			return "";
 		}
 	}
 
@@ -172,7 +193,14 @@ export function MoviesScreen({ navigation }) {
 					)}
 					<View style={{ flex: 1 }}>
 						<Text style={styles.movieTitle} numberOfLines={2}>{item.title}</Text>
-						{item.username ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>@{item.username}</Text> : null}
+						{item.isDiscover ? (
+							<View style={{ flexDirection: "row", alignItems: "center", marginTop: 7 }}>
+								{item.avatar ? <FastImage style={{ width: 22, height: 22, borderRadius: 11, marginRight: 6 }} source={{ uri: item.avatar }} /> : null}
+								<Text style={{ color: "#8a8a8a", flex: 1 }} numberOfLines={1}>{item.username ? "@" + item.username : ""}{(item.username && item.hostname) ? " \u2022 " : ""}{item.hostname}</Text>
+							</View>
+						) : (
+							item.username ? <Text style={{ color: "#5f5f5f", marginTop: 2 }}>@{item.username}</Text> : null
+						)}
 						{(item.year || item.director) ? (
 							<Text style={{ color: "#5f5f5f", marginTop: 2 }}>
 								{item.year}{(item.year && item.director) ? " \u2022 " : ""}{item.director ? "Directed by " + item.director : ""}
