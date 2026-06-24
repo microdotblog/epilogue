@@ -542,7 +542,8 @@ export const light = StyleSheet.create({
 		color: "#000",
 		fontSize: 13
 	},
-	bookDetailsDescription: {		
+	bookDetailsDescription: {
+		lineHeight: 20
 	},
 	movieTitle: {
 		fontSize: 14
