@@ -89,7 +89,7 @@ const App: () => Node = () => {
             <Stack.Screen name="Details" component={BookDetailsScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               ),
@@ -102,7 +102,7 @@ const App: () => Node = () => {
             <Stack.Screen name="Editions" component={OpenEditionsScreen} options={({ navigation, route }) => ({
               title: "Editions",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
@@ -110,7 +110,7 @@ const App: () => Node = () => {
             <Stack.Screen name="OLDetails" component={OpenDetailsScreen} options={({ navigation, route }) => ({
               title: "Details",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
@@ -118,7 +118,7 @@ const App: () => Node = () => {
             <Stack.Screen name="MovieDetails" component={MovieDetailsScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
@@ -126,7 +126,7 @@ const App: () => Node = () => {
             <Stack.Screen name="TVSeasons" component={TVSeasonsScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
@@ -134,7 +134,7 @@ const App: () => Node = () => {
             <Stack.Screen name="TVEpisodes" component={TVEpisodesScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
@@ -142,7 +142,7 @@ const App: () => Node = () => {
             <Stack.Screen name="TVEpisodeDetails" component={TVEpisodeDetailsScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
                             <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
@@ -152,7 +152,7 @@ const App: () => Node = () => {
             <Stack.Screen name="Post" component={PostScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               ),
@@ -165,7 +165,7 @@ const App: () => Node = () => {
             <Stack.Screen name="Note" component={NoteScreen} options={({ navigation, route }) => ({
               title: "Note",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
@@ -174,7 +174,7 @@ const App: () => Node = () => {
               title: "Blogs",
               headerTintColor: is_dark ? "#FFFFFF" : "#000000",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
@@ -182,7 +182,7 @@ const App: () => Node = () => {
             <Stack.Screen name="NotesKey" component={NotesKeyScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
@@ -190,7 +190,7 @@ const App: () => Node = () => {
             <Stack.Screen name="Profile" component={ProfileScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               ),
@@ -203,7 +203,7 @@ const App: () => Node = () => {
             <Stack.Screen name="External" component={ExternalScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
@@ -211,7 +211,7 @@ const App: () => Node = () => {
             <Stack.Screen name="EditBookInfo" component={EditBookInfoScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
@@ -219,7 +219,7 @@ const App: () => Node = () => {
             <Stack.Screen name="AddBookInfo" component={AddBookInfoScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
@@ -227,7 +227,7 @@ const App: () => Node = () => {
             <Stack.Screen name="EditGoal" component={EditGoalScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               ),
@@ -240,7 +240,7 @@ const App: () => Node = () => {
             <Stack.Screen name="Covers" component={OpenCoversScreen} options={({ navigation, route }) => ({
               title: "Covers",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
@@ -248,7 +248,7 @@ const App: () => Node = () => {
             <Stack.Screen name="DatePicker" component={DateScreen} options={({ navigation, route }) => ({
               title: "Finished Date",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               ),
@@ -273,7 +273,7 @@ const App: () => Node = () => {
             <Stack.Screen name="Username" component={CreateAccountScreen} options={({navigation, route}) => ({
               title: "Username",
               headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10}>
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
                   <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               ),
