@@ -270,6 +270,9 @@ export const light = StyleSheet.create({
 		fontWeight: "600"
 	},
 	postTextBox: {
+		flex: 1,
+		minHeight: 0,
+		width: "100%"
 	},
 	postTextInput: {
 		textAlignVertical: "top",
@@ -281,8 +284,15 @@ export const light = StyleSheet.create({
 		paddingBottom: 14
 	},
 	postEditorTextInput: {
+		flex: 1,
+		flexShrink: 1,
+		minHeight: 0,
+		width: "100%",
 		fontSize: 17,
 		lineHeight: 24
+	},
+	postEditorBottomSpacer: {
+		height: 12
 	},
 	postTextNotice: {
 		paddingLeft: 14,
@@ -1061,8 +1071,7 @@ export const dark = StyleSheet.create({
 	},
 	postTextBox: {
 		backgroundColor: "#212936",
-		color: "#E5E7EB",
-		height: 2000
+		color: "#E5E7EB"
 	},
 	bookDetailsColumns: {
 		backgroundColor: "#141723",
