@@ -175,7 +175,7 @@ export function GoalsScreen({ navigation }) {
 				<View style={styles.goalsBanner}>
 					<Text style={styles.goalsBannerText}>You finished {bannerCount} books in {bannerYear}. Start a new blog post linking to all of them.</Text>
 					<Pressable onPress={() => { navigation.navigate("Post", params); }} style={[styles.goalsBannerButton, { width: button_width }]}>
-						<Icon name="publish" size={18} color={is_dark ? "#FFFFFF" : "#337AB7"} style={styles.goalsBannerIcon} />
+						<Icon name="publish" size={18} color={is_dark ? "#FFFFFF" : "#000000"} style={styles.goalsBannerIcon} />
 						<Text style={styles.goalsBannerButtonTitle}>Year in books for {bannerYear}</Text>
 					</Pressable>
 				</View>			

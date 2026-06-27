@@ -72,7 +72,7 @@ export function EditGoalScreen({ route, navigation }) {
 		navigation.setOptions({
 			headerRight: () => (
 		  	<Pressable onPress={() => { navigation.navigate("Post", params); }} hitSlop={10}>
-				<Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+				<Icon name="publish" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
 		  	</Pressable>
 			)
 		});				

@@ -96,7 +96,7 @@ export function OpenDetailsScreen({ route, navigation }) {
 			<View style={styles.openLibraryEditionsDetails}>
 				<FastImage style={styles.openLibraryEditionsCover} source={{ uri: image.replace("http://", "https://") }} />
 				<Pressable style={styles.openLibraryEditionsButton} onPress={() => { onPromptNewCover(); }}>
-					<Icon name="photo" size={16} color={is_dark ? "#FFFFFF" : "#337AB7"} style={styles.goalsBannerIcon} />
+					<Icon name="photo" size={16} color={is_dark ? "#FFFFFF" : "#000000"} style={styles.goalsBannerIcon} />
 					<Text style={styles.openLibraryEditionsButtonTitle}>New Cover...</Text>
 				</Pressable>
 			</View>

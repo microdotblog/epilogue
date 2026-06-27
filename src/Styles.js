@@ -33,7 +33,7 @@ export const light = StyleSheet.create({
 		alignItems: "center"
 	},
 	navbarBookshelfIcon: {
-		color: "#337AB7"
+		color: "#000000"
 	},
 	navbarBookshelfTriangle: {
 		marginLeft: 5,
@@ -204,12 +204,12 @@ export const light = StyleSheet.create({
 	navbarNewIcon: {
 		width: 22,
 		height: 22,
-		tintColor: "#337AB7"
+		tintColor: "#000000"
 	},
 	navbarBackIcon: {
 		width: 19,
 		height: 25,
-		tintColor: "#337AB7"
+		tintColor: "#000000"
 	},
 	removeAction: {
 		alignItems: "center",
@@ -273,11 +273,11 @@ export const light = StyleSheet.create({
 		marginTop: 3,
 		width: 22,
 		height: 22,
-		tintColor: "#337AB7"
+		tintColor: "#000000"
 	},
 	navbarSubmit: {
 		marginTop: 4,
-		color: "#337AB7",
+		color: "#000000",
 		fontSize: 16,
 		fontWeight: "600"
 	},
@@ -397,7 +397,7 @@ export const light = StyleSheet.create({
 		backgroundColor: "#FFF"
 	},
 	signInLink: {
-		color: "#337AB7",
+		color: "#000000",
 		textDecorationLine: 'underline',
 	},
 	blogListContainer: {

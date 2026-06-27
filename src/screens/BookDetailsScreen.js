@@ -412,7 +412,7 @@ export function BookDetailsScreen({ route, navigation }) {
 								<Icon
 									name="ellipsis"
 									size={18}
-									color={is_dark ? "#FFFFFF" : "#337AB7"}
+									color={is_dark ? "#FFFFFF" : "#000000"}
 									style={styles.bookDetailsMenuIcon}
 								/>
 							</View>

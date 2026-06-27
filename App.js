@@ -45,7 +45,7 @@ const EpilogueDarkTheme = {
     text: "#FFFFFF",
     primary: "#FFFFFF",
     border: "#242A3D",
-    notification: "#337AB7"
+    notification: "#FFFFFF"
   },
   fonts: DefaultTheme.fonts
 };
@@ -95,12 +95,12 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               ),
               headerRight: () => (
                 <Pressable onPress={() => { navigation.navigate("Post", { books: [] }); }} hitSlop={10}>
-                  <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+                  <Icon name="publish" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
                 </Pressable>
               )
             })} />
@@ -108,7 +108,7 @@ const App: () => Node = () => {
               title: "Editions",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
             })} />
@@ -116,7 +116,7 @@ const App: () => Node = () => {
               title: "Details",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
             })} />
@@ -124,7 +124,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
             })} />
@@ -132,7 +132,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
             })} />
@@ -140,7 +140,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
             })} />
@@ -148,7 +148,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               )
             })} />
@@ -158,7 +158,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               ),
               headerRight: () => (
@@ -171,7 +171,7 @@ const App: () => Node = () => {
               title: "Note",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />
@@ -180,7 +180,7 @@ const App: () => Node = () => {
               headerTintColor: is_dark ? "#FFFFFF" : "#000000",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />
@@ -188,7 +188,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />
@@ -196,7 +196,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               ),
               headerRight: () => (
@@ -209,7 +209,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />
@@ -217,7 +217,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />
@@ -225,7 +225,7 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />
@@ -233,12 +233,12 @@ const App: () => Node = () => {
               title: "",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               ),
               headerRight: () => (
                 <Pressable onPress={() => { navigation.navigate("Post", { books: [] }); }} hitSlop={10}>
-                  <Icon name="publish" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
+                  <Icon name="publish" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
                 </Pressable>
               )
             })} />
@@ -246,7 +246,7 @@ const App: () => Node = () => {
               title: "Covers",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />
@@ -254,7 +254,7 @@ const App: () => Node = () => {
               title: "Finished Date",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarCloseIcon} />
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               ),
               headerRight: () => (
@@ -279,7 +279,7 @@ const App: () => Node = () => {
               title: "Username",
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                  <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} style={styles.navbarBackIcon} />
+                  <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
                 </Pressable>
               ),
             })}/>
