@@ -277,6 +277,8 @@ export const light = StyleSheet.create({
 	},
 	navbarSubmit: {
 		marginTop: 4,
+		paddingHorizontal: 8,
+		paddingVertical: 2,
 		color: "#000000",
 		fontSize: 16,
 		fontWeight: "600"
