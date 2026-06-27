@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Node } from "react";
 import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useColorScheme } from "react-native";
-import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 import FastImage from "react-native-fast-image";
 var showdown  = require("showdown");

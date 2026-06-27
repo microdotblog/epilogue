@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
 import { FlatList, ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";

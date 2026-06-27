@@ -188,3 +188,4 @@ ios/.xcode.env
 ios/.xcode.env.local
 /bun.lockb
 .kotlin/
+/.expo

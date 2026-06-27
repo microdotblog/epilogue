@@ -16,12 +16,24 @@ export const light = StyleSheet.create({
 		height: 24,
 		borderRadius: 12
 	},
+	profileHeaderButton: {
+		marginLeft: -8,
+		width: 32,
+		height: 32,
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	profileHeaderIcon: {
+		width: 28,
+		height: 28,
+		borderRadius: 14
+	},
 	navbarBookshelf: {
 		flexDirection: "row",
 		alignItems: "center"
 	},
 	navbarBookshelfIcon: {
-		color: "#337AB7"
+		color: "#000000"
 	},
 	navbarBookshelfTriangle: {
 		marginLeft: 5,
@@ -119,7 +131,7 @@ export const light = StyleSheet.create({
 		justifyContent: "center"
 	},
 	bookDetailsCover: {
-		borderRadius: 4,
+		borderRadius: 6,
 		overflow: "hidden",
 		resizeMode: "cover"
 	},
@@ -171,7 +183,7 @@ export const light = StyleSheet.create({
 		alignItems: "center",
 		paddingVertical: 14,
 		paddingHorizontal: 14,
-		borderRadius: 5,
+		borderRadius: 8,
 		marginBottom: 6,
 		backgroundColor: "#DEDEDE"
 	},	
@@ -192,12 +204,12 @@ export const light = StyleSheet.create({
 	navbarNewIcon: {
 		width: 22,
 		height: 22,
-		tintColor: "#337AB7"
+		tintColor: "#000000"
 	},
 	navbarBackIcon: {
 		width: 19,
 		height: 25,
-		tintColor: "#337AB7"
+		tintColor: "#000000"
 	},
 	removeAction: {
 		alignItems: "center",
@@ -261,13 +273,21 @@ export const light = StyleSheet.create({
 		marginTop: 3,
 		width: 22,
 		height: 22,
-		tintColor: "#337AB7"
+		tintColor: "#000000"
 	},
 	navbarSubmit: {
 		marginTop: 4,
-		color: "#337AB7",
+		paddingHorizontal: 8,
+		paddingVertical: 2,
+		color: "#000000",
 		fontSize: 16,
 		fontWeight: "600"
+	},
+	navbarSearchSpinner: {
+		width: 32,
+		height: 32,
+		alignItems: "center",
+		justifyContent: "center"
 	},
 	postTextBox: {
 		flex: 1,
@@ -385,7 +405,7 @@ export const light = StyleSheet.create({
 		backgroundColor: "#FFF"
 	},
 	signInLink: {
-		color: "#337AB7",
+		color: "#000000",
 		textDecorationLine: 'underline',
 	},
 	blogListContainer: {
@@ -591,6 +611,16 @@ export const light = StyleSheet.create({
 	discoverView: {
 		flex: 1,
 		paddingTop: 10
+	},
+	discoverTabBacking: {
+		position: "absolute",
+		left: 20,
+		right: 20,
+		bottom: 20,
+		height: 60,
+		borderRadius: 30,
+		backgroundColor: "rgba(255, 255, 255, 0.6)",
+		zIndex: 1
 	},
 	moviesCreditPane: {
 		position: "absolute",
@@ -917,10 +947,13 @@ export const light = StyleSheet.create({
 	mediumBookCover: {
 		width: 100,
 		height: 140,
+		borderRadius: 6,
+		overflow: "hidden",
 		backgroundColor: "#c9c9c9"
 	},
 	coverResults: {
-		flexDirection: "row"
+		flexDirection: "row",
+		marginBottom: 14
 	},
 	coverResultsOptions: {
 		justifyContent: "center"
@@ -1225,6 +1258,9 @@ export const dark = StyleSheet.create({
 	},
 	discoverView: {
 		backgroundColor: '#212936'
+	},
+	discoverTabBacking: {
+		backgroundColor: "rgba(20, 23, 35, 0.6)"
 	},
 	moviesCreditPane: {
 		borderTopColor: "#444444",

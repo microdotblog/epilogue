@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* epilogueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* epilogueTests.m */; };
 		0A0F6C4361B604F8E6738629 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 72E6C67A60EC779B9B4E4F12 /* PrivacyInfo.xcprivacy */; };
+		10660CFF44EBF10F11E25D1C /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF88827112DF11E102EB3DFF /* ExpoModulesProvider.swift */; };
+		130A80D4BF9298DBD197C23C /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490210AD4C20E2AEA89E368C /* ExpoModulesProvider.swift */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		4B6C06582ECE3B8F007B2264 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6C06572ECE3B8F007B2264 /* AppDelegate.swift */; };
 		4B719C3E2E65FFC5006D4E7D /* MBNoteCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B719C3B2E65FFC5006D4E7D /* MBNoteCrypto.swift */; };
@@ -38,6 +40,7 @@
 		28B22893B9D176E10E00D7AF /* Pods-epilogue-epilogueTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-epilogue-epilogueTests.release.xcconfig"; path = "Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests.release.xcconfig"; sourceTree = "<group>"; };
 		34A6ED399D5D443F46E004D6 /* Pods-epilogue.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-epilogue.release.xcconfig"; path = "Target Support Files/Pods-epilogue/Pods-epilogue.release.xcconfig"; sourceTree = "<group>"; };
 		3AAA9915A05BF3847A4C64BC /* libPods-epilogue-epilogueTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-epilogue-epilogueTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		490210AD4C20E2AEA89E368C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-epilogue/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		4B6C06572ECE3B8F007B2264 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = epilogue/AppDelegate.swift; sourceTree = "<group>"; };
 		4B719C3B2E65FFC5006D4E7D /* MBNoteCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBNoteCrypto.swift; sourceTree = "<group>"; };
 		4B719C3C2E65FFC5006D4E7D /* MBNotesCryptoModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MBNotesCryptoModule.h; sourceTree = "<group>"; };
@@ -49,6 +52,7 @@
 		93E801B5245217A577CCE5D3 /* Pods-epilogue-epilogueTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-epilogue-epilogueTests.debug.xcconfig"; path = "Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests.debug.xcconfig"; sourceTree = "<group>"; };
 		AB582F9A9F129452EC2579BE /* Pods-epilogue.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-epilogue.debug.xcconfig"; path = "Target Support Files/Pods-epilogue/Pods-epilogue.debug.xcconfig"; sourceTree = "<group>"; };
 		B9B19CC82A7837CD0077659F /* epilogue.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = epilogue.entitlements; path = epilogue/epilogue.entitlements; sourceTree = "<group>"; };
+		DF88827112DF11E102EB3DFF /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-epilogue-epilogueTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -117,6 +121,14 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		27DD5EAA074D71183332FF4B /* epilogue */ = {
+			isa = PBXGroup;
+			children = (
+				490210AD4C20E2AEA89E368C /* ExpoModulesProvider.swift */,
+			);
+			name = epilogue;
+			sourceTree = "<group>";
+		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -143,6 +155,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				1CE1B2B8F8B325039FE127E5 /* Pods */,
+				9F1C430C92255EAB662CE61C /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -158,6 +171,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9F1C430C92255EAB662CE61C /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				27DD5EAA074D71183332FF4B /* epilogue */,
+				D29D8BE711DC76BE79601315 /* epilogueTests */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		D29D8BE711DC76BE79601315 /* epilogueTests */ = {
+			isa = PBXGroup;
+			children = (
+				DF88827112DF11E102EB3DFF /* ExpoModulesProvider.swift */,
+			);
+			name = epilogueTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -166,6 +196,7 @@
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "epilogueTests" */;
 			buildPhases = (
 				853439FBC893907A29A5B50D /* [CP] Check Pods Manifest.lock */,
+				26CD43A8505F407A6F51D257 /* [Expo] Configure project */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
@@ -188,6 +219,7 @@
 			buildPhases = (
 				5805F73DF455B02DE00DE7E5 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
+				6324CE41CD4933A786B07DBB /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -273,7 +305,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n";
+		};
+		26CD43A8505F407A6F51D257 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-epilogue-epilogueTests/expo-configure-project.sh",
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/Pods/Target Support Files/Pods-epilogue-epilogueTests/ExpoModulesProvider.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-epilogue-epilogueTests/expo-configure-project.sh\"\n";
 		};
 		388D7CCC84D0899A62733F08 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -360,6 +415,30 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-epilogue-epilogueTests/Pods-epilogue-epilogueTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		6324CE41CD4933A786B07DBB /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/epilogue/epilogue.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-epilogue/expo-configure-project.sh",
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/Pods/Target Support Files/Pods-epilogue/ExpoModulesProvider.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-epilogue/expo-configure-project.sh\"\n";
+		};
 		853439FBC893907A29A5B50D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -430,6 +509,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00E356F31AD99517003FC87E /* epilogueTests.m in Sources */,
+				10660CFF44EBF10F11E25D1C /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,6 +520,7 @@
 				4B6C06582ECE3B8F007B2264 /* AppDelegate.swift in Sources */,
 				4B719C3E2E65FFC5006D4E7D /* MBNoteCrypto.swift in Sources */,
 				4B719C3F2E65FFC5006D4E7D /* MBNotesCryptoModule.m in Sources */,
+				130A80D4BF9298DBD197C23C /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,7 +545,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = epilogueTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -475,6 +556,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/epilogue.app/epilogue";
@@ -488,7 +570,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = epilogueTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -499,6 +581,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/epilogue.app/epilogue";
@@ -512,7 +595,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = epilogue/epilogue.entitlements;
-				CURRENT_PROJECT_VERSION = 126;
+				CURRENT_PROJECT_VERSION = 130;
 				DEVELOPMENT_TEAM = 3F9MDJ6K4E;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = epilogue/Info.plist;
@@ -520,12 +603,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.1;
+				MARKETING_VERSION = 2.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = blog.micro.epilogue;
 				PRODUCT_NAME = epilogue;
 				SWIFT_OBJC_BRIDGING_HEADER = "epilogue-Bridging-Header.h";
@@ -543,19 +627,20 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = epilogue/epilogue.entitlements;
-				CURRENT_PROJECT_VERSION = 126;
+				CURRENT_PROJECT_VERSION = 130;
 				DEVELOPMENT_TEAM = 3F9MDJ6K4E;
 				INFOPLIST_FILE = epilogue/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.1;
+				MARKETING_VERSION = 2.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = blog.micro.epilogue;
 				PRODUCT_NAME = epilogue;
 				SWIFT_OBJC_BRIDGING_HEADER = "epilogue-Bridging-Header.h";
@@ -616,7 +701,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD = "";
 				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -684,7 +769,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD = "";
 				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (

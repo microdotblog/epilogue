@@ -32,7 +32,7 @@ export function OpenEditionsScreen({ route, navigation }) {
 			if (new_editions.length > 0) {				
 				var new_items = [];
 			
-				for (e of new_editions) {
+				for (let e of new_editions) {
 					new_items.push({
 						id: e.id,
 						isbn: e.isbn,

@@ -1,4 +1,7 @@
 {
-  "name": "epilogue",
-  "displayName": "epilogue"
+  "expo": {
+    "name": "Epilogue",
+    "slug": "epilogue",
+    "version": "2.3.1"
+  }
 }

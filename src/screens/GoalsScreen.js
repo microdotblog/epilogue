@@ -7,6 +7,7 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
+import { profileHeaderOptions } from "../ProfileHeaderButton";
 
 export function GoalsScreen({ navigation }) {
 	const windowSize = useWindowDimensions();
@@ -136,13 +137,7 @@ export function GoalsScreen({ navigation }) {
 	function setupProfileIcon() {
 		epilogueStorage.get(keys.currentUsername).then(username => {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions({
-				headerLeft: () => (
-					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
-						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
-					</Pressable>
-				)
-			});		
+			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
 		});
 	}	
 
@@ -180,7 +175,7 @@ export function GoalsScreen({ navigation }) {
 				<View style={styles.goalsBanner}>
 					<Text style={styles.goalsBannerText}>You finished {bannerCount} books in {bannerYear}. Start a new blog post linking to all of them.</Text>
 					<Pressable onPress={() => { navigation.navigate("Post", params); }} style={[styles.goalsBannerButton, { width: button_width }]}>
-						<Icon name="publish" size={18} color={is_dark ? "#FFFFFF" : "#337AB7"} style={styles.goalsBannerIcon} />
+						<Icon name="publish" size={18} color={is_dark ? "#FFFFFF" : "#000000"} style={styles.goalsBannerIcon} />
 						<Text style={styles.goalsBannerButtonTitle}>Year in books for {bannerYear}</Text>
 					</Pressable>
 				</View>			

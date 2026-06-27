@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
 import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, Platform, useColorScheme } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 import { MenuView } from "@react-native-menu/menu";
 import ContextMenu from "react-native-context-menu-view";
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -91,7 +90,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		if (!is_search) {
 			edit_actions.push({
 				id: "setopenlibrary",
-				title: "Set Cover from Open Library"
+				title: "Set Cover"
 			});
 		}
 
@@ -279,7 +278,8 @@ export function BookDetailsScreen({ route, navigation }) {
 		let params = {
 			id: id,
 			bookshelf_id: current_bookshelf.id,
-			isbn: isbn
+			isbn: isbn,
+			title: title
 		};
 		navigation.navigate("Covers", params);
 	}
@@ -319,7 +319,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		else if (service == "Edit Title & Author") {
 			showEditBookInfo();
 		}
-		else if (service == "Set Cover from Open Library") {
+		else if (service == "Set Cover") {
 			showCovers();
 		}
 		
@@ -413,7 +413,7 @@ export function BookDetailsScreen({ route, navigation }) {
 								<Icon
 									name="ellipsis"
 									size={18}
-									color={is_dark ? "#FFFFFF" : "#337AB7"}
+									color={is_dark ? "#FFFFFF" : "#000000"}
 									style={styles.bookDetailsMenuIcon}
 								/>
 							</View>

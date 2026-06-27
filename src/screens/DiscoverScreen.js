@@ -11,11 +11,14 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Book } from "../models/Book";
+import { profileHeaderOptions } from "../ProfileHeaderButton";
 import { readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();
 	const windowSize = useWindowDimensions();
+	const iosMajorVersion = Number.parseInt(String(Platform.Version).split(".")[0], 10);
+	const shouldShowTabBacking = Platform.OS === "ios" && iosMajorVersion == 26;
 	
 	const height = Platform.isPad ? 260 : 180 // book cover height
 	const coverHeight = height - 4
@@ -102,13 +105,7 @@ export function DiscoverScreen({ navigation }) {
 	function setupProfileIcon() {
 		epilogueStorage.get(keys.currentUsername).then(username => {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions({
-				headerLeft: () => (
-					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
-						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
-					</Pressable>
-				)
-			});		
+			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
 		});
 	}	
 
@@ -289,7 +286,7 @@ export function DiscoverScreen({ navigation }) {
 	function searchResultItems(new_books, searchText) {
 		var new_items = [];
 
-		for (b of new_books) {
+		for (let b of new_books) {
 			new_items.push({
 				id: b.id,
 				isbn: b.isbn,
@@ -427,6 +424,12 @@ export function DiscoverScreen({ navigation }) {
 		</Pressable>
 		)
 	);
+
+	const renderTabBacking = () => (
+		shouldShowTabBacking ? (
+			<View pointerEvents="none" style={styles.discoverTabBacking} />
+		) : null
+	);
 	
 	return (
 		loaded === true ? (
@@ -441,6 +444,7 @@ export function DiscoverScreen({ navigation }) {
 						keyExtractor = { item => item.id }
 						style={styles.discoverSearchResults}
 					/>
+					{renderTabBacking()}
 				</View>
 			) : (
 				<View style={styles.discoverView}> 
@@ -457,6 +461,7 @@ export function DiscoverScreen({ navigation }) {
 						renderItem={renderItem}
 						style={styles.discoverResults}
 					/>
+					{renderTabBacking()}
 				</View>
 			)
 		) : (

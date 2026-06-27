@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
-import { NavigationContainer, useScrollToTop } from "@react-navigation/native";
+import { useScrollToTop } from "@react-navigation/native";
 import { MenuView } from "@react-native-menu/menu";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
@@ -13,6 +13,7 @@ import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
+import { profileHeaderOptions } from "../ProfileHeaderButton";
 import {
 	booksFromJSONFeed,
 	cacheBookshelfDataForID,
@@ -103,16 +104,27 @@ export function HomeScreen({ navigation }) {
 	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
 
 	React.useEffect(() => {
-		navigation.setOptions({
-			headerRight: () => (
-				isSearching ? (
-					<View style={{ marginRight: 24 }}>
-						<ActivityIndicator size="small" color={is_dark ? "#FFFFFF" : "#000000"} />
-					</View>
-				) : null
-			)
-		});
-	}, [navigation, isSearching, is_dark]);
+		const renderSearchSpinner = () => (
+			<View style={styles.navbarSearchSpinner}>
+				<ActivityIndicator size="small" color={is_dark ? "#FFFFFF" : "#000000"} />
+			</View>
+		);
+
+		if (Platform.OS === "ios") {
+			navigation.setOptions({
+				unstable_headerRightItems: () => isSearching ? [{
+					type: "custom",
+					element: renderSearchSpinner(),
+					hidesSharedBackground: true
+				}] : []
+			});
+		}
+		else {
+			navigation.setOptions({
+				headerRight: () => isSearching ? renderSearchSpinner() : null
+			});
+		}
+	}, [navigation, isSearching, is_dark, styles]);
   
 	function onFocus(navigation) {
 		if (currentBookshelfTitle && bookshelves.length > 0) {
@@ -461,13 +473,7 @@ export function HomeScreen({ navigation }) {
 	function setupProfileIcon() {
 		epilogueStorage.get(keys.currentUsername).then(username => {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions({
-				headerLeft: () => (
-					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
-						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
-					</Pressable>
-				)
-			});		
+			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
 		});
 	}	
 	
