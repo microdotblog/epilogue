@@ -104,16 +104,27 @@ export function HomeScreen({ navigation }) {
 	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
 
 	React.useEffect(() => {
-		navigation.setOptions({
-			headerRight: () => (
-				isSearching ? (
-					<View style={{ marginRight: 24 }}>
-						<ActivityIndicator size="small" color={is_dark ? "#FFFFFF" : "#000000"} />
-					</View>
-				) : null
-			)
-		});
-	}, [navigation, isSearching, is_dark]);
+		const renderSearchSpinner = () => (
+			<View style={styles.navbarSearchSpinner}>
+				<ActivityIndicator size="small" color={is_dark ? "#FFFFFF" : "#000000"} />
+			</View>
+		);
+
+		if (Platform.OS === "ios") {
+			navigation.setOptions({
+				unstable_headerRightItems: () => isSearching ? [{
+					type: "custom",
+					element: renderSearchSpinner(),
+					hidesSharedBackground: true
+				}] : []
+			});
+		}
+		else {
+			navigation.setOptions({
+				headerRight: () => isSearching ? renderSearchSpinner() : null
+			});
+		}
+	}, [navigation, isSearching, is_dark, styles]);
   
 	function onFocus(navigation) {
 		if (currentBookshelfTitle && bookshelves.length > 0) {

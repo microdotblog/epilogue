@@ -24,9 +24,9 @@ export const light = StyleSheet.create({
 		justifyContent: "center"
 	},
 	profileHeaderIcon: {
-		width: 24,
-		height: 24,
-		borderRadius: 12
+		width: 28,
+		height: 28,
+		borderRadius: 14
 	},
 	navbarBookshelf: {
 		flexDirection: "row",
@@ -183,7 +183,7 @@ export const light = StyleSheet.create({
 		alignItems: "center",
 		paddingVertical: 14,
 		paddingHorizontal: 14,
-		borderRadius: 5,
+		borderRadius: 8,
 		marginBottom: 6,
 		backgroundColor: "#DEDEDE"
 	},	
@@ -282,6 +282,12 @@ export const light = StyleSheet.create({
 		color: "#000000",
 		fontSize: 16,
 		fontWeight: "600"
+	},
+	navbarSearchSpinner: {
+		width: 32,
+		height: 32,
+		alignItems: "center",
+		justifyContent: "center"
 	},
 	postTextBox: {
 		flex: 1,
