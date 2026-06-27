@@ -43,12 +43,13 @@ const nativeTabIcon = (routeName) => () => ({
 	name: tabIcons[routeName].ios,
 });
 
-const tabActiveTintColor = "#FF8800";
+const lightTabActiveTintColor = "#C85F00";
+const darkTabActiveTintColor = "#FFB45A";
 
-const jsTabIcon = (routeName, isDark) => ({ focused }) => (
+const jsTabIcon = (routeName, activeTintColor) => ({ focused }) => (
 	<Icon
 		name={tabIcons[routeName].android}
-		color={focused ? tabActiveTintColor : "gray"}
+		color={focused ? activeTintColor : "gray"}
 		size={18}
 	/>
 );
@@ -57,6 +58,7 @@ export function TabsScreen({ navigation }) {
     const is_dark = (useColorScheme() == "dark");
 	const enable_open_library = false;
 	const inactiveTintColor = "gray";
+	const tabActiveTintColor = is_dark ? darkTabActiveTintColor : lightTabActiveTintColor;
 
 	return (
 		<Tab.Navigator
@@ -66,7 +68,7 @@ export function TabsScreen({ navigation }) {
 				tabBarInactiveTintColor: inactiveTintColor,
 				tabBarIcon: useNativeTabs
 					? nativeTabIcon(route.name)
-					: jsTabIcon(route.name, is_dark),
+					: jsTabIcon(route.name, tabActiveTintColor),
 				...(useNativeTabs ? {
 					headerShown: true,
 					lazy: false,
