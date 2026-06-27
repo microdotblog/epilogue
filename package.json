@@ -65,6 +65,9 @@
   "engines": {
     "node": ">=20.19.4"
   },
+  "patchedDependencies": {
+    "@react-navigation/bottom-tabs@7.16.0": "patches/@react-navigation%2Fbottom-tabs@7.16.0.patch"
+  },
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {

@@ -1,95 +1,98 @@
-import React, { useState } from "react";
-import { Text, View, useColorScheme } from "react-native";
+import React from "react";
+import { Platform, useColorScheme } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeBottomTabNavigator } from '@react-navigation/bottom-tabs/unstable';
 
-import { keys } from "../Constants";
-import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import { Icon } from '../Icon';
-import epilogueStorage from "../Storage";
 import { HomeScreen } from "./HomeScreen";
 import { DiscoverScreen } from "./DiscoverScreen";
 import { GoalsScreen } from "./GoalsScreen";
 import { MoviesScreen } from "./MoviesScreen";
 import { OpenLibraryScreen } from "./OpenLibraryScreen";
 
-const Tab = createBottomTabNavigator();
+const useNativeTabs = Platform.OS === 'ios';
+const Tab = useNativeTabs
+	? createNativeBottomTabNavigator()
+	: createBottomTabNavigator();
+
+const tabIcons = {
+	Bookshelves: {
+		ios: "books.vertical",
+		android: "bookshelves",
+	},
+	Goals: {
+		ios: "calendar",
+		android: "goals",
+	},
+	Movies: {
+		ios: "movieclapper",
+		android: "movies",
+	},
+	Discover: {
+		ios: "magnifyingglass",
+		android: "discover",
+	},
+	"Open Library": {
+		ios: "building.columns",
+		android: "openlibrary",
+	},
+};
+
+const nativeTabIcon = (routeName) => () => ({
+	type: "sfSymbol",
+	name: tabIcons[routeName].ios,
+});
+
+const jsTabIcon = (routeName, isDark) => ({ focused }) => (
+	<Icon
+		name={tabIcons[routeName].android}
+		color={focused ? (isDark ? "#FFFFFF" : "#337AB7") : "gray"}
+		size={18}
+	/>
+);
 
 export function TabsScreen({ navigation }) {
-	const styles = useEpilogueStyle()
     const is_dark = (useColorScheme() == "dark");
 	const enable_open_library = false;
+	const activeTintColor = is_dark ? "#FFFFFF" : "#337AB7";
+	const inactiveTintColor = "gray";
 
 	return (
 		<Tab.Navigator
-			screenOptions={{
-				headerTintColor: is_dark ? "#FFFFFF" : "#000000"
-			}}
+			screenOptions={({ route }) => ({
+				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
+				tabBarActiveTintColor: activeTintColor,
+				tabBarInactiveTintColor: inactiveTintColor,
+				tabBarIcon: useNativeTabs
+					? nativeTabIcon(route.name)
+					: jsTabIcon(route.name, is_dark),
+				...(useNativeTabs ? {
+					headerShown: true,
+					lazy: false,
+					tabBarMinimizeBehavior: "never",
+				} : null),
+			})}
 		>
 			<Tab.Screen name="Bookshelves" component={HomeScreen} options={{				
 				headerTitle: "",
-				tabBarIcon: ({ focused, color, size }) => {
-					if (focused) {
-						return <Icon name="bookshelves" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
-					}
-					else {
-						return <Icon name="bookshelves" color={"gray"} size={18} />
-					}
-				},
-  				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
-				tabBarInactiveTintColor: "gray"
+				tabBarLabel: "Bookshelves",
 			}} />
 			<Tab.Screen name="Goals" component={GoalsScreen} options={{
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
-				tabBarIcon: ({ focused, color, size }) => {
-					if (focused) {
-						return <Icon name="goals" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
-					}
-					else {					
-						return <Icon name="goals" color={"gray"} size={18} />
-					}
-				},
-				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
-				tabBarInactiveTintColor: "gray"
+				tabBarLabel: "Goals",
 			}} />
 			<Tab.Screen name="Movies" component={MoviesScreen} options={{
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
-				tabBarIcon: ({ focused, color, size }) => {
-					if (focused) {
-						return <Icon name="movies" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
-					}
-					else {					
-						return <Icon name="movies" color={"gray"} size={18} />
-					}
-				},
-				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
-				tabBarInactiveTintColor: "gray"
+				tabBarLabel: "Movies",
 			}} />
 			<Tab.Screen name="Discover" component={DiscoverScreen} options={{
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
-				tabBarIcon: ({ focused, color, size }) => {
-					if (focused) {
-						return <Icon name="discover" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
-					}
-					else {					
-						return <Icon name="discover" color={"gray"} size={18} />
-					}
-				},
-				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
-				tabBarInactiveTintColor: "gray"
+				tabBarLabel: "Discover",
 			}} />
 			{ enable_open_library ? 
 			<Tab.Screen name="Open Library" component={OpenLibraryScreen} options={{
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
-				tabBarIcon: ({ focused, color, size }) => {
-					if (focused) {
-						return <Icon name="openlibrary" color={is_dark ? "#FFFFFF" : "#337AB7"} size={18} />
-					}
-					else {					
-						return <Icon name="openlibrary" color={"gray"} size={18} />
-					}
-				},
-				tabBarActiveTintColor: is_dark ? "#FFFFFF" : "#337AB7",
-				tabBarInactiveTintColor: "gray"
+				tabBarLabel: "Open Library",
 			}} />
 			: null }
 		</Tab.Navigator>
