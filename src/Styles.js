@@ -131,7 +131,7 @@ export const light = StyleSheet.create({
 		justifyContent: "center"
 	},
 	bookDetailsCover: {
-		borderRadius: 4,
+		borderRadius: 6,
 		overflow: "hidden",
 		resizeMode: "cover"
 	},
