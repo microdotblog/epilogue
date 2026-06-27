@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Text, View, useColorScheme } from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { keys } from "../Constants";

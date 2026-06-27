@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { Node } from "react";
 import { Alert, LogBox, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Platform, StatusBar } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MenuView } from "@react-native-menu/menu";
 import changeNavigationBarColor from "react-native-navigation-bar-color";
 import "react-native-gesture-handler";
@@ -35,13 +35,19 @@ import { TVSeasonsScreen } from "./src/screens/TVSeasonsScreen";
 import { TVEpisodesScreen } from "./src/screens/TVEpisodesScreen";
 import { TVEpisodeDetailsScreen } from "./src/screens/TVEpisodeDetailsScreen";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const EpilogueDarkTheme = {
   dark: true,
   colors: {
-    card: "#131724"
-  }
+    background: "#131724",
+    card: "#131724",
+    text: "#FFFFFF",
+    primary: "#FFFFFF",
+    border: "#242A3D",
+    notification: "#337AB7"
+  },
+  fonts: DefaultTheme.fonts
 };
 
 const App: () => Node = () => {	
@@ -69,8 +75,7 @@ const App: () => Node = () => {
         screenOptions={{
           headerLeftContainerStyle: { paddingLeft: 15 },
           headerRightContainerStyle: { paddingRight: 15 },
-          headerTintColor: is_dark ? "#FFFFFF" : "#000000",
-          headerMode: 'screen'
+          headerTintColor: is_dark ? "#FFFFFF" : "#000000"
         }}
       >
           <Stack.Group>

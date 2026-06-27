@@ -1,7 +1,6 @@
 import React, { Component, useState } from "react";
 import type { Node } from "react";
 import { InputAccessoryView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import FastImage from "react-native-fast-image";
 

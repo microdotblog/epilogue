@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
-import { NavigationContainer, useScrollToTop } from "@react-navigation/native";
+import { useScrollToTop } from "@react-navigation/native";
 import { MenuView } from "@react-native-menu/menu";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';

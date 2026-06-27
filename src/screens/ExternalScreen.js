@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
 import { Linking, Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 
 import { keys, errors } from "../Constants";
