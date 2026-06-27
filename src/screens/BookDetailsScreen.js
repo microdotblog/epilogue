@@ -90,7 +90,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		if (!is_search) {
 			edit_actions.push({
 				id: "setopenlibrary",
-				title: "Set Cover from Open Library"
+				title: "Set Cover"
 			});
 		}
 
@@ -318,7 +318,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		else if (service == "Edit Title & Author") {
 			showEditBookInfo();
 		}
-		else if (service == "Set Cover from Open Library") {
+		else if (service == "Set Cover") {
 			showCovers();
 		}
 		

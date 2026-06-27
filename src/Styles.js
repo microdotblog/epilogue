@@ -947,10 +947,13 @@ export const light = StyleSheet.create({
 	mediumBookCover: {
 		width: 100,
 		height: 140,
+		borderRadius: 6,
+		overflow: "hidden",
 		backgroundColor: "#c9c9c9"
 	},
 	coverResults: {
-		flexDirection: "row"
+		flexDirection: "row",
+		marginBottom: 14
 	},
 	coverResultsOptions: {
 		justifyContent: "center"

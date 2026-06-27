@@ -57,9 +57,13 @@ export function OpenCoversScreen({ route, navigation }) {
 		setIsSearching(true);
 		Book.searchOpenLibrary(searchText, function(new_books) {
 			if (new_books.length > 0) {				
-				var new_items = [];
+				let new_items = [];
 			
-				for (b of new_books) {
+				for (let b of new_books) {
+					if ((b.cover_url || "").trim().length == 0) {
+						continue;
+					}
+
 					new_items.push({
 						id: b.id,
 						isbn: b.isbn,

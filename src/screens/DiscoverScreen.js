@@ -286,7 +286,7 @@ export function DiscoverScreen({ navigation }) {
 	function searchResultItems(new_books, searchText) {
 		var new_items = [];
 
-		for (b of new_books) {
+		for (let b of new_books) {
 			new_items.push({
 				id: b.id,
 				isbn: b.isbn,

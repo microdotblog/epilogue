@@ -134,7 +134,7 @@ export function OpenLibraryScreen({ route, navigation }) {
 			if (new_books.length > 0) {				
 				var new_items = [];
 			
-				for (b of new_books) {
+				for (let b of new_books) {
 					new_items.push({
 						id: b.id,
 						isbn: b.isbn,

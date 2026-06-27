@@ -24,7 +24,7 @@ export class Book {
 		fetch(url).then(response => response.json()).then(data => {
 			var results = [];
 			
-			for (entry of data.entries) {
+			for (let entry of data.entries) {
 				let title = entry.title;
 				var isbn = "";
 				if (entry.isbn_13 != undefined) {
@@ -71,30 +71,37 @@ export class Book {
 	static searchOpenLibrary(query, handler = function(books) {}) {
 		let url = "https://openlibrary.org/search.json?q=" + encodeURIComponent(query);
 		fetch(url).then(response => response.json()).then(data => {
-			var results = [];
+			if (!Array.isArray(data.docs)) {
+				throw new Error("OpenLibrary search response did not include docs");
+			}
+
+			let results = [];
 			
-			for (doc of data.docs) {
+			for (let doc of data.docs) {
 				let work_key = doc.key.replace("/works/", "");
 				let title = doc.title;
-				var author = "";
+				let author = "";
 				if (doc.author_name != undefined) {
 					author = doc.author_name[0];
 				}
-				var isbn = "";
+				let isbn = "";
 				if (doc.isbn != undefined) {
 					isbn = doc.isbn[0];
 				}
+				else if (Book.isISBN(query)) {
+					isbn = query;
+				}
 
-				var cover_id = 0;
+				let cover_id = 0;
 				if (doc.cover_i != undefined) {
 					cover_id = doc.cover_i;
 				}
 								
-				var cover_url = "";
+				let cover_url = "";
 				if (cover_id > 0) {
 					cover_url = Book.coverFromOpenLibraryID(cover_id);
 				}
-				else {
+				else if (isbn.length > 0) {
 					cover_url = Book.coverFromOpenLibraryISBN(isbn);
 				}
 
@@ -105,7 +112,8 @@ export class Book {
 			}
 
 			handler(results);
-		}).catch(() => {
+		}).catch(error => {
+			console.log("OpenLibrary search error", error);
 			handler([]);
 		});
 	}
