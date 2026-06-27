@@ -17,6 +17,8 @@ import { readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground }
 export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();
 	const windowSize = useWindowDimensions();
+	const iosMajorVersion = Number.parseInt(String(Platform.Version).split(".")[0], 10);
+	const shouldShowTabBacking = Platform.OS === "ios" && iosMajorVersion == 26;
 	
 	const height = Platform.isPad ? 260 : 180 // book cover height
 	const coverHeight = height - 4
@@ -422,6 +424,12 @@ export function DiscoverScreen({ navigation }) {
 		</Pressable>
 		)
 	);
+
+	const renderTabBacking = () => (
+		shouldShowTabBacking ? (
+			<View pointerEvents="none" style={styles.discoverTabBacking} />
+		) : null
+	);
 	
 	return (
 		loaded === true ? (
@@ -436,6 +444,7 @@ export function DiscoverScreen({ navigation }) {
 						keyExtractor = { item => item.id }
 						style={styles.discoverSearchResults}
 					/>
+					{renderTabBacking()}
 				</View>
 			) : (
 				<View style={styles.discoverView}> 
@@ -452,6 +461,7 @@ export function DiscoverScreen({ navigation }) {
 						renderItem={renderItem}
 						style={styles.discoverResults}
 					/>
+					{renderTabBacking()}
 				</View>
 			)
 		) : (

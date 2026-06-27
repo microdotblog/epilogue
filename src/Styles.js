@@ -612,6 +612,16 @@ export const light = StyleSheet.create({
 		flex: 1,
 		paddingTop: 10
 	},
+	discoverTabBacking: {
+		position: "absolute",
+		left: 20,
+		right: 20,
+		bottom: 20,
+		height: 60,
+		borderRadius: 30,
+		backgroundColor: "rgba(255, 255, 255, 0.6)",
+		zIndex: 1
+	},
 	moviesCreditPane: {
 		position: "absolute",
 		left: 0,
@@ -1245,6 +1255,9 @@ export const dark = StyleSheet.create({
 	},
 	discoverView: {
 		backgroundColor: '#212936'
+	},
+	discoverTabBacking: {
+		backgroundColor: "rgba(20, 23, 35, 0.6)"
 	},
 	moviesCreditPane: {
 		borderTopColor: "#444444",
