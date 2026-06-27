@@ -278,7 +278,8 @@ export function BookDetailsScreen({ route, navigation }) {
 		let params = {
 			id: id,
 			bookshelf_id: current_bookshelf.id,
-			isbn: isbn
+			isbn: isbn,
+			title: title
 		};
 		navigation.navigate("Covers", params);
 	}

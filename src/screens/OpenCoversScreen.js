@@ -17,7 +17,7 @@ export function OpenCoversScreen({ route, navigation }) {
 	const [ isSearching , setIsSearching ] = useState(false);
 	const [ books, setBooks ] = useState([]);
 	const [ searchText , setSearchText ] = useState("");
-	const { id, bookshelf_id, isbn } = route.params;
+	const { id, bookshelf_id, isbn, title } = route.params;
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -27,7 +27,7 @@ export function OpenCoversScreen({ route, navigation }) {
 	}, [navigation]);	
 	
 	const onFocus = (navigation) =>  {
-		sendSearch(isbn);
+		sendInitialSearch();
 	}
 
 	function onChangeSearch(text) {
@@ -53,33 +53,68 @@ export function OpenCoversScreen({ route, navigation }) {
 		}
 	}
 
-	function sendSearch(searchText) {
+	function sendInitialSearch() {
+		const titleSearchText = (title || "").trim();
+
+		sendSearch(isbn, {
+			onComplete: () => {
+				if ((titleSearchText.length > 0) && (titleSearchText != isbn)) {
+					sendSearch(titleSearchText, { append: true });
+				}
+				else {
+					setIsSearching(false);
+				}
+			}
+		});
+	}
+
+	function coverResultItems(new_books) {
+		let new_items = [];
+
+		for (let b of new_books) {
+			if ((b.cover_url || "").trim().length == 0) {
+				continue;
+			}
+
+			new_items.push({
+				id: b.id,
+				isbn: b.isbn,
+				title: b.title,
+				image: b.cover_url,
+				author: b.author,
+				description: b.description,
+				work_key: b.work_key
+			});
+		}
+
+		return new_items;
+	}
+
+	function appendCoverResults(current_items, new_items) {
+		const existing_urls = new Set((current_items || []).map(item => item.image));
+		const appended_items = new_items.filter(item => !existing_urls.has(item.image));
+		return [ ...(current_items || []), ...appended_items ];
+	}
+
+	function sendSearch(searchText, options = {}) {
+		const append = options.append || false;
+		const onComplete = options.onComplete || null;
+
 		setIsSearching(true);
 		Book.searchOpenLibrary(searchText, function(new_books) {
-			if (new_books.length > 0) {				
-				let new_items = [];
-			
-				for (let b of new_books) {
-					if ((b.cover_url || "").trim().length == 0) {
-						continue;
-					}
+			const new_items = coverResultItems(new_books);
 
-					new_items.push({
-						id: b.id,
-						isbn: b.isbn,
-						title: b.title,
-						image: b.cover_url,
-						author: b.author,
-						description: b.description,
-						work_key: b.work_key
-					});
-				}
-			
-				setBooks(new_items);
-				setIsSearching(false);
+			if (append) {
+				setBooks(current_items => appendCoverResults(current_items, new_items));
 			}
 			else {
-				setBooks([]);
+				setBooks(new_items);
+			}
+
+			if (onComplete != null) {
+				onComplete();
+			}
+			else {
 				setIsSearching(false);
 			}
 		});
