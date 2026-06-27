@@ -16,6 +16,18 @@ export const light = StyleSheet.create({
 		height: 24,
 		borderRadius: 12
 	},
+	profileHeaderButton: {
+		marginLeft: -8,
+		width: 32,
+		height: 32,
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	profileHeaderIcon: {
+		width: 24,
+		height: 24,
+		borderRadius: 12
+	},
 	navbarBookshelf: {
 		flexDirection: "row",
 		alignItems: "center"

@@ -8,6 +8,7 @@ import { keys } from "../Constants";
 import { MOVIE_POSTER_HEIGHT, MOVIE_POSTER_WIDTH } from "../Styles";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
+import { profileHeaderOptions } from "../ProfileHeaderButton";
 
 export function MoviesScreen({ navigation }) {
 	const styles = useEpilogueStyle();
@@ -48,13 +49,7 @@ export function MoviesScreen({ navigation }) {
 	function setupProfileIcon() {
 		epilogueStorage.get(keys.currentUsername).then(username => {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions({
-				headerLeft: () => (
-					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
-						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
-					</Pressable>
-				)
-			});		
+			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
 		});
 	}
 

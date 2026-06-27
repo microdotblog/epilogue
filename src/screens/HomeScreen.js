@@ -13,6 +13,7 @@ import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
+import { profileHeaderOptions } from "../ProfileHeaderButton";
 import {
 	booksFromJSONFeed,
 	cacheBookshelfDataForID,
@@ -461,13 +462,7 @@ export function HomeScreen({ navigation }) {
 	function setupProfileIcon() {
 		epilogueStorage.get(keys.currentUsername).then(username => {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions({
-				headerLeft: () => (
-					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
-						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
-					</Pressable>
-				)
-			});		
+			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
 		});
 	}	
 	

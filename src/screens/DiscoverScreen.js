@@ -11,6 +11,7 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Book } from "../models/Book";
+import { profileHeaderOptions } from "../ProfileHeaderButton";
 import { readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 export function DiscoverScreen({ navigation }) {		
@@ -102,13 +103,7 @@ export function DiscoverScreen({ navigation }) {
 	function setupProfileIcon() {
 		epilogueStorage.get(keys.currentUsername).then(username => {
 			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions({
-				headerLeft: () => (
-					<Pressable onPress={() => { onShowProfile(); }} accessibilityRole="button" accessibilityLabel="show profile">
-						<Image style={styles.profileIcon} source={{ uri: avatar_url }} />
-					</Pressable>
-				)
-			});		
+			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
 		});
 	}	
 
