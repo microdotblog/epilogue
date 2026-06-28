@@ -1,7 +1,6 @@
 import React, { Component, useState } from "react";
 import type { Node } from "react";
-import { KeyboardAvoidingView, Platform, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions, useColorScheme } from "react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
+import { ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions, useColorScheme } from "react-native";
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
@@ -9,6 +8,7 @@ import { BOOK_COVER_HEIGHT, BOOK_COVER_WIDTH } from "../Styles";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
+import EditorKeyboardAvoidingView from "../components/keyboard/editor_keyboard_avoiding_view";
 import HighlightingText from "../components/text/highlighting_text";
 
 export function PostScreen({ route, navigation }) {
@@ -16,7 +16,6 @@ export function PostScreen({ route, navigation }) {
 	const colorScheme = useColorScheme();
 	const isDark = colorScheme == "dark";
 	const windowSize = useWindowDimensions();
-	const headerHeight = useHeaderHeight();
 	const [ text, setText ] = useState("");
 	const [ title, setTitle ] = useState();
 	const [ blogID, setBlogID ] = useState();
@@ -317,10 +316,8 @@ export function PostScreen({ route, navigation }) {
 	}
 		
 	return (
-		<KeyboardAvoidingView
+		<EditorKeyboardAvoidingView
 			style={styles.postTextBox}
-			behavior="height"
-			keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : 0}
 		>
 			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
 				<Text style={styles.postHostnameLeft}></Text>
@@ -357,6 +354,6 @@ export function PostScreen({ route, navigation }) {
 			)}
 			
 			<PostBooksGrid title={title} books={books} columns={bookColumns} />
-		</KeyboardAvoidingView>
+		</EditorKeyboardAvoidingView>
 	);
 }

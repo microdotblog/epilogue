@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Keyboard, Platform, StyleSheet, View } from 'react-native'
+import { Keyboard, PanResponder, Platform, StyleSheet, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import App from '../../stores/App'
 import { EditorKeyboardFrameContext } from '../keyboard/editor_keyboard_avoiding_view'
@@ -25,6 +25,14 @@ export default class HighlightingText extends React.Component {
     this.keyboard_show_listener = null
     this.keyboard_hide_listener = null
     this.pending_focus_options = null
+    this.last_pan_y = null
+    this.pan_responder = PanResponder.create({
+      onMoveShouldSetPanResponderCapture: this.shouldCapturePan,
+      onPanResponderGrant: this.handlePanGrant,
+      onPanResponderMove: this.handlePanMove,
+      onPanResponderRelease: this.handlePanEnd,
+      onPanResponderTerminate: this.handlePanEnd
+    })
   }
 
   componentDidMount() {
@@ -172,6 +180,37 @@ export default class HighlightingText extends React.Component {
 
   injectJavaScript(script) {
     this.webview.current?.injectJavaScript(`${script}\ntrue;`)
+  }
+
+  shouldCapturePan = (event, gestureState) => {
+    if (this.props.scrollEnabled === false) {
+      return false
+    }
+
+    return Math.abs(gestureState.dy) > 6 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx)
+  }
+
+  handlePanGrant = (event) => {
+    this.last_pan_y = event?.nativeEvent?.pageY ?? null
+  }
+
+  handlePanMove = (event, gestureState) => {
+    const current_y = event?.nativeEvent?.pageY ?? null
+    if (current_y == null) {
+      return
+    }
+
+    const previous_y = this.last_pan_y == null ? current_y - gestureState.dy : this.last_pan_y
+    const delta_y = previous_y - current_y
+    this.last_pan_y = current_y
+
+    if (delta_y !== 0) {
+      this.injectJavaScript(`window.MicroBlogReactEditor.scrollByPixels(${JSON.stringify(delta_y)})`)
+    }
+  }
+
+  handlePanEnd = () => {
+    this.last_pan_y = null
   }
 
   requestScrollSelectionIntoView() {
@@ -340,7 +379,12 @@ export default class HighlightingText extends React.Component {
     const config = this.editorConfig()
 
     return (
-      <View ref={this.container} onLayout={this.handleLayout} style={this.webviewStyle()}>
+      <View
+        ref={this.container}
+        onLayout={this.handleLayout}
+        style={this.webviewStyle()}
+        {...this.pan_responder.panHandlers}
+      >
         <WebView
           ref={this.webview}
           source={{ html: editorHtml, baseUrl: 'https://micro.blog' }}
