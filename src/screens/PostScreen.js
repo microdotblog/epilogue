@@ -28,6 +28,7 @@ export function PostScreen({ route, navigation }) {
 	const [ bookColumns, setBookColumns ] = useState(bestColumnsForWidth(windowSize.width))
 	const showsPostNotice = (title != undefined) && (title.length > 0);
 	const showsPlainPostSpacer = !showsPostNotice;
+	const editorBackgroundColor = isDark ? "#212936" : "#EFEFEF";
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -338,7 +339,7 @@ export function PostScreen({ route, navigation }) {
 					styles.postTextInput,
 					styles.postEditorTextInput,
 					{
-						backgroundColor: isDark ? "#212936" : "#FFFFFF"
+						backgroundColor: editorBackgroundColor
 					}
 				]}
 				autoFocus={true}
