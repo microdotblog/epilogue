@@ -25,10 +25,12 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ notes, setNotes] = useState([])
 	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
 	const [ coverSize, setCoverSize ] = useState(null)
-	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
+	const { id, isbn, title, image, author, description, date, background, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
 	const initial_bookshelf_ids_with_book = bookshelf_ids_with_book || ((!is_search && current_bookshelf?.id != null) ? [current_bookshelf.id] : []);
 	const bookshelfIDsWithBook = new Set(initial_bookshelf_ids_with_book.map(shelf_id => String(shelf_id)));
 	const coverURL = image.replace("http://", "https://");
+	const backgroundImageURL = normalizedBackgroundImageURL(background);
+	const backgroundColor = normalizedBackgroundColor(background);
 
 	React.useEffect(() => {
 		setupBookDetails();
@@ -374,6 +376,24 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 	}
 
+	function normalizedBackgroundImageURL(background) {
+		const url = background?.image || background?.url;
+		if ((typeof url != "string") || (url.trim().length == 0)) {
+			return null;
+		}
+
+		return url.trim().replace("http://", "https://");
+	}
+
+	function normalizedBackgroundColor(background) {
+		const color = background?.color;
+		if ((typeof color != "string") || !/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/.test(color.trim())) {
+			return null;
+		}
+
+		return color.trim();
+	}
+
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={[styles.container, styles.bookDetailsContainer]}>
@@ -391,7 +411,15 @@ export function BookDetailsScreen({ route, navigation }) {
 						dropdownMenuMode={true}
 				>
 					<View style={styles.bookDetails}>
-						<View style={styles.bookDetailsTop}>
+						<View style={[styles.bookDetailsTop, backgroundColor == null ? null : { backgroundColor: backgroundColor }]}>
+							{backgroundImageURL == null ? null : (
+								<Image
+									pointerEvents="none"
+									style={styles.bookDetailsBackgroundImage}
+									resizeMode="cover"
+									source={{ uri: backgroundImageURL }}
+								/>
+							)}
 							<View style={styles.bookDetailsCoverSlot}>
 								<Image
 									style={[
