@@ -226,6 +226,7 @@ export function DiscoverScreen({ navigation }) {
 						image: item.image,
 						author: item.author,
 						description: item.description,
+						background: item.background,
 						bookshelves: bookshelves,
 						current_bookshelf: current_bookshelf,
 						is_search: item.is_search,
@@ -294,6 +295,7 @@ export function DiscoverScreen({ navigation }) {
 				image: b.cover_url,
 				author: b.author,
 				description: b.description,
+				background: b.background,
 				is_search: true
 			});
 		}

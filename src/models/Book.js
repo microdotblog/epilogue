@@ -204,14 +204,16 @@ export class Book {
 						}
 						
 						var best_isbn = "";
-						if ((book_item._microblog != undefined) && (book_item._microblog.isbn != undefined)) {
-							best_isbn = book_item._microblog.isbn;
+						const metadata = book_item._microblog || {};
+						if (metadata.isbn != undefined) {
+							best_isbn = metadata.isbn;
 						}
 			
 						if ((best_isbn.length > 0) && (cover_url.length > 0)) {
 							let b = new Book(best_isbn, book_item.title, author_name, cover_url);
 							b.id = (book_item.id != undefined) ? book_item.id : best_isbn;
 							b.description = description;
+							b.background = metadata.background;
 							results.push(b);
 						}
 					}
