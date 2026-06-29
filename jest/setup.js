@@ -8,9 +8,11 @@ jest.mock("react-native-fs", () => ({
   CachesDirectoryPath: "/tmp/cache",
   TemporaryDirectoryPath: "/tmp",
   copyFile: jest.fn(() => Promise.resolve()),
+  downloadFile: jest.fn(() => ({ promise: Promise.resolve({ statusCode: 200 }) })),
   mkdir: jest.fn(() => Promise.resolve()),
   readDir: jest.fn(() => Promise.resolve([])),
   readFile: jest.fn(() => Promise.resolve("{}")),
+  stat: jest.fn(() => Promise.reject(new Error("Not found"))),
   unlink: jest.fn(() => Promise.resolve()),
   writeFile: jest.fn(() => Promise.resolve())
 }));
