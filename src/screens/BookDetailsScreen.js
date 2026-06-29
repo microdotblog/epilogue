@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, Platform, useColorScheme } from "react-native";
+import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, Platform, useColorScheme, Animated } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import ContextMenu from "react-native-context-menu-view";
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -12,9 +12,11 @@ import { Icon } from "../Icon";
 import { Note } from "../models/Note";
 import CryptoUtils from '../utils/crypto';
 import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
+import { cacheBookBackgroundImage, cachedBookBackgroundImageURL, cleanupBookBackgroundImageCache } from "../BookBackgroundCache";
 
 const BOOK_DETAILS_COVER_MAX_WIDTH = 200;
 const BOOK_DETAILS_COVER_MAX_HEIGHT = 200;
+const BOOK_DETAILS_BACKGROUND_OPACITY = 0.2;
 
 export function BookDetailsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle()
@@ -29,8 +31,12 @@ export function BookDetailsScreen({ route, navigation }) {
 	const initial_bookshelf_ids_with_book = bookshelf_ids_with_book || ((!is_search && current_bookshelf?.id != null) ? [current_bookshelf.id] : []);
 	const bookshelfIDsWithBook = new Set(initial_bookshelf_ids_with_book.map(shelf_id => String(shelf_id)));
 	const coverURL = image.replace("http://", "https://");
-	const backgroundImageURL = normalizedBackgroundImageURL(background);
+	const remoteBackgroundImageURL = normalizedBackgroundImageURL(background);
 	const backgroundColor = normalizedBackgroundColor(background);
+	const backgroundColorStyle = remoteBackgroundImageURL == null ? backgroundColorStyleWithOpacity(backgroundColor, BOOK_DETAILS_BACKGROUND_OPACITY) : null;
+	const backgroundImageOpacity = React.useRef(new Animated.Value(0)).current;
+	const [ backgroundImageURL, setBackgroundImageURL ] = useState(null);
+	const [ shouldAnimateBackgroundImage, setShouldAnimateBackgroundImage ] = useState(false);
 
 	React.useEffect(() => {
 		setupBookDetails();
@@ -40,6 +46,39 @@ export function BookDetailsScreen({ route, navigation }) {
 	React.useEffect(() => {
 		setCoverSize(null);
 	}, [coverURL]);
+
+	React.useEffect(() => {
+		let is_cancelled = false;
+
+		backgroundImageOpacity.stopAnimation();
+		backgroundImageOpacity.setValue(0);
+		setBackgroundImageURL(null);
+		setShouldAnimateBackgroundImage(false);
+
+		if (remoteBackgroundImageURL == null) {
+			return;
+		}
+
+		cleanupBookBackgroundImageCache();
+		cachedBookBackgroundImageURL(isbn).then(cached_url => {
+			if (is_cancelled) {
+				return;
+			}
+
+			if (cached_url != null) {
+				backgroundImageOpacity.setValue(BOOK_DETAILS_BACKGROUND_OPACITY);
+				setBackgroundImageURL(cached_url);
+			}
+			else {
+				setShouldAnimateBackgroundImage(true);
+				setBackgroundImageURL(remoteBackgroundImageURL);
+			}
+		});
+
+		return () => {
+			is_cancelled = true;
+		};
+	}, [isbn, remoteBackgroundImageURL, backgroundImageOpacity]);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -376,6 +415,18 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 	}
 
+	function onBackgroundImageLoad() {
+		if (shouldAnimateBackgroundImage) {
+			Animated.timing(backgroundImageOpacity, {
+				toValue: BOOK_DETAILS_BACKGROUND_OPACITY,
+				duration: 350,
+				useNativeDriver: true
+			}).start();
+
+			cacheBookBackgroundImage(isbn, remoteBackgroundImageURL);
+		}
+	}
+
 	function normalizedBackgroundImageURL(background) {
 		const url = background?.image || background?.url;
 		if ((typeof url != "string") || (url.trim().length == 0)) {
@@ -392,6 +443,25 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 
 		return color.trim();
+	}
+
+	function backgroundColorStyleWithOpacity(color, opacity) {
+		if (color == null) {
+			return null;
+		}
+
+		let hex = color.slice(1);
+		if (hex.length == 3) {
+			hex = hex.split("").map(char => char + char).join("");
+		}
+		else if (hex.length == 8) {
+			hex = hex.slice(0, 6);
+		}
+
+		const red = parseInt(hex.slice(0, 2), 16);
+		const green = parseInt(hex.slice(2, 4), 16);
+		const blue = parseInt(hex.slice(4, 6), 16);
+		return { backgroundColor: `rgba(${red}, ${green}, ${blue}, ${opacity})` };
 	}
 
 	return (
@@ -411,13 +481,14 @@ export function BookDetailsScreen({ route, navigation }) {
 						dropdownMenuMode={true}
 				>
 					<View style={styles.bookDetails}>
-						<View style={[styles.bookDetailsTop, backgroundColor == null ? null : { backgroundColor: backgroundColor }]}>
+						<View style={[styles.bookDetailsTop, backgroundColorStyle]}>
 							{backgroundImageURL == null ? null : (
-								<Image
+								<Animated.Image
 									pointerEvents="none"
-									style={styles.bookDetailsBackgroundImage}
+									style={[styles.bookDetailsBackgroundImage, { opacity: backgroundImageOpacity }]}
 									resizeMode="cover"
 									source={{ uri: backgroundImageURL }}
+									onLoad={onBackgroundImageLoad}
 								/>
 							)}
 							<View style={styles.bookDetailsCoverSlot}>
