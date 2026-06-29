@@ -3,8 +3,8 @@ import RNFS from "react-native-fs";
 const bookBackgroundCacheDirectory = RNFS.CachesDirectoryPath + "/Backgrounds";
 const maximumCachedBackgrounds = 50;
 
-export function cachedBookBackgroundImageURL(isbn) {
-	const path = bookBackgroundCachePath(isbn);
+export function cachedBookBackgroundImageURL(isbn, image_url) {
+	const path = bookBackgroundCachePath(isbn, image_url);
 	if (path == null) {
 		return Promise.resolve(null);
 	}
@@ -17,7 +17,7 @@ export function cachedBookBackgroundImageURL(isbn) {
 }
 
 export function cacheBookBackgroundImage(isbn, image_url) {
-	const path = bookBackgroundCachePath(isbn);
+	const path = bookBackgroundCachePath(isbn, image_url);
 	if ((path == null) || (typeof image_url != "string") || (image_url.length == 0)) {
 		return Promise.resolve();
 	}
@@ -64,17 +64,32 @@ function ensureBookBackgroundCacheDirectory() {
 	});
 }
 
-function bookBackgroundCachePath(isbn) {
+function bookBackgroundCachePath(isbn, image_url) {
 	const clean_isbn = sanitizedISBN(isbn);
-	if (clean_isbn.length == 0) {
+	const url_hash = shortHashForString(image_url);
+	if ((clean_isbn.length == 0) || (url_hash.length == 0)) {
 		return null;
 	}
 
-	return bookBackgroundCacheDirectory + "/" + clean_isbn + ".png";
+	return bookBackgroundCacheDirectory + "/" + clean_isbn + "-" + url_hash + ".png";
 }
 
 function sanitizedISBN(isbn) {
 	return String(isbn || "").replace(/[^0-9Xx]/g, "");
+}
+
+function shortHashForString(value) {
+	const text = String(value || "");
+	if (text.length == 0) {
+		return "";
+	}
+
+	let hash = 0;
+	for (let i = 0; i < text.length; i++) {
+		hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+	}
+
+	return Math.abs(hash).toString(36);
 }
 
 function cacheEntryTime(entry) {

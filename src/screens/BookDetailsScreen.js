@@ -60,7 +60,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 
 		cleanupBookBackgroundImageCache();
-		cachedBookBackgroundImageURL(isbn).then(cached_url => {
+		cachedBookBackgroundImageURL(isbn, remoteBackgroundImageURL).then(cached_url => {
 			if (is_cancelled) {
 				return;
 			}
