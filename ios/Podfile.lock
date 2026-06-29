@@ -1986,7 +1986,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-context-menu-view (1.20.0):
+  - react-native-context-menu-view (1.19.0):
     - React
   - react-native-cookies (6.2.1):
     - React-Core
@@ -2046,7 +2046,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context (5.6.2):
+  - react-native-safe-area-context (5.8.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2064,8 +2064,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.6.2)
-    - react-native-safe-area-context/fabric (= 5.6.2)
+    - react-native-safe-area-context/common (= 5.8.0)
+    - react-native-safe-area-context/fabric (= 5.8.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2076,7 +2076,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/common (5.6.2):
+  - react-native-safe-area-context/common (5.8.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2104,7 +2104,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/fabric (5.6.2):
+  - react-native-safe-area-context/fabric (5.8.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2692,7 +2692,7 @@ PODS:
     - React-perflogger (= 0.83.6)
     - React-utils (= 0.83.6)
     - SocketRocket
-  - RNAppleAuthentication (2.5.0):
+  - RNAppleAuthentication (2.4.1):
     - React-Core
   - RNCAsyncStorage (2.2.0):
     - boost
@@ -2750,7 +2750,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNDateTimePicker (8.5.0):
+  - RNDateTimePicker (8.4.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2996,7 +2996,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNVectorIcons (10.3.0):
+  - RNVectorIcons (10.2.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3506,11 +3506,11 @@ SPEC CHECKSUMS:
   React-logger: 984bd45f1fddb75e49627ca13c9470a4f4abe7a7
   React-Mapbuffer: ceeccd6570db88ba4bc04278073392adf96a0fc1
   React-microtasksnativemodule: c71eb8a79998c20dd13de58a7525eb32d200d9c8
-  react-native-context-menu-view: 418877dcac6add4abba8fc2ee92c39f05b763f3a
+  react-native-context-menu-view: 3a8fb510448efa9d477f645dafa889ef1c78daaa
   react-native-cookies: d648ab7025833b977c0b19e142503034f5f29411
   react-native-image-picker: b16541b587b275e81a12f9b82f215c5e9b0ccbf3
   react-native-menu: 8d2c831a735c9e6528c28b26ca14e57591d87e14
-  react-native-safe-area-context: c00143b4823773bba23f2f19f85663ae89ceb460
+  react-native-safe-area-context: ebd2c2ece5e6e650a6963184039ec8cfd8960d86
   react-native-sfsymbols: 3309f24c98d32705568c84b714268f3ec62017c7
   React-NativeModulesApple: 70b1879ac2b642ef784fb6d43360c40803b0a142
   React-networking: 49160c13f35f3eb93791d062c330caea323bde87
@@ -3545,17 +3545,17 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 3ec8fc5d32ad422f5b805523a5a5ea5556d8b3a2
   ReactCodegen: c8db9328177bc793ed2e3a217931689c594c5cf8
   ReactCommon: e788387a0b387a927a2a5d041fab09472fe8dedc
-  RNAppleAuthentication: 9027af8aa92b4719ef1b6030a8e954d37079473a
+  RNAppleAuthentication: c3dddf5918126c9aae85dc2e2ce9fb87835e9e04
   RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
   RNCClipboard: 4b58c780f63676367640f23c8e114e9bd0cf86ac
-  RNDateTimePicker: 776fed1b26cfd8d7fff6dd382d6291546fdbe755
+  RNDateTimePicker: 59201f42efe6c4c1f8464ea21e9d5f4392171c2a
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
   RNGestureHandler: b407c25a3f51d22dd7430e6b530f753f112b7e77
   RNInAppBrowser: 6d3eb68d471b9834335c664704719b8be1bfdb20
   RNReanimated: c27186cf7f86c8a0fb31583062f3a5dde622098b
   RNScreens: 9269ab4971b2bd24917be84295d2c2ae7d06e9be
-  RNVectorIcons: 791f13226ec4a3fd13062eda9e892159f0981fae
+  RNVectorIcons: c13cc1db346e960ecd0aafcdd5d0bb458133b9c1
   RNWorklets: 917983f22986cc04d1555095b59591e9321dbb2e
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
