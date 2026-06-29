@@ -33,8 +33,15 @@ class EditorKeyboardAvoidingContent extends React.Component {
   }
 
   updateKeyboardHeight(keyboard_height) {
-    const next_keyboard_height = Math.max(0, keyboard_height || 0)
+    const next_keyboard_height = Math.max(0, Math.round(keyboard_height || 0))
     const next_visible_height = this.visibleHeight(this.state.content_height, next_keyboard_height)
+
+    if (
+      next_keyboard_height === this.state.keyboard_height &&
+      next_visible_height === this.state.visible_height
+    ) {
+      return
+    }
 
     this.setState({
       keyboard_height: next_keyboard_height,
@@ -59,7 +66,7 @@ class EditorKeyboardAvoidingContent extends React.Component {
       return
     }
 
-    const height = event?.nativeEvent?.layout?.height || 0
+    const height = Math.round(event?.nativeEvent?.layout?.height || 0)
     if (height > 0 && height !== this.state.content_height) {
       this.setState({
         content_height: height,
@@ -69,7 +76,7 @@ class EditorKeyboardAvoidingContent extends React.Component {
   }
 
   visibleHeight(content_height, keyboard_height) {
-    return Math.max(0, content_height - keyboard_height)
+    return Math.max(0, Math.round(content_height - keyboard_height))
   }
 
   render() {
@@ -118,7 +125,7 @@ export default function EditorKeyboardAvoidingView(props) {
   const [keyboard_event_height, setKeyboardEventHeight] = React.useState(0)
 
   const applyKeyboardHeight = React.useCallback((height, duration, should_animate) => {
-    const next_height = Math.abs(height || 0)
+    const next_height = Math.round(Math.abs(height || 0))
 
     if (should_animate) {
       const animation_duration = duration > 0 && duration < 10 ? duration * 1000 : duration
