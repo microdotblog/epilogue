@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useColorScheme } from "react-native";
+import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useColorScheme, Animated } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
+import * as Application from "expo-application";
 import FastImage from "react-native-fast-image";
 var showdown  = require("showdown");
 
@@ -17,15 +18,22 @@ const profilePostSources = [
 	{ filter: "letterboxd.com", media_type: "letterboxd" }
 ];
 
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
 export function ProfileScreen({ navigation }) {
 	const styles = useEpilogueStyle()
 	const colorScheme = useColorScheme();
 	const is_dark = (colorScheme == "dark");
+	const versionPaneOpacity = React.useRef(new Animated.Value(1)).current;
+	const versionPaneTranslateY = React.useRef(new Animated.Value(0)).current;
+	const hasHiddenVersionPane = React.useRef(false);
 	const [ username, setUsername ] = useState("");
 	const [ hostname, setHostname ] = useState("Micro.blog");
 	const [ posts, setPosts ] = useState([]);
 	const [ isDownloading, setDownloading ] = useState(true);
 	const [ blogName, setBlogName ] = useState();
+	const appVersionLabel = appVersionDisplayLabel();
+	const appBuildLabel = appBuildDisplayLabel();
 
 	var isCancelDownload = false;
 
@@ -316,6 +324,26 @@ export function ProfileScreen({ navigation }) {
 	function onNotesKeyPressed() {
 		navigation.navigate("NotesKey");
 	}
+
+	function hideVersionPane() {
+		if (hasHiddenVersionPane.current) {
+			return;
+		}
+
+		hasHiddenVersionPane.current = true;
+		Animated.parallel([
+			Animated.timing(versionPaneOpacity, {
+				toValue: 0,
+				duration: 220,
+				useNativeDriver: true
+			}),
+			Animated.timing(versionPaneTranslateY, {
+				toValue: 16,
+				duration: 220,
+				useNativeDriver: true
+			})
+		]).start();
+	}
 	
 	function onEditPost(item) {
 		const s = item.text;
@@ -359,9 +387,12 @@ export function ProfileScreen({ navigation }) {
 					<Text style={styles.micropubButtonTitle} accessibilityLabel="set secret key">Notes Key...</Text>
 				</Pressable>
 			</View>
-			<FlatList
+			<AnimatedFlatList
 				style={styles.profilePosts}
+				contentContainerStyle={styles.profilePostsContent}
 				data = {posts}
+				onScrollBeginDrag={hideVersionPane}
+				onMomentumScrollBegin={hideVersionPane}
 				renderItem = { ({item}) => 
 				<Pressable onPress={() => { onEditPost(item) }}>
 					<View style={styles.profilePost}>
@@ -379,6 +410,42 @@ export function ProfileScreen({ navigation }) {
 				}
 				keyExtractor = { item => item.id }
 			/>
+			<Animated.View
+				pointerEvents="none"
+				style={[
+					styles.profileVersionPaneContainer,
+					{
+						opacity: versionPaneOpacity,
+						transform: [{ translateY: versionPaneTranslateY }]
+					}
+				]}
+			>
+				<View style={styles.profileVersionPane}>
+					<Text style={styles.profileVersionText}>
+						{appVersionLabel}
+						{appBuildLabel.length > 0 ? (
+							<Text style={styles.profileVersionBuildText}> {appBuildLabel}</Text>
+						) : null}
+					</Text>
+				</View>
+			</Animated.View>
 		</View>
 	);
+}
+
+function appVersionDisplayLabel() {
+	const appVersion = Application.nativeApplicationVersion || "";
+	const versionText = appVersion.length > 0 ? appVersion : "Unknown";
+
+	return `Epilogue ${versionText}`;
+}
+
+function appBuildDisplayLabel() {
+	const buildVersion = Application.nativeBuildVersion || "";
+
+	if (buildVersion.length > 0) {
+		return `(${buildVersion})`;
+	}
+
+	return "";
 }

@@ -445,6 +445,9 @@ export const light = StyleSheet.create({
 	},
 	profilePosts: {		
 	},
+	profilePostsContent: {
+		paddingBottom: 86
+	},
 	profilePost: {
 		flexDirection: "row",
 		paddingTop: 15,
@@ -482,6 +485,37 @@ export const light = StyleSheet.create({
 	},
 	profileSpinner: {
 		alignItems: "flex-end"
+	},
+	profileVersionPaneContainer: {
+		position: "absolute",
+		left: 0,
+		right: 0,
+		bottom: 16,
+		alignItems: "center",
+		zIndex: 10
+	},
+	profileVersionPane: {
+		paddingHorizontal: 22,
+		paddingVertical: 9,
+		borderRadius: 22,
+		backgroundColor: "#e1e1e1",
+		borderWidth: 0.5,
+		borderColor: "#d6d6d6",
+		shadowColor: "#000000",
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.10,
+		shadowRadius: 5,
+		elevation: 4
+	},
+	profileVersionText: {
+		fontSize: 14,
+		color: "#000000"
+	},
+	profileVersionBuildText: {
+		color: "#777777"
 	},
 	notesKeyIntro: {
 		paddingLeft: 15,
@@ -1209,6 +1243,16 @@ export const dark = StyleSheet.create({
 	},
 	micropubButtonTitle: {
 		color: "#E5E7EB",
+	},
+	profileVersionPane: {
+		backgroundColor: "#272f3d",
+		borderColor: "#444444"
+	},
+	profileVersionText: {
+		color: "#E5E7EB"
+	},
+	profileVersionBuildText: {
+		color: "#8E98AA"
 	},
 	micropubIntro: {
 		color: "#E5E7EB"

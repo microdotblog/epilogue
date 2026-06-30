@@ -76,6 +76,11 @@ jest.mock("react-native-inappbrowser-reborn", () => ({
 
 jest.mock("react-native-navigation-bar-color", () => jest.fn(() => Promise.resolve()));
 
+jest.mock("expo-application", () => ({
+  nativeApplicationVersion: "2.4",
+  nativeBuildVersion: "131"
+}));
+
 jest.mock("react-native-sfsymbols", () => {
   const React = require("react");
   const { View } = require("react-native");
