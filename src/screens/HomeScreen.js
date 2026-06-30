@@ -501,7 +501,8 @@ export function HomeScreen({ navigation }) {
 				author: b.author,
 				description: b.description,
 				date: "",
-				background: b.background,
+				background_color: b.background_color,
+				background_url: b.background_url,
 				is_search: true
 			});
 		}
@@ -587,7 +588,8 @@ export function HomeScreen({ navigation }) {
 					author: item.author,
 					description: item.description,
 					date: item.date,
-					background: item.background,
+					background_color: item.background_color,
+					background_url: item.background_url,
 					bookshelves: bookshelves,
 					current_bookshelf: selected_bookshelf,
 					is_search: item.is_search,

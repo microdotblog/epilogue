@@ -27,12 +27,12 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ notes, setNotes] = useState([])
 	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
 	const [ coverSize, setCoverSize ] = useState(null)
-	const { id, isbn, title, image, author, description, date, background, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
+	const { id, isbn, title, image, author, description, date, background_color, background_url, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
 	const initial_bookshelf_ids_with_book = bookshelf_ids_with_book || ((!is_search && current_bookshelf?.id != null) ? [current_bookshelf.id] : []);
 	const bookshelfIDsWithBook = new Set(initial_bookshelf_ids_with_book.map(shelf_id => String(shelf_id)));
 	const coverURL = image.replace("http://", "https://");
-	const remoteBackgroundImageURL = normalizedBackgroundImageURL(background);
-	const backgroundColor = normalizedBackgroundColor(background);
+	const remoteBackgroundImageURL = normalizedBackgroundImageURL(background_url);
+	const backgroundColor = normalizedBackgroundColor(background_color);
 	const backgroundColorStyle = remoteBackgroundImageURL == null ? backgroundColorStyleWithOpacity(backgroundColor, BOOK_DETAILS_BACKGROUND_OPACITY) : null;
 	const backgroundImageOpacity = React.useRef(new Animated.Value(0)).current;
 	const [ backgroundImageURL, setBackgroundImageURL ] = useState(null);
@@ -427,8 +427,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 	}
 
-	function normalizedBackgroundImageURL(background) {
-		const url = background?.image || background?.url;
+	function normalizedBackgroundImageURL(url) {
 		if ((typeof url != "string") || (url.trim().length == 0)) {
 			return null;
 		}
@@ -436,8 +435,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		return url.trim().replace("http://", "https://");
 	}
 
-	function normalizedBackgroundColor(background) {
-		const color = background?.color;
+	function normalizedBackgroundColor(color) {
 		if ((typeof color != "string") || !/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/.test(color.trim())) {
 			return null;
 		}
