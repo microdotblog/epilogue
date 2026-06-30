@@ -414,7 +414,6 @@ export function ProfileScreen({ navigation }) {
 				keyExtractor = { item => item.id }
 			/>
 			<Animated.View
-				pointerEvents="none"
 				style={[
 					styles.profileVersionPaneContainer,
 					{
@@ -423,14 +422,14 @@ export function ProfileScreen({ navigation }) {
 					}
 				]}
 			>
-				<View style={styles.profileVersionPane}>
+				<Pressable style={styles.profileVersionPane}>
 					<Text style={styles.profileVersionText}>
 						{appVersionLabel}
 						{appBuildLabel.length > 0 ? (
 							<Text style={styles.profileVersionBuildText}> {appBuildLabel}</Text>
 						) : null}
 					</Text>
-				</View>
+				</Pressable>
 			</Animated.View>
 		</View>
 	);
