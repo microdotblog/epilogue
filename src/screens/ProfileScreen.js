@@ -144,6 +144,9 @@ export function ProfileScreen({ navigation }) {
 							else {
 								use_url = use_url + "?q=source&offset=" + source.offset;
 							}
+							if (source.offset == 0) {
+								use_url = use_url + "&limit=20";
+							}
 							use_url = use_url + "&filter=" + encodeURIComponent(source.filter);
 
 							if ((blog_id != null) && (blog_id.length > 0)) {
