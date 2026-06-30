@@ -1,7 +1,6 @@
 import React, { Component, useState } from "react";
 import type { Node } from "react";
-import { InputAccessoryView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions } from "react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
+import { ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions, useColorScheme } from "react-native";
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
@@ -9,15 +8,16 @@ import { BOOK_COVER_HEIGHT, BOOK_COVER_WIDTH } from "../Styles";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
+import EditorKeyboardAvoidingView from "../components/keyboard/editor_keyboard_avoiding_view";
+import HighlightingText from "../components/text/highlighting_text";
 
 export function PostScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
+	const colorScheme = useColorScheme();
+	const isDark = colorScheme == "dark";
 	const windowSize = useWindowDimensions();
-	const headerHeight = useHeaderHeight();
-	const keyboardNoticeID = "KeyboardNoticeID";
-	const [ text, setText ] = useState();
+	const [ text, setText ] = useState("");
 	const [ title, setTitle ] = useState();
-	const [ keyboardAccessoryHeight, setKeyboardAccessoryHeight ] = useState(0);
 	const [ blogID, setBlogID ] = useState();
 	const [ blogName, setBlogName ] = useState();
 	const [ blogCount, setBlogCount ] = useState(0);
@@ -27,6 +27,7 @@ export function PostScreen({ route, navigation }) {
 	const [ bookColumns, setBookColumns ] = useState(bestColumnsForWidth(windowSize.width))
 	const showsPostNotice = (title != undefined) && (title.length > 0);
 	const showsPlainPostSpacer = !showsPostNotice;
+	const editorBackgroundColor = isDark ? "#212936" : "#EFEFEF";
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -42,12 +43,6 @@ export function PostScreen({ route, navigation }) {
 		return () => subscription?.remove()
 	})
 
-	React.useEffect(() => {
-		if (!showsPostNotice) {
-			setKeyboardAccessoryHeight(0);
-		}
-	}, [showsPostNotice]);
-	
 	function onFocus(navigation) {
 		setupPostButton();
 		setupFields();
@@ -76,13 +71,10 @@ export function PostScreen({ route, navigation }) {
 		epilogueStorage.set(keys.currentText, text);
 	}
 
-	function onKeyboardAccessoryLayout(event) {
-		const height = Math.ceil(event.nativeEvent.layout.height);
-		if (height != keyboardAccessoryHeight) {
-			setKeyboardAccessoryHeight(height);
-		}
+	function onChangeEditorText({ nativeEvent }) {
+		onChangeText(nativeEvent?.text || "");
 	}
-	
+
 	function setupPostButton() {
 		navigation.setOptions({
 			headerRight: () => (
@@ -324,10 +316,8 @@ export function PostScreen({ route, navigation }) {
 	}
 		
 	return (
-		<KeyboardAvoidingView
+		<EditorKeyboardAvoidingView
 			style={styles.postTextBox}
-			behavior="height"
-			keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight + keyboardAccessoryHeight : 0}
 		>
 			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
 				<Text style={styles.postHostnameLeft}></Text>
@@ -341,26 +331,29 @@ export function PostScreen({ route, navigation }) {
 			</Pressable>
 			<PostTitleField title={title} />
 
-			{Platform.OS === "ios" && <>
-				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} scrollEnabled={true} autoFocus={true} inputAccessoryViewID={showsPostNotice ? keyboardNoticeID : undefined} />
-				{showsPostNotice && (
-					<InputAccessoryView nativeID={keyboardNoticeID}>
-						<View onLayout={onKeyboardAccessoryLayout}>
-							<PostNoticeField title={title} />
-						</View>
-					</InputAccessoryView>
-				)}
-			</>}
-			{Platform.OS === "android" && <>
-				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} scrollEnabled={true} autoFocus={true} />
-				<PostNoticeField title={title} />
-			</>}
+			<HighlightingText
+				style={[
+					styles.postTextInput,
+					styles.postEditorTextInput,
+					{
+						backgroundColor: editorBackgroundColor
+					}
+				]}
+				autoFocus={true}
+				colorScheme={isDark ? "dark" : "light"}
+				editable={!progressAnimating}
+				placeholderTextColor={isDark ? "#9ca3af" : "lightgray"}
+				scrollEnabled={true}
+				value={text}
+				onChangeText={onChangeEditorText}
+			/>
+			<PostNoticeField title={title} />
 
 			{showsPlainPostSpacer && (
 				<View style={styles.postEditorBottomSpacer} />
 			)}
 			
 			<PostBooksGrid title={title} books={books} columns={bookColumns} />
-		</KeyboardAvoidingView>
+		</EditorKeyboardAvoidingView>
 	);
 }
