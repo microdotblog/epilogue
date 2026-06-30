@@ -213,7 +213,8 @@ export class Book {
 							let b = new Book(best_isbn, book_item.title, author_name, cover_url);
 							b.id = (book_item.id != undefined) ? book_item.id : best_isbn;
 							b.description = description;
-							b.background = metadata.background;
+							b.background_color = metadata.background_color;
+							b.background_url = metadata.background_url;
 							results.push(b);
 						}
 					}

@@ -226,7 +226,8 @@ export function DiscoverScreen({ navigation }) {
 						image: item.image,
 						author: item.author,
 						description: item.description,
-						background: item.background,
+						background_color: item.background_color,
+						background_url: item.background_url,
 						bookshelves: bookshelves,
 						current_bookshelf: current_bookshelf,
 						is_search: item.is_search,
@@ -288,16 +289,17 @@ export function DiscoverScreen({ navigation }) {
 		var new_items = [];
 
 		for (let b of new_books) {
-			new_items.push({
-				id: b.id,
-				isbn: b.isbn,
-				title: b.title,
-				image: b.cover_url,
-				author: b.author,
-				description: b.description,
-				background: b.background,
-				is_search: true
-			});
+				new_items.push({
+					id: b.id,
+					isbn: b.isbn,
+					title: b.title,
+					image: b.cover_url,
+					author: b.author,
+					description: b.description,
+					background_color: b.background_color,
+					background_url: b.background_url,
+					is_search: true
+				});
 		}
 
 		if (new_items.length == 0) {

@@ -27,7 +27,8 @@ export function booksFromJSONFeed(data, bookshelf = null) {
 			author: author_name,
 			description: item.content_text,
 			date: item.date_published,
-			background: metadata.background,
+			background_color: metadata.background_color,
+			background_url: metadata.background_url,
 			is_search: false
 		};
 
