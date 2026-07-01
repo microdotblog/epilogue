@@ -2,10 +2,10 @@ import React from "react";
 import { Image, Platform, Pressable } from "react-native";
 
 export function profileHeaderOptions(avatarURL, onPress, styles) {
-	const renderButton = () => (
+	const renderButton = (buttonStyle) => (
 		<Pressable
 			onPress={onPress}
-			style={styles.profileHeaderButton}
+			style={[styles.profileHeaderButton, buttonStyle]}
 			accessibilityRole="button"
 			accessibilityLabel="show profile"
 		>
@@ -17,7 +17,7 @@ export function profileHeaderOptions(avatarURL, onPress, styles) {
 		return {
 			unstable_headerLeftItems: () => [{
 				type: "custom",
-				element: renderButton(),
+				element: renderButton(styles.profileHeaderButtonIOS),
 				hidesSharedBackground: true
 			}]
 		};

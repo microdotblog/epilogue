@@ -64,6 +64,7 @@ export function TabsScreen({ navigation }) {
 		<Tab.Navigator
 			screenOptions={({ route }) => ({
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
+				headerLeftContainerStyle: { paddingLeft: 15 },
 				tabBarActiveTintColor: tabActiveTintColor,
 				tabBarInactiveTintColor: inactiveTintColor,
 				tabBarIcon: useNativeTabs
