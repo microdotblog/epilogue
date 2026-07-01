@@ -17,11 +17,13 @@ export const light = StyleSheet.create({
 		borderRadius: 12
 	},
 	profileHeaderButton: {
-		marginLeft: -8,
 		width: 32,
 		height: 32,
 		alignItems: "center",
 		justifyContent: "center"
+	},
+	profileHeaderButtonIOS: {
+		marginLeft: -8
 	},
 	profileHeaderIcon: {
 		width: 28,
