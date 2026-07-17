@@ -25,6 +25,7 @@ export function booksFromJSONFeed(data, bookshelf = null) {
 			title: item.title,
 			image: item.image,
 			author: author_name,
+			author_id: metadata.author_id,
 			description: item.content_text,
 			date: item.date_published,
 			background_color: metadata.background_color,
@@ -187,6 +188,17 @@ export function readBookshelfIDsContainingBook(isbn, bookID = null) {
 	}).catch(() => {
 		return [];
 	});
+}
+
+export function resolveOwningBookshelf(bookshelves, currentBookshelf, bookshelfIDs) {
+	const shelf_ids = new Set((bookshelfIDs || []).map(shelf_id => String(shelf_id)));
+	const saved_bookshelves = bookshelves || [];
+
+	if ((currentBookshelf?.id != null) && shelf_ids.has(String(currentBookshelf.id))) {
+		return saved_bookshelves.find(bookshelf => String(bookshelf.id) == String(currentBookshelf.id)) || currentBookshelf;
+	}
+
+	return saved_bookshelves.find(bookshelf => shelf_ids.has(String(bookshelf.id))) || null;
 }
 
 function bookshelfCachePath(bookshelf) {
