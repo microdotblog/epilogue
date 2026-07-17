@@ -32,6 +32,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	const canShowAuthorBooks = (author_id != null) && (String(author_id).length > 0);
 	const initial_bookshelf_ids_with_book = bookshelf_ids_with_book || ((!is_search && current_bookshelf?.id != null) ? [current_bookshelf.id] : []);
 	const bookshelfIDsWithBook = new Set(initial_bookshelf_ids_with_book.map(shelf_id => String(shelf_id)));
+	const canEditBook = !is_search && (current_bookshelf?.id != null) && bookshelfIDsWithBook.has(String(current_bookshelf.id));
 	const coverURL = image.replace("http://", "https://");
 	const remoteBackgroundImageURL = normalizedBackgroundImageURL(background_url);
 	const backgroundColor = normalizedBackgroundColor(background_color);
@@ -90,7 +91,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	}, [navigation, isbn]);
 	
 	function setupBookDetails() {
-		let bookshelf_title = current_bookshelf.title;
+		let bookshelf_title = current_bookshelf?.title || "Books";
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
 		epilogueStorage.set(keys.currentTitle, "");
 		epilogueStorage.set(keys.currentText, s);
@@ -144,21 +145,21 @@ export function BookDetailsScreen({ route, navigation }) {
 		
 		var edit_actions = [];
 
-		if (!is_search) {
+		if (canEditBook) {
 			edit_actions.push({
 				id: "editbook",
 				title: "Edit Title & Author"
 			});
 		}
 
-		if (!is_search) {
+		if (canEditBook) {
 			edit_actions.push({
 				id: "setopenlibrary",
 				title: "Set Cover"
 			});
 		}
 
-		if (!is_search && current_bookshelf.type == "finished") {
+		if (canEditBook && current_bookshelf.type == "finished") {
 			edit_actions.push({
 				id: "setfinisheddate",
 				title: "Set Finished Date"
@@ -348,7 +349,9 @@ export function BookDetailsScreen({ route, navigation }) {
 	function showAuthorBooks() {
 		const params = {
 			author_id: author_id,
-			author: author
+			author: author,
+			bookshelves: bookshelves,
+			current_bookshelf: current_bookshelf
 		};
 		navigation.navigate("AuthorBooks", params);
 	}

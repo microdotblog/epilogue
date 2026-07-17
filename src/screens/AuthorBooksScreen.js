@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Platform, Pressable, StyleSheet, Text, TextInput, useColorScheme, useWindowDimensions, View } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 
-import { booksFromJSONFeed, readBookshelfIDsContainingBook } from "../BookshelfCache";
+import { booksFromJSONFeed, readBookshelfIDsContainingBook, resolveOwningBookshelf } from "../BookshelfCache";
 import { keys } from "../Constants";
 import { Icon } from "../Icon";
 import epilogueStorage from "../Storage";
@@ -19,7 +19,7 @@ export function AuthorBooksScreen({ route, navigation }) {
 	const [ searchText, setSearchText ] = useState("");
 	const [ sheetDetentIndex, setSheetDetentIndex ] = useState(0);
 	const requestVersion = useRef(0);
-	const { author_id, author } = route.params;
+	const { author_id, author, bookshelves = [], current_bookshelf = null } = route.params;
 	const backgroundColor = is_dark ? "#212936" : "#FFFFFF";
 	const sheetDetentFraction = sheetDetentIndex == 0 ? 0.5 : 0.9;
 	const bookListHeight = Math.max(1, Math.floor((windowHeight * sheetDetentFraction) - headerHeight));
@@ -98,8 +98,10 @@ export function AuthorBooksScreen({ route, navigation }) {
 		}
 
 		setSelectedBookID(item.id);
-		const bookshelf_ids_with_book = await readBookshelfIDsContainingBook(item.isbn, item.id);
-		const is_search = bookshelf_ids_with_book.length == 0;
+		const fallback_book_id = String(item.isbn || "").length == 0 ? item.id : null;
+		const bookshelf_ids_with_book = await readBookshelfIDsContainingBook(item.isbn, fallback_book_id);
+		const owning_bookshelf = resolveOwningBookshelf(bookshelves, current_bookshelf, bookshelf_ids_with_book);
+		const is_search = owning_bookshelf == null;
 
 		navigation.popTo("Details", {
 			id: item.id,
@@ -112,6 +114,8 @@ export function AuthorBooksScreen({ route, navigation }) {
 			date: item.date,
 			background_color: item.background_color,
 			background_url: item.background_url,
+			bookshelves: bookshelves,
+			current_bookshelf: owning_bookshelf || current_bookshelf,
 			is_search: is_search,
 			bookshelf_ids_with_book: bookshelf_ids_with_book
 		}, { merge: true });
