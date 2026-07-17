@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from "react-native";
 
 import { booksFromJSONFeed, readBookshelfIDsContainingBook } from "../BookshelfCache";
 import { keys } from "../Constants";
+import { Icon } from "../Icon";
 import epilogueStorage from "../Storage";
 
 export function AuthorBooksScreen({ route, navigation }) {
@@ -11,9 +12,25 @@ export function AuthorBooksScreen({ route, navigation }) {
 	const [ isLoading, setIsLoading ] = useState(true);
 	const [ errorMessage, setErrorMessage ] = useState("");
 	const [ selectedBookID, setSelectedBookID ] = useState(null);
+	const [ isSearchVisible, setIsSearchVisible ] = useState(false);
+	const [ searchText, setSearchText ] = useState("");
 	const requestVersion = useRef(0);
 	const { author_id, author } = route.params;
 	const backgroundColor = is_dark ? "#212936" : "#FFFFFF";
+	const normalizedSearchText = searchText.trim().toLowerCase();
+	const filteredBooks = normalizedSearchText.length == 0 ? books : books.filter(book => {
+		return String(book.title || "").toLowerCase().includes(normalizedSearchText);
+	});
+
+	React.useLayoutEffect(() => {
+		navigation.setOptions({
+			headerRight: () => (
+				<Pressable onPress={toggleSearch} hitSlop={10} accessibilityRole="button" accessibilityLabel="search books">
+					<Icon name="discover" color={is_dark ? "#FFFFFF" : "#000000"} size={18} />
+				</Pressable>
+			)
+		});
+	}, [navigation, is_dark, isSearchVisible]);
 
 	React.useEffect(() => {
 		loadBooks();
@@ -86,6 +103,13 @@ export function AuthorBooksScreen({ route, navigation }) {
 		}, { merge: true });
 	}
 
+	function toggleSearch() {
+		if (isSearchVisible) {
+			setSearchText("");
+		}
+		setIsSearchVisible(!isSearchVisible);
+	}
+
 	function renderBook({ item }) {
 		const image_url = String(item.image || "").replace("http://", "https://");
 		const is_selecting = String(item.id) == String(selectedBookID);
@@ -146,12 +170,40 @@ export function AuthorBooksScreen({ route, navigation }) {
 	}
 
 	return (
-		<FlatList
-			data={books}
-			keyExtractor={item => String(item.id || item.isbn)}
-			renderItem={renderBook}
-			style={[ sheetStyles.container, { backgroundColor: backgroundColor } ]}
-		/>
+		<View style={[ sheetStyles.container, { backgroundColor: backgroundColor } ]}>
+			{isSearchVisible ? (
+				<View style={[ sheetStyles.searchContainer, { borderBottomColor: is_dark ? "#3B4351" : "#E5E5E5" } ]}>
+					<TextInput
+						autoFocus={true}
+						clearButtonMode="while-editing"
+						onChangeText={setSearchText}
+						placeholder="Search books"
+						placeholderTextColor="#777777"
+						returnKeyType="done"
+						style={[
+							sheetStyles.searchField,
+							{
+								backgroundColor: is_dark ? "#111827" : "#F1F2F4",
+								color: is_dark ? "#FFFFFF" : "#111111"
+							}
+						]}
+						value={searchText}
+					/>
+				</View>
+			) : null}
+			<FlatList
+				data={filteredBooks}
+				keyboardShouldPersistTaps="handled"
+				keyExtractor={item => String(item.id || item.isbn)}
+				ListEmptyComponent={(
+					<View style={sheetStyles.filteredEmptyContainer}>
+						<Text style={[ sheetStyles.statusText, { color: is_dark ? "#E5E7EB" : "#333333" } ]}>No matching books.</Text>
+					</View>
+				)}
+				renderItem={renderBook}
+				style={sheetStyles.container}
+			/>
+		</View>
 	);
 }
 
@@ -192,6 +244,22 @@ const sheetStyles = StyleSheet.create({
 		color: "#777777",
 		fontSize: 13,
 		marginTop: 3
+	},
+	searchContainer: {
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		paddingHorizontal: 12,
+		paddingVertical: 8
+	},
+	searchField: {
+		borderRadius: 8,
+		fontSize: 15,
+		height: 36,
+		paddingHorizontal: 10,
+		paddingVertical: 6
+	},
+	filteredEmptyContainer: {
+		alignItems: "center",
+		padding: 24
 	},
 	statusContainer: {
 		alignItems: "center",
