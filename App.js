@@ -15,6 +15,7 @@ import { Icon } from "./src/Icon";
 import { HomeScreen } from "./src/screens/HomeScreen";
 import { TabsScreen } from "./src/screens/TabsScreen";
 import { BookDetailsScreen } from "./src/screens/BookDetailsScreen";
+import { AuthorBooksScreen } from "./src/screens/AuthorBooksScreen";
 import { PostScreen } from "./src/screens/PostScreen";
 import { SignInScreen } from "./src/screens/SignInScreen";
 import { BlogsScreen } from "./src/screens/BlogsScreen";
@@ -154,6 +155,18 @@ const App: () => Node = () => {
             })} />
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: "modal" }}>
+            <Stack.Screen name="AuthorBooks" component={AuthorBooksScreen} options={({ navigation, route }) => ({
+              title: route.params.author,
+              presentation: "formSheet",
+              sheetAllowedDetents: [0.5, 0.9],
+              sheetInitialDetentIndex: 0,
+              sheetGrabberVisible: true,
+              headerLeft: () => (
+                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
+                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
+                </Pressable>
+              )
+            })} />
             <Stack.Screen name="Post" component={PostScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (

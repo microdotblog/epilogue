@@ -7,6 +7,7 @@ export class Book {
 		this.id = "";
 		this.description = "";
 		this.work_key = "";
+		this.author_id = null;
 		
 		this.isbn = isbn;
 		this.title = title;
@@ -215,6 +216,7 @@ export class Book {
 							b.description = description;
 							b.background_color = metadata.background_color;
 							b.background_url = metadata.background_url;
+							b.author_id = metadata.author_id;
 							results.push(b);
 						}
 					}

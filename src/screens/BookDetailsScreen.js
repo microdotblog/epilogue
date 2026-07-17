@@ -27,7 +27,9 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ notes, setNotes] = useState([])
 	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
 	const [ coverSize, setCoverSize ] = useState(null)
-	const { id, isbn, title, image, author, description, date, background_color, background_url, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
+	const { id, isbn, title, image, author, author_id, description, date, background_color, background_url, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
+	const authorBooksMenuTitle = "Books by " + author;
+	const canShowAuthorBooks = (author_id != null) && (String(author_id).length > 0);
 	const initial_bookshelf_ids_with_book = bookshelf_ids_with_book || ((!is_search && current_bookshelf?.id != null) ? [current_bookshelf.id] : []);
 	const bookshelfIDsWithBook = new Set(initial_bookshelf_ids_with_book.map(shelf_id => String(shelf_id)));
 	const coverURL = image.replace("http://", "https://");
@@ -117,6 +119,14 @@ export function BookDetailsScreen({ route, navigation }) {
 				title: "WorldCat"
 			},
 		];
+
+		if (canShowAuthorBooks) {
+			menu_items.unshift({
+				id: "authorbooks",
+				title: authorBooksMenuTitle,
+				systemIcon: "books.vertical"
+			});
+		}
 		
 		var edit_actions = [];
 		var share_actions = [];
@@ -335,6 +345,15 @@ export function BookDetailsScreen({ route, navigation }) {
 		};
 		navigation.navigate("EditBookInfo", params);
 	}
+
+	function showAuthorBooks() {
+		const params = {
+			author_id: author_id,
+			author: author,
+			current_isbn: isbn
+		};
+		navigation.navigate("AuthorBooks", params);
+	}
 	
 	function viewBookOn(service) {
 		var url;
@@ -468,10 +487,15 @@ export function BookDetailsScreen({ route, navigation }) {
 				<ContextMenu
 						title="View on..."
 						onPress={({nativeEvent}) => {
-							viewBookOn(nativeEvent.name);
-							if (nativeEvent.name === "Share") {
+							if (nativeEvent.name === authorBooksMenuTitle) {
+								showAuthorBooks();
+							}
+							else if (nativeEvent.name === "Share") {
 								let url = "https://micro.blog/books/" + isbn
 								onShare(url)
+							}
+							else {
+								viewBookOn(nativeEvent.name);
 							}
 						}}
 						actions={menuActions}
