@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Platform, Pressable, StyleSheet, Text, TextInput, useColorScheme, useWindowDimensions, View } from "react-native";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 import { booksFromJSONFeed, readBookshelfIDsContainingBook } from "../BookshelfCache";
 import { keys } from "../Constants";
@@ -8,15 +9,20 @@ import epilogueStorage from "../Storage";
 
 export function AuthorBooksScreen({ route, navigation }) {
 	const is_dark = (useColorScheme() == "dark");
+	const windowHeight = useWindowDimensions().height;
+	const headerHeight = useHeaderHeight();
 	const [ books, setBooks ] = useState([]);
 	const [ isLoading, setIsLoading ] = useState(true);
 	const [ errorMessage, setErrorMessage ] = useState("");
 	const [ selectedBookID, setSelectedBookID ] = useState(null);
 	const [ isSearchVisible, setIsSearchVisible ] = useState(false);
 	const [ searchText, setSearchText ] = useState("");
+	const [ sheetDetentIndex, setSheetDetentIndex ] = useState(0);
 	const requestVersion = useRef(0);
 	const { author_id, author } = route.params;
 	const backgroundColor = is_dark ? "#212936" : "#FFFFFF";
+	const sheetDetentFraction = sheetDetentIndex == 0 ? 0.5 : 0.9;
+	const bookListHeight = Math.max(1, Math.floor((windowHeight * sheetDetentFraction) - headerHeight));
 	const normalizedSearchText = searchText.trim().toLowerCase();
 	const filteredBooks = normalizedSearchText.length == 0 ? books : books.filter(book => {
 		return String(book.title || "").toLowerCase().includes(normalizedSearchText);
@@ -39,6 +45,14 @@ export function AuthorBooksScreen({ route, navigation }) {
 			requestVersion.current += 1;
 		};
 	}, [author_id]);
+
+	React.useEffect(() => {
+		return navigation.addListener("sheetDetentChange", event => {
+			if (event.data.stable) {
+				setSheetDetentIndex(event.data.index);
+			}
+		});
+	}, [navigation]);
 
 	async function loadBooks() {
 		const current_request = ++requestVersion.current;
@@ -170,9 +184,19 @@ export function AuthorBooksScreen({ route, navigation }) {
 	}
 
 	return (
-		<View style={[ sheetStyles.container, { backgroundColor: backgroundColor } ]}>
-			{isSearchVisible ? (
-				<View style={[ sheetStyles.searchContainer, { borderBottomColor: is_dark ? "#3B4351" : "#E5E5E5" } ]}>
+		<FlatList
+			contentInsetAdjustmentBehavior="automatic"
+			data={filteredBooks}
+			keyboardShouldPersistTaps="handled"
+			keyExtractor={item => String(item.id || item.isbn)}
+			ListHeaderComponent={isSearchVisible ? (
+				<View style={[
+					sheetStyles.searchContainer,
+					{
+						backgroundColor: backgroundColor,
+						borderBottomColor: is_dark ? "#3B4351" : "#E5E5E5"
+					}
+				]}>
 					<TextInput
 						autoFocus={true}
 						clearButtonMode="while-editing"
@@ -191,19 +215,18 @@ export function AuthorBooksScreen({ route, navigation }) {
 					/>
 				</View>
 			) : null}
-			<FlatList
-				data={filteredBooks}
-				keyboardShouldPersistTaps="handled"
-				keyExtractor={item => String(item.id || item.isbn)}
-				ListEmptyComponent={(
-					<View style={sheetStyles.filteredEmptyContainer}>
-						<Text style={[ sheetStyles.statusText, { color: is_dark ? "#E5E7EB" : "#333333" } ]}>No matching books.</Text>
-					</View>
-				)}
-				renderItem={renderBook}
-				style={sheetStyles.container}
-			/>
-		</View>
+			ListEmptyComponent={(
+				<View style={sheetStyles.filteredEmptyContainer}>
+					<Text style={[ sheetStyles.statusText, { color: is_dark ? "#E5E7EB" : "#333333" } ]}>No matching books.</Text>
+				</View>
+			)}
+			renderItem={renderBook}
+			style={[
+				sheetStyles.container,
+				{ backgroundColor: backgroundColor },
+				Platform.OS === "ios" ? { flex: 0, height: bookListHeight } : null
+			]}
+		/>
 	);
 }
 

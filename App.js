@@ -159,6 +159,7 @@ const App: () => Node = () => {
               title: route.params.author,
               presentation: "formSheet",
               sheetAllowedDetents: [0.5, 0.9],
+              sheetExpandsWhenScrolledToEdge: false,
               sheetInitialDetentIndex: 0,
               sheetGrabberVisible: true,
               headerLeft: () => (
