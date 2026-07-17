@@ -3,7 +3,6 @@ import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, useCol
 
 import { booksFromJSONFeed, readBookshelfIDsContainingBook } from "../BookshelfCache";
 import { keys } from "../Constants";
-import { Icon } from "../Icon";
 import epilogueStorage from "../Storage";
 
 export function AuthorBooksScreen({ route, navigation }) {
@@ -13,7 +12,7 @@ export function AuthorBooksScreen({ route, navigation }) {
 	const [ errorMessage, setErrorMessage ] = useState("");
 	const [ selectedBookID, setSelectedBookID ] = useState(null);
 	const requestVersion = useRef(0);
-	const { author_id, author, current_isbn } = route.params;
+	const { author_id, author } = route.params;
 	const backgroundColor = is_dark ? "#212936" : "#FFFFFF";
 
 	React.useEffect(() => {
@@ -87,13 +86,8 @@ export function AuthorBooksScreen({ route, navigation }) {
 		}, { merge: true });
 	}
 
-	function normalizedISBN(isbn) {
-		return String(isbn || "").replace(/[-\s]/g, "").toLowerCase();
-	}
-
 	function renderBook({ item }) {
 		const image_url = String(item.image || "").replace("http://", "https://");
-		const is_current_book = normalizedISBN(item.isbn) == normalizedISBN(current_isbn);
 		const is_selecting = String(item.id) == String(selectedBookID);
 
 		return (
@@ -119,8 +113,6 @@ export function AuthorBooksScreen({ route, navigation }) {
 				</View>
 				{is_selecting ? (
 					<ActivityIndicator size="small" />
-				) : is_current_book ? (
-					<Icon name="check-circle" size={18} color={is_dark ? "#E5E7EB" : "#303030"} accessibilityLabel="currently selected book" />
 				) : null}
 			</Pressable>
 		);

@@ -28,7 +28,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
 	const [ coverSize, setCoverSize ] = useState(null)
 	const { id, isbn, title, image, author, author_id, description, date, background_color, background_url, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
-	const authorBooksMenuTitle = "Books by " + author;
+	const authorBooksMenuTitle = author;
 	const canShowAuthorBooks = (author_id != null) && (String(author_id).length > 0);
 	const initial_bookshelf_ids_with_book = bookshelf_ids_with_book || ((!is_search && current_bookshelf?.id != null) ? [current_bookshelf.id] : []);
 	const bookshelfIDsWithBook = new Set(initial_bookshelf_ids_with_book.map(shelf_id => String(shelf_id)));
@@ -97,7 +97,7 @@ export function BookDetailsScreen({ route, navigation }) {
 		epilogueStorage.set(keys.currentTextExtra, "");
 		epilogueStorage.remove(keys.currentPostURL);
 
-		var menu_items = [
+		var view_on_actions = [
 			{
 				id: "amazon",
 				title: "Amazon"
@@ -119,17 +119,30 @@ export function BookDetailsScreen({ route, navigation }) {
 				title: "WorldCat"
 			},
 		];
+		var menu_items = [];
 
 		if (canShowAuthorBooks) {
-			menu_items.unshift({
+			menu_items.push({
 				id: "authorbooks",
 				title: authorBooksMenuTitle,
-				systemIcon: "books.vertical"
+				systemIcon: "person.crop.circle"
 			});
 		}
+
+		menu_items.push({
+			id: "sharebutton",
+			title: "Share Link",
+			systemIcon: "square.and.arrow.up"
+		});
+
+		menu_items.push({
+			id: "viewon",
+			title: "View on...",
+			inlineChildren: true,
+			actions: view_on_actions
+		});
 		
 		var edit_actions = [];
-		var share_actions = [];
 
 		if (!is_search) {
 			edit_actions.push({
@@ -152,12 +165,6 @@ export function BookDetailsScreen({ route, navigation }) {
 			});
 		}
 
-		share_actions.push({
-			id: "sharebutton",
-			title: "Share",
-			systemIcon: "square.and.arrow.up"
-		})
-
 		if (Platform.OS === "ios") {
 			menu_items.push({
 				id: "edit",
@@ -165,13 +172,6 @@ export function BookDetailsScreen({ route, navigation }) {
 				inlineChildren: true,
 				actions: edit_actions
 			});
-
-			menu_items.push({
-				id: "sharelabel",
-				title: "micro.blog/books/" + isbn,
-				inlineChildren: true,
-				actions: share_actions
-			})
 		}
 		else {
 			menu_items.push({
@@ -180,7 +180,6 @@ export function BookDetailsScreen({ route, navigation }) {
 				disabled: true
 			});
 			menu_items.push(...edit_actions);
-			menu_items.push(...share_actions);
 		}
 		
 		setMenuActions(menu_items);
@@ -349,8 +348,7 @@ export function BookDetailsScreen({ route, navigation }) {
 	function showAuthorBooks() {
 		const params = {
 			author_id: author_id,
-			author: author,
-			current_isbn: isbn
+			author: author
 		};
 		navigation.navigate("AuthorBooks", params);
 	}
@@ -485,12 +483,11 @@ export function BookDetailsScreen({ route, navigation }) {
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={[styles.container, styles.bookDetailsContainer]}>
 				<ContextMenu
-						title="View on..."
 						onPress={({nativeEvent}) => {
 							if (nativeEvent.name === authorBooksMenuTitle) {
 								showAuthorBooks();
 							}
-							else if (nativeEvent.name === "Share") {
+							else if (nativeEvent.name === "Share Link") {
 								let url = "https://micro.blog/books/" + isbn
 								onShare(url)
 							}
