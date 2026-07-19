@@ -157,7 +157,7 @@ const App: () => Node = () => {
           <Stack.Group screenOptions={{ presentation: "modal" }}>
             <Stack.Screen name="AuthorBooks" component={AuthorBooksScreen} options={({ navigation, route }) => ({
               title: route.params.author,
-              presentation: "formSheet",
+              presentation: Platform.OS === "ios" ? "formSheet" : "modal",
               sheetAllowedDetents: [0.5, 0.9],
               sheetExpandsWhenScrolledToEdge: false,
               sheetInitialDetentIndex: 0,
