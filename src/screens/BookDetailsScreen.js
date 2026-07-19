@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import type { Node } from "react";
 import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, Platform, useColorScheme, Animated } from "react-native";
-import { MenuView } from "@react-native-menu/menu";
-import ContextMenu from "react-native-context-menu-view";
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
+import { ContextMenu } from "../ContextMenu";
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
@@ -174,11 +173,10 @@ export function BookDetailsScreen({ route, navigation }) {
 				actions: edit_actions
 			});
 		}
-		else {
+		else if (edit_actions.length > 0) {
 			menu_items.push({
 				id: "separator",
-				title: "────────────────────",
-				disabled: true
+				separator: true
 			});
 			menu_items.push(...edit_actions);
 		}
