@@ -78,6 +78,7 @@ export function OpenEditionsScreen({ route, navigation }) {
 						onShowEditionPressed(item);
 					}}
 					style={({ pressed }) => pressed ? styles.bookListItemPressed : null}
+					unstable_pressDelay={100}
 				>
 					<View style={styles.item}>
 						<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />

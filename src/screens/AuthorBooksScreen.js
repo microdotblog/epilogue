@@ -143,6 +143,7 @@ export function AuthorBooksScreen({ route, navigation }) {
 					{ borderBottomColor: is_dark ? "#3B4351" : "#E5E5E5" },
 					pressed ? { backgroundColor: is_dark ? "rgba(255, 255, 255, 0.07)" : "rgba(0, 0, 0, 0.06)" } : null
 				]}
+				unstable_pressDelay={100}
 			>
 				{image_url.length > 0 ? (
 					<Image style={sheetStyles.bookCover} source={{ uri: image_url }} />
