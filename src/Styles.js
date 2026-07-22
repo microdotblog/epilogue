@@ -982,11 +982,18 @@ export const light = StyleSheet.create({
 	},
 	openLibraryEditionsButtonTitle: {		
 	},
-	openLibraryCoverSearch: {		
+	openLibraryCoverSearch: {
+		flex: 1,
 		marginLeft: 20,
 		marginRight: 20,
 		marginTop: 0,
 		marginBottom: 15		
+	},
+	openLibraryCoverResultsList: {
+		flex: 1
+	},
+	openLibraryCoverResultsFooter: {
+		height: 20
 	},
 	mediumBookCover: {
 		width: 100,
