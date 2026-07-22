@@ -194,6 +194,7 @@ export function GoalsScreen({ navigation }) {
 	return (
 		<View style={styles.goalsContainer}>
 			<FlatList
+				contentInsetAdjustmentBehavior="automatic"
 				ref={goalsListRef}
 				data = {goals}
 				renderItem = { ({item}) => 

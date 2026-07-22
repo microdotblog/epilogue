@@ -419,7 +419,11 @@ export function DiscoverScreen({ navigation }) {
 				</Pressable>
 			</View>
 		) : (
-		<Pressable onPress={() => { onShowBookPressed(item) }}>
+		<Pressable
+			onPress={() => { onShowBookPressed(item) }}
+			style={({ pressed }) => pressed ? styles.bookListItemPressed : null}
+			unstable_pressDelay={100}
+		>
 			<View style={styles.item}>
 				<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 				<View style={styles.bookItem}>
@@ -443,6 +447,7 @@ export function DiscoverScreen({ navigation }) {
 				<View style={styles.discoverView}> 
 					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" />
 					<FlatList
+						contentInsetAdjustmentBehavior="automatic"
 						ref={discoverListRef}
 						data = {books}
 						key = "BooksList"
@@ -456,6 +461,7 @@ export function DiscoverScreen({ navigation }) {
 				<View style={styles.discoverView}> 
 					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" />
 					<FlatList
+						contentInsetAdjustmentBehavior="automatic"
 						ref={discoverListRef}
 						data={data}
 						key={columns}

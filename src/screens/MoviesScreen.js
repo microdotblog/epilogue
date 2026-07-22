@@ -287,6 +287,7 @@ export function MoviesScreen({ navigation }) {
 					</View>
 				) : (
 					<FlatList
+						contentInsetAdjustmentBehavior="automatic"
 						ref={moviesListRef}
 						data={movies}
 						keyExtractor={(item, index) => item.id ?? index.toString()}

@@ -74,6 +74,7 @@ export function HomeScreen({ navigation }) {
 	const [ latestBooks, setLatestBooks ] = useState([]);
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
+	const [ isLoadingBooks, setIsLoadingBooks ] = useState(false);
 	const [ isSearching, setIsSearching ] = useState(false);
 	const searchFieldRef = useRef();
 	const booksListRef = useRef(null);
@@ -104,27 +105,28 @@ export function HomeScreen({ navigation }) {
 	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
 
 	React.useEffect(() => {
-		const renderSearchSpinner = () => (
-			<View style={styles.navbarSearchSpinner}>
+		const renderProgressSpinner = () => (
+			<View style={styles.navbarProgressSpinner}>
 				<ActivityIndicator size="small" color={is_dark ? "#FFFFFF" : "#000000"} />
 			</View>
 		);
+		const shouldShowProgress = isLoadingBooks || isSearching;
 
 		if (Platform.OS === "ios") {
 			navigation.setOptions({
-				unstable_headerRightItems: () => isSearching ? [{
+				unstable_headerRightItems: () => shouldShowProgress ? [{
 					type: "custom",
-					element: renderSearchSpinner(),
+					element: renderProgressSpinner(),
 					hidesSharedBackground: true
 				}] : []
 			});
 		}
 		else {
 			navigation.setOptions({
-				headerRight: () => isSearching ? renderSearchSpinner() : null
+				headerRight: () => shouldShowProgress ? renderProgressSpinner() : null
 			});
 		}
-	}, [navigation, isSearching, is_dark, styles]);
+	}, [navigation, isLoadingBooks, isSearching, is_dark, styles]);
   
 	function onFocus(navigation) {
 		if (currentBookshelfTitle && bookshelves.length > 0) {
@@ -357,6 +359,8 @@ export function HomeScreen({ navigation }) {
 		if (bookshelf_id == undefined) {
 			return;
 		}
+
+		setIsLoadingBooks(true);
 		
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			var options = {
@@ -365,7 +369,7 @@ export function HomeScreen({ navigation }) {
 				}
 			};
 						
-			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
+			return fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
 				const new_books = booksFromJSONFeed(data);
 				setBooks(new_books);
 				setLatestBooks(new_books);
@@ -373,6 +377,8 @@ export function HomeScreen({ navigation }) {
 				cacheBookshelfDataForID(bookshelf_id, data);
 				handler();
 			});		
+		}).finally(() => {
+			setIsLoadingBooks(false);
 		});
 	}
 
@@ -668,6 +674,7 @@ export function HomeScreen({ navigation }) {
 		<View style={styles.container}>
 			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" ref={searchFieldRef} />
 			<FlatList
+				contentInsetAdjustmentBehavior="automatic"
 				ref={booksListRef}
 				data = {books}
 				renderItem = { ({item}) => 
@@ -680,9 +687,13 @@ export function HomeScreen({ navigation }) {
 					</View>
 				) : (
 				<BookSwipeableRow bookID={item.id} bookshelfID={item.bookshelf_id} onRemove={removeFromBookshelf} styles={styles}>
-					<Pressable onPress={() => {
-						onShowBookPressed(item);
-					}}>
+					<Pressable
+						onPress={() => {
+							onShowBookPressed(item);
+						}}
+						style={({ pressed }) => pressed ? styles.bookListItemPressed : null}
+						unstable_pressDelay={100}
+					>
 						<View style={styles.item}>
 							<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>

@@ -141,8 +141,9 @@ export function AuthorBooksScreen({ route, navigation }) {
 				style={({ pressed }) => [
 					sheetStyles.bookRow,
 					{ borderBottomColor: is_dark ? "#3B4351" : "#E5E5E5" },
-					pressed ? sheetStyles.bookRowPressed : null
+					pressed ? { backgroundColor: is_dark ? "rgba(255, 255, 255, 0.07)" : "rgba(0, 0, 0, 0.06)" } : null
 				]}
+				unstable_pressDelay={100}
 			>
 				{image_url.length > 0 ? (
 					<Image style={sheetStyles.bookCover} source={{ uri: image_url }} />
@@ -245,9 +246,6 @@ const sheetStyles = StyleSheet.create({
 		minHeight: 72,
 		paddingHorizontal: 16,
 		paddingVertical: 6
-	},
-	bookRowPressed: {
-		opacity: 0.55
 	},
 	bookCover: {
 		borderRadius: 3,

@@ -56,6 +56,9 @@ export const light = StyleSheet.create({
 		paddingBottom: 5,
 		marginBottom: 5
 	},
+	bookListItemPressed: {
+		backgroundColor: "rgba(0, 0, 0, 0.06)"
+	},
 	bookItem: {
 		flex: 1,
 		marginLeft: 5,
@@ -290,7 +293,7 @@ export const light = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "600"
 	},
-	navbarSearchSpinner: {
+	navbarProgressSpinner: {
 		width: 32,
 		height: 32,
 		alignItems: "center",
@@ -979,11 +982,18 @@ export const light = StyleSheet.create({
 	},
 	openLibraryEditionsButtonTitle: {		
 	},
-	openLibraryCoverSearch: {		
+	openLibraryCoverSearch: {
+		flex: 1,
 		marginLeft: 20,
 		marginRight: 20,
 		marginTop: 0,
 		marginBottom: 15		
+	},
+	openLibraryCoverResultsList: {
+		flex: 1
+	},
+	openLibraryCoverResultsFooter: {
+		height: 20
 	},
 	mediumBookCover: {
 		width: 100,
@@ -1108,6 +1118,9 @@ export const dark = StyleSheet.create({
 	container: {
 		backgroundColor: "#212936",
 		color: "#E5E7EB"
+	},
+	bookListItemPressed: {
+		backgroundColor: "rgba(255, 255, 255, 0.07)"
 	},
 	bookTitle: {
 		color: "#FFFFFF"	

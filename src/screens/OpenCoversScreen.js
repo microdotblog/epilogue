@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, Pressable, Image, StyleSheet, Text, View, TextInput, FlatList, useColorScheme } from "react-native";
+import { ActivityIndicator, Pressable, Image, StyleSheet, Text, View, TextInput, FlatList, KeyboardAvoidingView, Platform, useColorScheme } from "react-native";
 import FastImage from "react-native-fast-image";
 
 import { keys } from "../Constants";
@@ -17,6 +17,9 @@ export function OpenCoversScreen({ route, navigation }) {
 	const [ isSearching , setIsSearching ] = useState(false);
 	const [ books, setBooks ] = useState([]);
 	const [ searchText , setSearchText ] = useState("");
+	const initialBooksRef = useRef([]);
+	const searchRequestRef = useRef(0);
+	const coverListRef = useRef(null);
 	const { id, bookshelf_id, isbn, title } = route.params;
 
 	React.useEffect(() => {
@@ -25,31 +28,37 @@ export function OpenCoversScreen({ route, navigation }) {
 		});
 		return unsubscribe;
 	}, [navigation]);	
+
+	React.useEffect(() => {
+		coverListRef.current?.scrollToOffset({ offset: 0, animated: false });
+	}, [books]);
 	
 	const onFocus = (navigation) =>  {
 		sendInitialSearch();
 	}
 
 	function onChangeSearch(text) {
+		setSearchText(text);
+
 		if (text.length == 0) {
-			setSearchText("");
-			setTimeout(function() {
-				setBooks([]);
-				setIsSearching(false);
-			}, 500);			
-		}
-		else {
-			setSearchText(text);
+			searchRequestRef.current += 1;
+			setBooks(initialBooksRef.current);
+			setIsSearching(false);
 		}
 	}
 	
 	function onRunSearch() {
-		setBooks([]);
-		if (searchText.length == 0) {
-			setIsSearching(false);			
+		const trimmedSearchText = searchText.trim();
+
+		if (trimmedSearchText.length == 0) {
+			searchRequestRef.current += 1;
+			setBooks(initialBooksRef.current);
+			setIsSearching(false);
 		}
 		else {
-			sendSearch(searchText);
+			const requestID = searchRequestRef.current + 1;
+			searchRequestRef.current = requestID;
+			sendSearch(trimmedSearchText, { requestID: requestID });
 		}
 	}
 
@@ -57,11 +66,20 @@ export function OpenCoversScreen({ route, navigation }) {
 		const titleSearchText = (title || "").trim();
 
 		sendSearch(isbn, {
-			onComplete: () => {
+			onComplete: isbnBooks => {
 				if ((titleSearchText.length > 0) && (titleSearchText != isbn)) {
-					sendSearch(titleSearchText, { append: true });
+					sendSearch(titleSearchText, {
+						append: true,
+						onComplete: titleBooks => {
+							const initialBooks = appendCoverResults(isbnBooks, titleBooks);
+							initialBooksRef.current = initialBooks;
+							setBooks(initialBooks);
+							setIsSearching(false);
+						}
+					});
 				}
 				else {
+					initialBooksRef.current = isbnBooks;
 					setIsSearching(false);
 				}
 			}
@@ -99,9 +117,14 @@ export function OpenCoversScreen({ route, navigation }) {
 	function sendSearch(searchText, options = {}) {
 		const append = options.append || false;
 		const onComplete = options.onComplete || null;
+		const requestID = options.requestID || null;
 
 		setIsSearching(true);
 		Book.searchOpenLibrary(searchText, function(new_books) {
+			if ((requestID != null) && (requestID != searchRequestRef.current)) {
+				return;
+			}
+
 			const new_items = coverResultItems(new_books);
 
 			if (append) {
@@ -112,7 +135,7 @@ export function OpenCoversScreen({ route, navigation }) {
 			}
 
 			if (onComplete != null) {
-				onComplete();
+				onComplete(new_items);
 			}
 			else {
 				setIsSearching(false);
@@ -153,7 +176,10 @@ export function OpenCoversScreen({ route, navigation }) {
 				<Text style={styles.openLibraryIntro}>Set your book cover from images hosted on the Internet Archive's Open Library.</Text>
 			</View>
 
-			<View style={styles.openLibraryCoverSearch}>
+			<KeyboardAvoidingView
+				style={styles.openLibraryCoverSearch}
+				behavior={Platform.OS == "ios" ? "padding" : undefined}
+			>
 				<TextInput style={[ styles.searchField, styles.openLibrarySearch ]} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for book covers" placeholderTextColor="#6d6d72" clearButtonMode="always" />
 
 				{ isSearching && 
@@ -161,7 +187,12 @@ export function OpenCoversScreen({ route, navigation }) {
 				}
 					
 				<FlatList
+					ref={coverListRef}
+					style={styles.openLibraryCoverResultsList}
 					data = {books}
+					keyboardDismissMode="on-drag"
+					keyboardShouldPersistTaps="handled"
+					ListFooterComponent={<View style={styles.openLibraryCoverResultsFooter} />}
 					renderItem = { ({item}) =>
 						<View style={styles.coverResults}>
 							<FastImage style={styles.mediumBookCover} source={{ uri: item.image.replace("http://", "https://") }} />
@@ -181,7 +212,7 @@ export function OpenCoversScreen({ route, navigation }) {
 					}
 					keyExtractor = { item => item.id }
 				/>
-			</View>
+			</KeyboardAvoidingView>
 		</View>
 	);
 }
