@@ -293,7 +293,7 @@ export const light = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "600"
 	},
-	navbarSearchSpinner: {
+	navbarProgressSpinner: {
 		width: 32,
 		height: 32,
 		alignItems: "center",
