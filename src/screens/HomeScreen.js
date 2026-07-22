@@ -680,9 +680,12 @@ export function HomeScreen({ navigation }) {
 					</View>
 				) : (
 				<BookSwipeableRow bookID={item.id} bookshelfID={item.bookshelf_id} onRemove={removeFromBookshelf} styles={styles}>
-					<Pressable onPress={() => {
-						onShowBookPressed(item);
-					}}>
+					<Pressable
+						onPress={() => {
+							onShowBookPressed(item);
+						}}
+						style={({ pressed }) => pressed ? styles.bookListItemPressed : null}
+					>
 						<View style={styles.item}>
 							<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>

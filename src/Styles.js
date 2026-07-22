@@ -56,6 +56,9 @@ export const light = StyleSheet.create({
 		paddingBottom: 5,
 		marginBottom: 5
 	},
+	bookListItemPressed: {
+		backgroundColor: "rgba(0, 0, 0, 0.06)"
+	},
 	bookItem: {
 		flex: 1,
 		marginLeft: 5,
@@ -1108,6 +1111,9 @@ export const dark = StyleSheet.create({
 	container: {
 		backgroundColor: "#212936",
 		color: "#E5E7EB"
+	},
+	bookListItemPressed: {
+		backgroundColor: "rgba(255, 255, 255, 0.07)"
 	},
 	bookTitle: {
 		color: "#FFFFFF"	
