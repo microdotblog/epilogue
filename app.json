@@ -2,6 +2,9 @@
   "expo": {
     "name": "Epilogue",
     "slug": "epilogue",
-    "version": "2.4"
+    "version": "2.4",
+    "plugins": [
+      "@react-native-community/datetimepicker"
+    ]
   }
 }
