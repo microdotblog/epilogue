@@ -1,3 +1,10 @@
+import org.gradle.api.artifacts.dsl.RepositoryHandler
+
+// Gradle 9 removed jcenter(); map it to mavenCentral for unmaintained library buildscripts.
+RepositoryHandler.metaClass.jcenter = { ->
+    mavenCentral()
+}
+
 buildscript {
     def resolveNodeExecutable = {
         def configuredNode = System.getenv("NODE_BINARY")
