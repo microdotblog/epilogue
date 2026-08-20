@@ -422,14 +422,28 @@ export const light = StyleSheet.create({
 		flex: 1
 	},
 	blogListItem: {
-		paddingLeft: 15,
+		alignItems: "center",
+		flexDirection: "row",
+		paddingLeft: 0,
 		paddingRight: 15,
 		paddingTop: 16,
 		paddingBottom: 16,
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
+	blogListCheckSlot: {
+		alignItems: "center",
+		justifyContent: "center",
+		width: 42
+	},
+	blogListCheckmark: {
+		color: "#C85F00",
+		fontSize: 17,
+		fontWeight: "600",
+		transform: [{ translateX: 2 }]
+	},
 	blogListName: {
+		flex: 1
 	},
 	profilePane: {
 		flexDirection: "row",
@@ -1187,6 +1201,9 @@ export const dark = StyleSheet.create({
 	},
 	blogListItem: {
 		borderBottomColor: "#444444"			
+	},
+	blogListCheckmark: {
+		color: "#FFB45A"
 	},
 	blogListName: {
 		color: "#E5E7EB"
