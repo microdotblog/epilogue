@@ -3,6 +3,7 @@ import React from "react";
 import { View } from "react-native";
 import renderer from "react-test-renderer";
 
+import { cacheBookshelfDataForID } from "../src/BookshelfCache";
 import { keys } from "../src/Constants";
 import { HomeScreen } from "../src/screens/HomeScreen";
 
@@ -85,6 +86,7 @@ function createHomeScreen(navigation) {
 }
 
 beforeEach(async () => {
+	jest.clearAllMocks();
 	await AsyncStorage.clear();
 });
 
@@ -138,6 +140,66 @@ it("does not persist a selected bookshelf until its books load", async () => {
 		expect(await storedBookshelf()).toEqual(shelf_b);
 		expect(screen.root.findByProps({ testID: "bookshelf-popup" }).props.selectedBookshelfID).toBe("B");
 		expect(screen.root.findAll(node => node.props.bookID == "book-B" && node.props.bookshelfID == "B")).not.toHaveLength(0);
+	}
+	finally {
+		global.fetch = previous_fetch;
+		await renderer.act(async () => {
+			screen?.unmount();
+		});
+	}
+});
+
+it("does not cache a stale book response from the previous account", async () => {
+	const shelf = { id: "A", title: "Shelf A", books_count: "1 book", type: "reading" };
+	const stale_data = { items: [{ id: "old-account-book" }] };
+	const current_data = { items: [] };
+	await seedHomeStorage([ shelf ], shelf);
+
+	let resolve_stale_request;
+	const previous_fetch = global.fetch;
+	global.fetch = jest.fn((url, options) => {
+		if (options.headers.Authorization == "Bearer old-token") {
+			return new Promise(resolve => {
+				resolve_stale_request = resolve;
+			});
+		}
+
+		return Promise.resolve({
+			json: () => Promise.resolve(current_data)
+		});
+	});
+	const harness = navigationHarness();
+	let screen;
+
+	try {
+		await renderer.act(async () => {
+			screen = createHomeScreen(harness.navigation);
+			await flushAsyncWork();
+		});
+		await renderer.act(async () => {
+			harness.focus();
+			await flushAsyncWork();
+		});
+		await renderer.act(async () => {
+			screen.root.findByProps({ testID: "bookshelf-popup" }).props.onSelect(shelf);
+			await flushAsyncWork();
+		});
+		expect(resolve_stale_request).toBeDefined();
+
+		await AsyncStorage.setItem(keys.authToken, "new-token");
+		await renderer.act(async () => {
+			screen.root.findByProps({ testID: "bookshelf-popup" }).props.onSelect(shelf);
+			await flushAsyncWork();
+		});
+		await renderer.act(async () => {
+			resolve_stale_request({
+				json: () => Promise.resolve(stale_data)
+			});
+			await flushAsyncWork();
+		});
+
+		expect(cacheBookshelfDataForID).toHaveBeenCalledTimes(1);
+		expect(cacheBookshelfDataForID).toHaveBeenCalledWith("A", current_data);
 	}
 	finally {
 		global.fetch = previous_fetch;

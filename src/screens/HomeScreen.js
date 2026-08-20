@@ -413,11 +413,11 @@ export function HomeScreen({ navigation }) {
 			};
 						
 			return fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
-				cacheBookshelfDataForID(bookshelf_id, data);
 				if (booksRequestRef.current != request_id) {
 					return;
 				}
 
+				cacheBookshelfDataForID(bookshelf_id, data);
 				const source_bookshelf = typeof bookshelf == "object" ? bookshelf : null;
 				const new_books = booksFromJSONFeed(data, source_bookshelf);
 				setBooks(new_books);
