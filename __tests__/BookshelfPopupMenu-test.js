@@ -1,6 +1,7 @@
 import {
 	BOOKSHELF_MENU_ROW_HEIGHT,
 	bookshelfIndexAtPoint,
+	bookshelfMenuCornerRadius,
 	bookshelfMenuFrameForAnchor
 } from "../src/BookshelfPopupMenu";
 
@@ -9,6 +10,13 @@ const bookshelves = [
 	{ id: "2", title: "Finished" },
 	{ id: "3", title: "Want to Read" }
 ];
+
+it("matches the system menu corner radius on iOS 26 and later", () => {
+	expect(bookshelfMenuCornerRadius("ios", "25.7")).toBe(12);
+	expect(bookshelfMenuCornerRadius("ios", "26.0")).toBe(26);
+	expect(bookshelfMenuCornerRadius("ios", "27.1")).toBe(26);
+	expect(bookshelfMenuCornerRadius("android", 26)).toBe(12);
+});
 
 it("positions the popup below the header trigger and clamps it to the screen", () => {
 	const below_header = bookshelfMenuFrameForAnchor(

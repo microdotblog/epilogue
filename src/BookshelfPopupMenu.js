@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
-import { Animated, BackHandler, Easing, Pressable, ScrollView, StyleSheet, Text, useColorScheme, View } from "react-native";
+import { Animated, BackHandler, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -12,6 +12,11 @@ const menuTopMargin = 5;
 const menuOffset = 6;
 const menuDismissAnimationDuration = 120;
 const dragActivationDelay = 160;
+
+export function bookshelfMenuCornerRadius(platformOS = Platform.OS, platformVersion = Platform.Version) {
+	const major_version = Number.parseInt(String(platformVersion).split(".")[0], 10);
+	return platformOS == "ios" && major_version >= 26 ? 26 : 12;
+}
 
 export function bookshelfMenuFrameForAnchor(anchor, bookshelfCount, containerSize, bottomInset = 0) {
 	const available_width = Math.max(0, containerSize.width - (menuMargin * 2));
@@ -218,6 +223,7 @@ export const BookshelfPopupMenu = forwardRef(function BookshelfPopupMenu({ books
 	const [ menuFrame, setMenuFrame ] = useState(null);
 	const [ highlightedIndex, setHighlightedIndex ] = useState(null);
 	const colors = bookshelfMenuColors(is_dark);
+	const corner_radius = bookshelfMenuCornerRadius();
 
 	bookshelvesRef.current = bookshelves;
 	bottomInsetRef.current = insets.bottom;
@@ -461,6 +467,7 @@ export const BookshelfPopupMenu = forwardRef(function BookshelfPopupMenu({ books
 							menuStyles.pane,
 							{
 								backgroundColor: colors.background,
+								borderRadius: corner_radius,
 								height: menuFrame.height,
 								left: menuFrame.left,
 								opacity: animation,
@@ -470,7 +477,7 @@ export const BookshelfPopupMenu = forwardRef(function BookshelfPopupMenu({ books
 						]}
 						testID="bookshelf-menu-pane"
 					>
-						<View style={[ menuStyles.surface, { backgroundColor: colors.background, borderColor: colors.border } ]}>
+						<View style={[ menuStyles.surface, { backgroundColor: colors.background, borderColor: colors.border, borderRadius: corner_radius } ]}>
 							<ScrollView
 								bounces={false}
 								keyboardShouldPersistTaps="handled"
@@ -542,7 +549,6 @@ const menuStyles = StyleSheet.create({
 		zIndex: 100
 	},
 	pane: {
-		borderRadius: 12,
 		elevation: 14,
 		position: "absolute",
 		shadowColor: "#000000",
@@ -551,7 +557,6 @@ const menuStyles = StyleSheet.create({
 		shadowRadius: 14
 	},
 	surface: {
-		borderRadius: 12,
 		borderWidth: StyleSheet.hairlineWidth,
 		flex: 1,
 		overflow: "hidden"
