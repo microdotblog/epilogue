@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
-import { Animated, BackHandler, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, useColorScheme, View } from "react-native";
+import { Animated, BackHandler, Dimensions, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -415,6 +415,13 @@ export const BookshelfPopupMenu = forwardRef(function BookshelfPopupMenu({ books
 			}
 		}
 	}), []);
+
+	useEffect(() => {
+		const subscription = Dimensions.addEventListener("change", () => {
+			dismissMenu(false);
+		});
+		return () => subscription.remove();
+	}, []);
 
 	useEffect(() => {
 		if (!isVisible) {

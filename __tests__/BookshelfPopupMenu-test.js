@@ -1,5 +1,14 @@
+import React from "react";
+import { Dimensions } from "react-native";
+import renderer from "react-test-renderer";
+
+jest.mock("react-native-safe-area-context", () => ({
+	useSafeAreaInsets: () => ({ top: 0, left: 0, right: 0, bottom: 0 })
+}));
+
 import {
 	BOOKSHELF_MENU_ROW_HEIGHT,
+	BookshelfPopupMenu,
 	bookshelfIndexAtPoint,
 	bookshelfMenuCornerRadius,
 	bookshelfMenuFrameForAnchor
@@ -51,4 +60,38 @@ it("maps absolute drag points to rows, including a scrolled menu", () => {
 	expect(bookshelfIndexAtPoint({ x: 80, y: 244 }, frame, 3)).toBeNull();
 	expect(bookshelfIndexAtPoint({ x: 59, y: 120 }, frame, 3)).toBeNull();
 	expect(bookshelfIndexAtPoint({ x: 80, y: 110 }, frame, 3, BOOKSHELF_MENU_ROW_HEIGHT)).toBe(1);
+});
+
+it("handles window dimension changes and removes its listener", async () => {
+	let change_handler;
+	const remove_listener = jest.fn();
+	const dimensions_listener = jest.spyOn(Dimensions, "addEventListener").mockImplementation((event, handler) => {
+		change_handler = handler;
+		return { remove: remove_listener };
+	});
+	let screen;
+
+	try {
+		await renderer.act(async () => {
+			screen = renderer.create(
+				<BookshelfPopupMenu bookshelves={bookshelves} onSelect={jest.fn()} selectedBookshelfID="1" />
+			);
+		});
+		expect(change_handler).toEqual(expect.any(Function));
+
+		await renderer.act(async () => {
+			change_handler({
+				screen: { width: 700, height: 390 },
+				window: { width: 700, height: 390 }
+			});
+		});
+	}
+	finally {
+		await renderer.act(async () => {
+			screen?.unmount();
+		});
+		dimensions_listener.mockRestore();
+	}
+
+	expect(remove_listener).toHaveBeenCalledTimes(1);
 });
