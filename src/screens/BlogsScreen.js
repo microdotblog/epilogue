@@ -9,6 +9,7 @@ import epilogueStorage from "../Storage";
 export function BlogsScreen({ navigation }) {
 	const styles = useEpilogueStyle()
 	const [ blogs, setBlogs ] = useState([]);
+	const [ currentBlogID, setCurrentBlogID ] = useState();
 	
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -18,6 +19,9 @@ export function BlogsScreen({ navigation }) {
 	}, [navigation]);	
 	
 	function onFocus(navigation) {
+		epilogueStorage.get(keys.currentBlogID).then(blog_id => {
+			setCurrentBlogID(blog_id);
+		});
 		loadBlogs();
 	}
 	
@@ -66,7 +70,8 @@ export function BlogsScreen({ navigation }) {
 		});
 	}
 	
-	function onSelectBlog(blog) {	
+	function onSelectBlog(blog) {
+		setCurrentBlogID(blog.id);
 		epilogueStorage.set(keys.currentBlogID, blog.id);
 		epilogueStorage.set(keys.currentBlogName, blog.name);
 
@@ -76,13 +81,19 @@ export function BlogsScreen({ navigation }) {
 	return (
 		<View style={styles.blogListContainer}>
 			<FlatList
-			data = {blogs}
-			renderItem = { ({item}) => 
-			<Pressable style={styles.blogListItem} onPress={() => { onSelectBlog(item) }}>
-				<Text style={styles.blogListName}>{item.name}</Text>
-			</Pressable>
-			}
-			keyExtractor = { item => item.id }
+				data = {blogs}
+				renderItem = { ({item}) => {
+					const is_selected = currentBlogID != null && String(item.id) == String(currentBlogID);
+					return (
+						<Pressable accessibilityRole="button" accessibilityState={{ selected: is_selected }} style={styles.blogListItem} onPress={() => { onSelectBlog(item) }} testID={`blog-list-row-${item.id}`}>
+							<View style={styles.blogListCheckSlot}>
+								{is_selected ? <Text style={styles.blogListCheckmark}>✓</Text> : null}
+							</View>
+							<Text style={styles.blogListName}>{item.name}</Text>
+						</Pressable>
+					);
+				}}
+				keyExtractor = { item => item.id }
 			/>
 		</View>
 	);
