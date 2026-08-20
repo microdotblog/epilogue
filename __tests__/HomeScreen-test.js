@@ -147,6 +147,74 @@ it("does not persist a selected bookshelf until its books load", async () => {
 	}
 });
 
+it("clears a pending bookshelf after its load fails", async () => {
+	const shelf_a = { id: "A", title: "Shelf A", books_count: "1 book", type: "reading" };
+	const shelf_b = { id: "B", title: "Shelf B", books_count: "2 books", type: "want" };
+	await seedHomeStorage([ shelf_a, shelf_b ], shelf_a);
+
+	let should_fail_b = true;
+	const previous_fetch = global.fetch;
+	global.fetch = jest.fn(url => {
+		if (url == "https://micro.blog/books/bookshelves/B" && should_fail_b) {
+			should_fail_b = false;
+			return Promise.reject(new Error("Shelf B failed to load"));
+		}
+		if (url == "https://micro.blog/books/bookshelves") {
+			return Promise.resolve({
+				json: () => Promise.resolve({
+					items: [ shelf_a, shelf_b ].map(shelf => ({
+						id: shelf.id,
+						title: shelf.title,
+						_microblog: { books_count: shelf.id == "A" ? 1 : 2, type: shelf.type }
+					}))
+				})
+			});
+		}
+
+		return Promise.resolve({
+			json: () => Promise.resolve({ items: [] })
+		});
+	});
+	const harness = navigationHarness();
+	let screen;
+
+	try {
+		await renderer.act(async () => {
+			screen = createHomeScreen(harness.navigation);
+			await flushAsyncWork();
+		});
+		await renderer.act(async () => {
+			harness.focus();
+			await flushAsyncWork();
+		});
+		await renderer.act(async () => {
+			screen.root.findByProps({ testID: "bookshelf-popup" }).props.onSelect(shelf_b);
+			await flushAsyncWork();
+		});
+
+		expect(await storedBookshelf()).toEqual(shelf_a);
+		expect(screen.root.findByProps({ testID: "bookshelf-popup" }).props.selectedBookshelfID).toBe("A");
+
+		global.fetch.mockClear();
+		await AsyncStorage.removeItem(keys.currentSearch);
+		await renderer.act(async () => {
+			harness.focus();
+			await flushAsyncWork(8);
+		});
+
+		const requested_urls = global.fetch.mock.calls.map(call => call[0]);
+		expect(requested_urls).toContain("https://micro.blog/books/bookshelves/A");
+		expect(requested_urls).not.toContain("https://micro.blog/books/bookshelves/B");
+		expect(await storedBookshelf()).toEqual(shelf_a);
+	}
+	finally {
+		global.fetch = previous_fetch;
+		await renderer.act(async () => {
+			screen?.unmount();
+		});
+	}
+});
+
 it("ignores an older account's bookshelf response after a new request starts", async () => {
 	const old_shelf = { id: "A", title: "Old Shelf", books_count: "1 book", type: "reading" };
 	const new_shelf = { id: "B", title: "New Shelf", books_count: "0 books", type: "want" };

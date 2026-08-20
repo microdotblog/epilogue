@@ -98,6 +98,7 @@ export function HomeScreen({ navigation }) {
 	const booksRequestRef = useRef(0);
 	const bookshelvesRequestRef = useRef(0);
 	const currentBookshelfRef = useRef(null);
+	const pendingBookshelfRef = useRef(null);
 
 	useScrollToTop(booksListRef);
     
@@ -178,6 +179,7 @@ export function HomeScreen({ navigation }) {
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			if ((auth_token == null) || (auth_token.length == 0)) {
 				currentBookshelfRef.current = null;
+				pendingBookshelfRef.current = null;
 				booksRequestRef.current += 1;
 				bookshelvesRequestRef.current += 1;
 				setIsLoadingBooks(false);
@@ -395,6 +397,9 @@ export function HomeScreen({ navigation }) {
 		if (bookshelf_id == undefined) {
 			return;
 		}
+		if (pendingBookshelfRef.current != null && String(pendingBookshelfRef.current.id) != String(bookshelf_id)) {
+			pendingBookshelfRef.current = null;
+		}
 
 		const request_id = booksRequestRef.current + 1;
 		booksRequestRef.current = request_id;
@@ -420,6 +425,10 @@ export function HomeScreen({ navigation }) {
 				writeLatestBooksCache(data);
 				handler();
 			});		
+		}).catch(() => {
+			if (booksRequestRef.current == request_id && String(pendingBookshelfRef.current?.id) == String(bookshelf_id)) {
+				pendingBookshelfRef.current = null;
+			}
 		}).finally(() => {
 			if (booksRequestRef.current == request_id) {
 				setIsLoadingBooks(false);
@@ -492,14 +501,13 @@ export function HomeScreen({ navigation }) {
 							return;
 						}
 
-						const preferred_bookshelf = currentBookshelfRef.current || stored_bookshelf;
+						const preferred_bookshelf = pendingBookshelfRef.current || currentBookshelfRef.current || stored_bookshelf;
 						const current_bookshelf = resolveBookshelfFromItems(new_items, preferred_bookshelf);
 						if (current_bookshelf == undefined) {
-							currentBookshelfRef.current = null;
+							pendingBookshelfRef.current = null;
 							return;
 						}
 
-						currentBookshelfRef.current = current_bookshelf;
 						loadBooks(current_bookshelf, function() {
 							commitBookshelf(current_bookshelf);
 						});
@@ -511,7 +519,7 @@ export function HomeScreen({ navigation }) {
 
 	function selectBookshelf(bookshelf) {
 		const latest_bookshelf = bookshelves.find(item => String(item.id) == String(bookshelf.id)) || bookshelf;
-		currentBookshelfRef.current = latest_bookshelf;
+		pendingBookshelfRef.current = latest_bookshelf;
 		loadBooks(latest_bookshelf, function() {
 			commitBookshelf(latest_bookshelf);
 		});
@@ -519,6 +527,7 @@ export function HomeScreen({ navigation }) {
 
 	function commitBookshelf(bookshelf) {
 		currentBookshelfRef.current = bookshelf;
+		pendingBookshelfRef.current = null;
 		epilogueStorage.set(keys.currentBookshelf, bookshelf);
 		setCurrentBookshelfTitle(bookshelf.title);
 		setCurrentBookshelfID(bookshelf.id);
