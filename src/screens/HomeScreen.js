@@ -2,12 +2,12 @@ import React, { useState, useRef } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
-import { MenuView } from "@react-native-menu/menu";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import FastImage from "react-native-fast-image";
 
+import { BookshelfPopupMenu, BookshelfPopupMenuTrigger } from "../BookshelfPopupMenu";
 import { keys, errors } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
@@ -74,35 +74,48 @@ export function HomeScreen({ navigation }) {
 	const [ latestBooks, setLatestBooks ] = useState([]);
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
+	const [ currentBookshelfID, setCurrentBookshelfID ] = useState();
 	const [ isLoadingBooks, setIsLoadingBooks ] = useState(false);
 	const [ isSearching, setIsSearching ] = useState(false);
 	const searchFieldRef = useRef();
 	const booksListRef = useRef(null);
+	const bookshelfPopupMenuRef = useRef(null);
+	const booksRequestRef = useRef(0);
+	const currentBookshelfRef = useRef(null);
 
 	useScrollToTop(booksListRef);
     
 	React.useEffect(() => {
 		const unsubscribe_focus = navigation.addListener("focus", () => {
+			bookshelfPopupMenuRef.current?.setEnabled(true);
 			onFocus(navigation);
+		});
+		const unsubscribe_blur = navigation.addListener("blur", () => {
+			bookshelfPopupMenuRef.current?.setEnabled(false);
 		});
 
 		const unsubscribe_change = AppState.addEventListener("change", nextAppState => {
 			if (nextAppState == "active") {
+				bookshelfPopupMenuRef.current?.setEnabled(navigation.isFocused?.() ?? true);
 				onBecomeActive();
+			}
+			else {
+				bookshelfPopupMenuRef.current?.setEnabled(false);
 			}
 		});
 
 		return () => {
 			unsubscribe_focus();
+			unsubscribe_blur();
 			unsubscribe_change.remove();
 		};
 	}, [navigation]);
 
 	React.useEffect(() => {
-		if (currentBookshelfTitle && bookshelves.length > 0) {
-			setupBookshelves(navigation, bookshelves, currentBookshelfTitle);
+		if (currentBookshelfTitle) {
+			setupBookshelves(navigation, currentBookshelfTitle);
 		}
-	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
+	}, [is_dark, currentBookshelfTitle, navigation, styles]);
 
 	React.useEffect(() => {
 		const renderProgressSpinner = () => (
@@ -129,16 +142,18 @@ export function HomeScreen({ navigation }) {
 	}, [navigation, isLoadingBooks, isSearching, is_dark, styles]);
   
 	function onFocus(navigation) {
-		if (currentBookshelfTitle && bookshelves.length > 0) {
-			setupBookshelves(navigation, bookshelves, currentBookshelfTitle);
+		if (currentBookshelfTitle) {
+			setupBookshelves(navigation, currentBookshelfTitle);
 		}
 		else {
 			epilogueStorage.get(keys.allBookshelves).then(saved_bookshelves => {
 				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 					if (saved_bookshelves && saved_bookshelves.length > 0 && current_bookshelf) {
+						currentBookshelfRef.current = current_bookshelf;
 						setBookshelves(saved_bookshelves);
 						setCurrentBookshelfTitle(current_bookshelf.title);
-						setupBookshelves(navigation, saved_bookshelves, current_bookshelf.title);
+						setCurrentBookshelfID(current_bookshelf.id);
+						setupBookshelves(navigation, current_bookshelf.title);
 					}
 				});
 			});
@@ -360,9 +375,11 @@ export function HomeScreen({ navigation }) {
 			return;
 		}
 
+		const request_id = booksRequestRef.current + 1;
+		booksRequestRef.current = request_id;
 		setIsLoadingBooks(true);
 		
-		epilogueStorage.get(keys.authToken).then(auth_token => {
+		return epilogueStorage.get(keys.authToken).then(auth_token => {
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + auth_token
@@ -370,15 +387,21 @@ export function HomeScreen({ navigation }) {
 			};
 						
 			return fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
+				cacheBookshelfDataForID(bookshelf_id, data);
+				if (booksRequestRef.current != request_id) {
+					return;
+				}
+
 				const new_books = booksFromJSONFeed(data);
 				setBooks(new_books);
 				setLatestBooks(new_books);
 				writeLatestBooksCache(data);
-				cacheBookshelfDataForID(bookshelf_id, data);
 				handler();
 			});		
 		}).finally(() => {
-			setIsLoadingBooks(false);
+			if (booksRequestRef.current == request_id) {
+				setIsLoadingBooks(false);
+			}
 		});
 	}
 
@@ -427,51 +450,43 @@ export function HomeScreen({ navigation }) {
 				epilogueStorage.set(keys.allBookshelves, new_items).then(() => {
 					warmAllBookshelfCachesInBackground(new_items);
 
-					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-						if (current_bookshelf == null) {
-							let first_bookshelf = new_items[0];
-							epilogueStorage.set(keys.currentBookshelf, first_bookshelf).then(() => {
-								loadBooks(first_bookshelf.id);
-								setCurrentBookshelfTitle(first_bookshelf.title);
-								setupBookshelves(navigation, new_items, first_bookshelf.title);
-							});
+					epilogueStorage.get(keys.currentBookshelf).then(stored_bookshelf => {
+						let current_bookshelf = currentBookshelfRef.current || stored_bookshelf || new_items[0];
+						if (current_bookshelf == undefined) {
+							return;
 						}
-						else {
-							loadBooks(current_bookshelf.id);
-							setCurrentBookshelfTitle(current_bookshelf.title);
-							setupBookshelves(navigation, new_items, current_bookshelf.title);
-						}
+
+						current_bookshelf = new_items.find(item => String(item.id) == String(current_bookshelf.id)) || current_bookshelf;
+						currentBookshelfRef.current = current_bookshelf;
+						epilogueStorage.set(keys.currentBookshelf, current_bookshelf);
+						loadBooks(current_bookshelf.id);
+						setCurrentBookshelfTitle(current_bookshelf.title);
+						setCurrentBookshelfID(current_bookshelf.id);
 					});
 				});
 			});		
 		});
 	}
 
-	function setupBookshelves(navigation, items, currentTitle) {
+	function selectBookshelf(bookshelf) {
+		const latest_bookshelf = bookshelves.find(item => String(item.id) == String(bookshelf.id)) || bookshelf;
+		currentBookshelfRef.current = latest_bookshelf;
+		epilogueStorage.set(keys.currentBookshelf, latest_bookshelf);
+		loadBooks(latest_bookshelf.id, function() {
+			setCurrentBookshelfTitle(latest_bookshelf.title);
+			setCurrentBookshelfID(latest_bookshelf.id);
+		});
+	}
+
+	function setupBookshelves(navigation, currentTitle) {
 		navigation.setOptions({
 			headerTitle: () => (
-				<MenuView accessibilityLabel={currentTitle}
-				onPressAction = {({ nativeEvent }) => {
-					let shelf_id = nativeEvent.event;
-					loadBooks(shelf_id, function() {
-						epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
-							for (let shelf of bookshelves) {
-								if (shelf.id == shelf_id) {
-									epilogueStorage.set(keys.currentBookshelf, shelf);
-									setCurrentBookshelfTitle(shelf.title);
-									setupBookshelves(navigation, bookshelves, shelf.title);
-								}
-							}
-						});
-					});
-				}}
-				actions = {items}
-				>
+				<BookshelfPopupMenuTrigger accessibilityLabel={currentTitle} menuRef={bookshelfPopupMenuRef}>
 					<View style={styles.navbarBookshelf}>
 						<Text style={[ styles.navbarBookshelfTitle, { marginLeft: Platform.OS == "ios" ? 15 : 0, color: is_dark ? "#FFFFFF" : "#000000" } ]}>{currentTitle}</Text>
 						<Icon name="popup-triangle" color={is_dark ? "#FFFFFF" : "#000000"} size={10} style={styles.navbarBookshelfTriangle} />
 					</View>
-				</MenuView>
+				</BookshelfPopupMenuTrigger>
 			)
 		});
 	}
@@ -709,6 +724,12 @@ export function HomeScreen({ navigation }) {
 				)
 				}
 				keyExtractor = { item => item.list_id || item.id }
+			/>
+			<BookshelfPopupMenu
+				bookshelves={bookshelves}
+				onSelect={selectBookshelf}
+				ref={bookshelfPopupMenuRef}
+				selectedBookshelfID={currentBookshelfID}
 			/>
 		</View>
 	);
