@@ -461,7 +461,6 @@ export const BookshelfPopupMenu = forwardRef(function BookshelfPopupMenu({ books
 							menuStyles.pane,
 							{
 								backgroundColor: colors.background,
-								borderColor: colors.border,
 								height: menuFrame.height,
 								left: menuFrame.left,
 								opacity: animation,
@@ -471,40 +470,42 @@ export const BookshelfPopupMenu = forwardRef(function BookshelfPopupMenu({ books
 						]}
 						testID="bookshelf-menu-pane"
 					>
-						<ScrollView
-							bounces={false}
-							keyboardShouldPersistTaps="handled"
-							onScroll={event => {
-								scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
-							}}
-							ref={scrollViewRef}
-							scrollEventThrottle={16}
-							showsVerticalScrollIndicator={false}
-						>
-							{menuBookshelves.map((bookshelf, index) => {
-								const is_selected = String(bookshelf.id) == String(selectedBookshelfIDRef.current);
-								const is_highlighted = highlightedIndex == index;
-								return (
-									<Pressable
-										accessibilityRole="button"
-									accessibilityState={{ selected: is_selected }}
-									key={bookshelf.id}
-									onPress={() => selectBookshelfAtIndex(index)}
-									style={({ pressed }) => [
-										menuStyles.row,
-										index < menuBookshelves.length - 1 ? { borderBottomColor: colors.divider } : { borderBottomWidth: 0 },
-										(pressed || is_highlighted) ? { backgroundColor: colors.highlighted } : null
-									]}
-										testID={`bookshelf-menu-row-${bookshelf.id}`}
-									>
-										<View style={menuStyles.checkSlot}>
-											{is_selected ? <Text style={[ menuStyles.checkmark, { color: colors.checkmark } ]}>✓</Text> : null}
-										</View>
-										<Text numberOfLines={1} style={[ menuStyles.title, { color: colors.text } ]}>{bookshelf.title}</Text>
-									</Pressable>
-								);
-							})}
-						</ScrollView>
+						<View style={[ menuStyles.surface, { backgroundColor: colors.background, borderColor: colors.border } ]}>
+							<ScrollView
+								bounces={false}
+								keyboardShouldPersistTaps="handled"
+								onScroll={event => {
+									scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
+								}}
+								ref={scrollViewRef}
+								scrollEventThrottle={16}
+								showsVerticalScrollIndicator={false}
+							>
+								{menuBookshelves.map((bookshelf, index) => {
+									const is_selected = String(bookshelf.id) == String(selectedBookshelfIDRef.current);
+									const is_highlighted = highlightedIndex == index;
+									return (
+										<Pressable
+											accessibilityRole="button"
+											accessibilityState={{ selected: is_selected }}
+											key={bookshelf.id}
+											onPress={() => selectBookshelfAtIndex(index)}
+											style={({ pressed }) => [
+												menuStyles.row,
+												index < menuBookshelves.length - 1 ? { borderBottomColor: colors.divider } : { borderBottomWidth: 0 },
+												(pressed || is_highlighted) ? { backgroundColor: colors.highlighted } : null
+											]}
+											testID={`bookshelf-menu-row-${bookshelf.id}`}
+										>
+											<View style={menuStyles.checkSlot}>
+												{is_selected ? <Text style={[ menuStyles.checkmark, { color: colors.checkmark } ]}>✓</Text> : null}
+											</View>
+											<Text numberOfLines={1} style={[ menuStyles.title, { color: colors.text } ]}>{bookshelf.title}</Text>
+										</Pressable>
+									);
+								})}
+							</ScrollView>
+						</View>
 					</Animated.View>
 				</>
 			) : null}
@@ -542,14 +543,18 @@ const menuStyles = StyleSheet.create({
 	},
 	pane: {
 		borderRadius: 12,
-		borderWidth: StyleSheet.hairlineWidth,
 		elevation: 14,
-		overflow: "hidden",
 		position: "absolute",
 		shadowColor: "#000000",
 		shadowOffset: { width: 0, height: 6 },
 		shadowOpacity: 0.20,
 		shadowRadius: 14
+	},
+	surface: {
+		borderRadius: 12,
+		borderWidth: StyleSheet.hairlineWidth,
+		flex: 1,
+		overflow: "hidden"
 	},
 	row: {
 		alignItems: "center",
