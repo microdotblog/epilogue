@@ -81,15 +81,11 @@ export function EditBookInfoScreen({ route, navigation }) {
 				}
 				deleteLatestBooksCache().then(() => {
 					refreshAllBookshelfCachesInBackground();
-					navigation.navigate({
-						name: "Details",
-						params: {
-							title: updatedBookInfo.title,
-							author: updatedBookInfo.author,
-							isbn: updatedBookInfo.isbn
-						},
-						merge: true
-					});
+					navigation.popTo("Details", {
+						title: updatedBookInfo.title,
+						author: updatedBookInfo.author,
+						isbn: updatedBookInfo.isbn
+					}, { merge: true });
 				});
 			}).catch(() => {
 				setIsSaving(false);
