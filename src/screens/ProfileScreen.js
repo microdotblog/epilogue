@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useColorScheme, Animated } from "react-native";
+import { Alert, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useColorScheme, Animated, LayoutAnimation } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { DOMParser } from "@xmldom/xmldom";
 import * as Application from "expo-application";
@@ -11,6 +11,7 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { clearBookCaches } from "../BookshelfCache";
+import { Icon } from "../Icon";
 
 const profilePostSources = [
 	{ filter: "micro.blog/books/", media_type: "book" },
@@ -31,7 +32,13 @@ export function ProfileScreen({ navigation }) {
 	const [ hostname, setHostname ] = useState("Micro.blog");
 	const [ posts, setPosts ] = useState([]);
 	const [ isDownloading, setDownloading ] = useState(true);
+	const [ isSearching, setSearching ] = useState(false);
+	const [ searchText, setSearchText ] = useState("");
 	const [ blogName, setBlogName ] = useState();
+	const filteredPosts = React.useMemo(() => {
+		const query = searchText.trim().toLowerCase();
+		return query ? posts.filter(post => post.display_text.toLowerCase().includes(query)) : posts;
+	}, [posts, searchText]);
 	const appVersionLabel = appVersionDisplayLabel();
 	const appBuildLabel = appBuildDisplayLabel();
 
@@ -94,6 +101,9 @@ export function ProfileScreen({ navigation }) {
 	}
 
 	function loadPosts() {
+		setDownloading(true);
+		setSearching(false);
+		setSearchText("");
 		const sources = profilePostSources.map(source => {
 			return {
 				...source,
@@ -328,6 +338,17 @@ export function ProfileScreen({ navigation }) {
 		navigation.navigate("NotesKey");
 	}
 
+	function toggleSearch(isVisible) {
+		LayoutAnimation.configureNext({
+			duration: 200,
+			update: { type: LayoutAnimation.Types.easeInEaseOut }
+		});
+		setSearching(isVisible);
+		if (!isVisible) {
+			setSearchText("");
+		}
+	}
+
 	function hideVersionPane() {
 		if (hasHiddenVersionPane.current) {
 			return;
@@ -381,19 +402,59 @@ export function ProfileScreen({ navigation }) {
 					}
 				</View>
 			</View>
-			<View style={styles.micropubPane}>
-				<Text style={styles.micropubHostname}>Posting to: {hostname}</Text>
-				<Pressable style={[styles.micropubButton, styles.profileMicropubButton]} onPress={() => { onChangePressed(); }}>
-					<Text style={styles.micropubButtonTitle} accessibilityLabel="change posting blog">Change...</Text>
-				</Pressable>
-				<Pressable style={[styles.micropubButton, styles.profileMicropubButton]} onPress={() => { onNotesKeyPressed(); }}>
-					<Text style={styles.micropubButtonTitle} accessibilityLabel="set secret key">Notes Key...</Text>
-				</Pressable>
-			</View>
+			{isSearching ? (
+				<View style={[styles.micropubPane, profileSearchStyles.searchPane]}>
+					<TextInput
+						style={[styles.searchField, profileSearchStyles.field]}
+						value={searchText}
+						onChangeText={setSearchText}
+						placeholder="Search posts"
+						placeholderTextColor="#777777"
+						accessibilityLabel="Search posts"
+						autoFocus={true}
+						autoCorrect={false}
+						autoCapitalize="none"
+						returnKeyType="done"
+						clearButtonMode="while-editing"
+					/>
+					<Pressable
+						style={profileSearchStyles.button}
+						hitSlop={10}
+						accessibilityRole="button"
+						accessibilityLabel="Cancel post search"
+						onPress={() => toggleSearch(false)}
+					>
+						<Text style={styles.micropubButtonTitle}>Cancel</Text>
+					</Pressable>
+				</View>
+			) : (
+				<View style={[styles.micropubPane, profileSearchStyles.controlsPane]}>
+					<Text style={[styles.micropubHostname, profileSearchStyles.hostname]} numberOfLines={1}>Posting to: {hostname}</Text>
+					<Pressable style={[styles.micropubButton, styles.profileMicropubButton]} onPress={() => { onChangePressed(); }}>
+						<Text style={styles.micropubButtonTitle} accessibilityLabel="change posting blog">Change...</Text>
+					</Pressable>
+					<Pressable style={[styles.micropubButton, styles.profileMicropubButton]} onPress={() => { onNotesKeyPressed(); }}>
+						<Text style={styles.micropubButtonTitle} accessibilityLabel="set secret key">Notes Key...</Text>
+					</Pressable>
+					<Pressable
+						style={[styles.micropubButton, styles.profileMicropubButton, profileSearchStyles.button, isDownloading && profileSearchStyles.disabled]}
+						hitSlop={10}
+						accessibilityRole="button"
+						accessibilityLabel="Search posts"
+						accessibilityState={{ disabled: isDownloading }}
+						disabled={isDownloading}
+						onPress={() => toggleSearch(true)}
+					>
+						<Icon name="discover" color={is_dark ? "#E5E7EB" : "#000000"} size={16} />
+					</Pressable>
+				</View>
+			)}
 			<AnimatedFlatList
 				style={styles.profilePosts}
 				contentContainerStyle={styles.profilePostsContent}
-				data = {posts}
+				data = {filteredPosts}
+				keyboardShouldPersistTaps="handled"
+				keyboardDismissMode="on-drag"
 				onScrollBeginDrag={hideVersionPane}
 				onMomentumScrollBegin={hideVersionPane}
 				renderItem = { ({item}) => 
@@ -434,6 +495,40 @@ export function ProfileScreen({ navigation }) {
 		</View>
 	);
 }
+
+const profileSearchStyles = StyleSheet.create({
+	controlsPane: {
+		paddingRight: 15
+	},
+	hostname: {
+		flexShrink: 1
+	},
+	button: {
+		marginLeft: 12,
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	disabled: {
+		opacity: 0.35
+	},
+	searchPane: {
+		paddingRight: 15
+	},
+	field: {
+		flex: 1,
+		marginTop: 0,
+		marginBottom: 0,
+		marginLeft: 0,
+		marginRight: 0,
+		paddingTop: 0,
+		paddingBottom: 0,
+		textAlignVertical: "center"
+	},
+	emptyText: {
+		padding: 20,
+		textAlign: "center"
+	}
+});
 
 function appVersionDisplayLabel() {
 	const appVersion = Application.nativeApplicationVersion || "";
