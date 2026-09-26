@@ -9,6 +9,7 @@ import { BOOK_COVER_HEIGHT, BOOK_COVER_WIDTH } from "../Styles";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
+import { deleteProfilePostsCache } from "../ProfilePostsCache";
 
 export function PostScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
@@ -227,7 +228,12 @@ export function PostScreen({ route, navigation }) {
 											navigation.goBack();
 										}
 										else {
-											fetch(use_url, options).then(response => {
+											fetch(use_url, options).then(async response => {
+												if (response.ok && post_url != undefined) {
+													// An edited older post may fall outside the next incremental refresh.
+													const username = await epilogueStorage.get(keys.currentUsername);
+													await deleteProfilePostsCache([username || "", use_url, blog_id || ""]);
+												}
 												navigation.goBack();
 											});
 										}
