@@ -383,10 +383,10 @@ export function ProfileScreen({ navigation }) {
 			</View>
 			<View style={styles.micropubPane}>
 				<Text style={styles.micropubHostname}>Posting to: {hostname}</Text>
-				<Pressable style={styles.micropubButton} onPress={() => { onChangePressed(); }}>
+				<Pressable style={[styles.micropubButton, styles.profileMicropubButton]} onPress={() => { onChangePressed(); }}>
 					<Text style={styles.micropubButtonTitle} accessibilityLabel="change posting blog">Change...</Text>
 				</Pressable>
-				<Pressable style={styles.micropubButton} onPress={() => { onNotesKeyPressed(); }}>
+				<Pressable style={[styles.micropubButton, styles.profileMicropubButton]} onPress={() => { onNotesKeyPressed(); }}>
 					<Text style={styles.micropubButtonTitle} accessibilityLabel="set secret key">Notes Key...</Text>
 				</Pressable>
 			</View>
