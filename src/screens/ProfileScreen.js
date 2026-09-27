@@ -305,9 +305,11 @@ export function ProfileScreen({ navigation }) {
 		  },
 		  {
 			text: "Sign Out",
-			onPress: () => {
-			  clearSettings();
-			  navigation.goBack();
+			onPress: async () => {
+			  await clearSettings();
+			  // Profile can open above any iPad detail stack. Reset them all so
+			  // Bookshelves takes the user through the normal sign-in flow.
+			  navigation.reset({ index: 0, routes: [{ name: "Tabs" }] });
 			}
 		  }
 		]);
@@ -316,26 +318,15 @@ export function ProfileScreen({ navigation }) {
 	function clearSettings() {
 		activePostsLoad.current += 1;
 		clearProfilePostsCaches();
-		epilogueStorage.remove(keys.authToken);
-		epilogueStorage.remove(keys.currentUsername);		
-		epilogueStorage.remove(keys.currentBlogID);
-		epilogueStorage.remove(keys.currentBlogName);
-		epilogueStorage.remove(keys.blogCount);
-		epilogueStorage.remove(keys.currentBookshelf);
-		epilogueStorage.remove(keys.currentSearch);
-		epilogueStorage.remove(keys.currentText);
-		epilogueStorage.remove(keys.currentPostURL);
-		epilogueStorage.remove(keys.allBookshelves);
-		epilogueStorage.remove(keys.meURL);
-		epilogueStorage.remove(keys.authState);
-		epilogueStorage.remove(keys.authURL);
-		epilogueStorage.remove(keys.tokenURL);
-		epilogueStorage.remove(keys.micropubURL);
-		epilogueStorage.remove(keys.micropubToken);
-		epilogueStorage.remove(keys.lastMicropubToken);
-		epilogueStorage.remove(keys.appleUserID);
-		epilogueStorage.remove(keys.appleIdentityToken);
 		clearBookCaches();
+		return Promise.all([
+			keys.authToken, keys.currentUsername, keys.currentBlogID,
+			keys.currentBlogName, keys.blogCount, keys.currentBookshelf,
+			keys.currentSearch, keys.currentText, keys.currentPostURL,
+			keys.allBookshelves, keys.meURL, keys.authState, keys.authURL,
+			keys.tokenURL, keys.micropubURL, keys.micropubToken,
+			keys.lastMicropubToken, keys.appleUserID, keys.appleIdentityToken
+		].map(key => epilogueStorage.remove(key)));
 	}
 
 	function setupSignOutButton() {

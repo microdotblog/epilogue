@@ -8,10 +8,11 @@ import { keys } from "../Constants";
 import { MOVIE_POSTER_HEIGHT, MOVIE_POSTER_WIDTH } from "../Styles";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
-import { profileHeaderOptions } from "../ProfileHeaderButton";
+import { useProfileHeader } from "../ProfileHeaderButton";
 
 export function MoviesScreen({ navigation }) {
 	const styles = useEpilogueStyle();
+	useProfileHeader(navigation, styles);
 	const [ movies, setMovies ] = useState([]);
 	const [ loading, setLoading ] = useState(true);
 	const [ searching, setSearching ] = useState(false);
@@ -29,7 +30,6 @@ export function MoviesScreen({ navigation }) {
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
-			setupProfileIcon();
 			if (!hasLoadedDiscoverRef.current) {
 				fetchDiscover();
 			}
@@ -45,17 +45,6 @@ export function MoviesScreen({ navigation }) {
 			creditsTranslateY.stopAnimation();
 		};
 	}, [creditsTranslateY]);
-
-	function setupProfileIcon() {
-		epilogueStorage.get(keys.currentUsername).then(username => {
-			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
-		});
-	}
-
-	function onShowProfile() {
-		navigation.navigate("Profile");
-	}
 
 	function onChangeSearch(text) {
 		searchTextRef.current = text;

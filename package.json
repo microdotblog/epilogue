@@ -73,7 +73,8 @@
     "expo-modules-jsi@57.1.0": "patches/expo-modules-jsi@57.1.0.patch",
     "@react-navigation/bottom-tabs@7.18.3": "patches/@react-navigation%2Fbottom-tabs@7.18.3.patch",
     "react-native-navigation-bar-color@2.0.2": "patches/react-native-navigation-bar-color@2.0.2.patch",
-    "@react-native-cookies/cookies@6.2.1": "patches/@react-native-cookies%2Fcookies@6.2.1.patch"
+    "@react-native-cookies/cookies@6.2.1": "patches/@react-native-cookies%2Fcookies@6.2.1.patch",
+    "react-native-screens@4.26.2": "patches/react-native-screens@4.26.2.patch"
   },
   "expo": {
     "doctor": {

@@ -1,11 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
-import { FlatList, TextInput } from "react-native";
+import { Alert, FlatList, TextInput } from "react-native";
 import renderer from "react-test-renderer";
 import RNFS from "react-native-fs";
 
 import { ProfileScreen } from "../src/screens/ProfileScreen";
 import { writeProfilePostsCache } from "../src/ProfilePostsCache";
+import { keys } from "../src/Constants";
 
 let cacheFiles;
 beforeEach(() => {
@@ -36,6 +37,35 @@ const post = (id, content) => ({
 	properties: {
 		uid: [id], url: [`https://example.com/${id}`], content: [content],
 		published: [`2026-09-${id.padStart(2, "0")}T12:00:00Z`]
+	}
+});
+
+it("clears credentials before resetting all section stacks on sign-out", async () => {
+	await AsyncStorage.clear();
+	await AsyncStorage.setItem(keys.authToken, "test-token");
+	await AsyncStorage.setItem(keys.currentUsername, "test-user");
+	const alert = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+	const previousFetch = global.fetch;
+	global.fetch = jest.fn(() => new Promise(() => {}));
+	const navigation = { setOptions: jest.fn(), reset: jest.fn() };
+	let screen;
+	try {
+		await renderer.act(async () => { screen = renderer.create(<ProfileScreen navigation={navigation} />); });
+		navigation.setOptions.mock.calls.at(-1)[0].headerRight().props.onPress();
+		const confirm = alert.mock.calls.at(-1)[2].find(button => button.text === "Sign Out").onPress;
+		let finishing;
+		await renderer.act(async () => {
+			finishing = confirm();
+			expect(navigation.reset).not.toHaveBeenCalled();
+			await finishing;
+		});
+		expect(await AsyncStorage.getItem(keys.authToken)).toBeNull();
+		expect(await AsyncStorage.getItem(keys.currentUsername)).toBeNull();
+		expect(navigation.reset).toHaveBeenCalledWith({ index: 0, routes: [{ name: "Tabs" }] });
+	} finally {
+		await renderer.act(async () => screen?.unmount());
+		alert.mockRestore();
+		global.fetch = previousFetch;
 	}
 });
 

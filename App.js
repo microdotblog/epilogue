@@ -14,27 +14,14 @@ import { Icon } from "./src/Icon";
 
 import { HomeScreen } from "./src/screens/HomeScreen";
 import { TabsScreen } from "./src/screens/TabsScreen";
-import { BookDetailsScreen } from "./src/screens/BookDetailsScreen";
-import { AuthorBooksScreen } from "./src/screens/AuthorBooksScreen";
+import { contentStackScreens } from "./src/navigation/ContentStackScreens";
 import { PostScreen } from "./src/screens/PostScreen";
 import { SignInScreen } from "./src/screens/SignInScreen";
 import { BlogsScreen } from "./src/screens/BlogsScreen";
 import { ProfileScreen } from "./src/screens/ProfileScreen";
 import { ExternalScreen } from "./src/screens/ExternalScreen";
-import { AddBookInfoScreen } from "./src/screens/AddBookInfoScreen";
-import { EditBookInfoScreen } from "./src/screens/EditBookInfoScreen";
-import { EditGoalScreen } from "./src/screens/EditGoalScreen";
 import { CreateAccountScreen } from "./src/screens/CreateAccountScreen";
-import { OpenEditionsScreen } from "./src/screens/OpenEditionsScreen";
-import { OpenDetailsScreen } from "./src/screens/OpenDetailsScreen";
-import { OpenCoversScreen } from "./src/screens/OpenCoversScreen";
-import { DateScreen } from "./src/screens/DateScreen";
-import { NoteScreen } from "./src/screens/NoteScreen";
 import { NotesKeyScreen } from "./src/screens/NotesKeyScreen";
-import { MovieDetailsScreen } from "./src/screens/MovieDetailsScreen";
-import { TVSeasonsScreen } from "./src/screens/TVSeasonsScreen";
-import { TVEpisodesScreen } from "./src/screens/TVEpisodesScreen";
-import { TVEpisodeDetailsScreen } from "./src/screens/TVEpisodeDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -92,82 +79,9 @@ const App: () => Node = () => {
                 <Image style={styles.profileIcon} source={{ uri: "https://micro.blog/images/blank_avatar.png" }} />
               )
             }} />
-            <Stack.Screen name="Details" component={BookDetailsScreen} options={({ navigation, route }) => ({
-              title: "",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
-                </Pressable>
-              ),
-              headerRight: () => (
-                <Pressable onPress={() => { navigation.navigate("Post", { books: [] }); }} hitSlop={10}>
-                  <Icon name="publish" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="Editions" component={OpenEditionsScreen} options={({ navigation, route }) => ({
-              title: "Editions",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="OLDetails" component={OpenDetailsScreen} options={({ navigation, route }) => ({
-              title: "Details",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="MovieDetails" component={MovieDetailsScreen} options={({ navigation, route }) => ({
-              title: "",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="TVSeasons" component={TVSeasonsScreen} options={({ navigation, route }) => ({
-              title: "",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="TVEpisodes" component={TVEpisodesScreen} options={({ navigation, route }) => ({
-              title: "",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="TVEpisodeDetails" component={TVEpisodeDetailsScreen} options={({ navigation, route }) => ({
-              title: "",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="back">
-                            <Icon name="navbar-back" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarBackIcon} />
-                </Pressable>
-              )
-            })} />
           </Stack.Group>
+          {contentStackScreens(Stack, styles, is_dark)}
           <Stack.Group screenOptions={{ presentation: "modal" }}>
-            <Stack.Screen name="AuthorBooks" component={AuthorBooksScreen} options={({ navigation, route }) => ({
-              title: route.params.author,
-              presentation: Platform.OS === "ios" ? "formSheet" : "modal",
-              sheetAllowedDetents: [0.5, 0.9],
-              sheetExpandsWhenScrolledToEdge: false,
-              sheetInitialDetentIndex: 0,
-              sheetGrabberVisible: true,
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
-                </Pressable>
-              )
-            })} />
             <Stack.Screen name="Post" component={PostScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (
@@ -178,14 +92,6 @@ const App: () => Node = () => {
               headerRight: () => (
                 <Pressable onPress={() => { }}>
                   <Text style={styles.navbarSubmit}>Post</Text>
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="Note" component={NoteScreen} options={({ navigation, route }) => ({
-              title: "Note",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
                 </Pressable>
               )
             })} />
@@ -224,56 +130,6 @@ const App: () => Node = () => {
               headerLeft: () => (
                 <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
                   <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="EditBookInfo" component={EditBookInfoScreen} options={({ navigation, route }) => ({
-              title: "",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="AddBookInfo" component={AddBookInfoScreen} options={({ navigation, route }) => ({
-              title: "",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="EditGoal" component={EditGoalScreen} options={({ navigation, route }) => ({
-              title: "",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
-                </Pressable>
-              ),
-              headerRight: () => (
-                <Pressable onPress={() => { navigation.navigate("Post", { books: [] }); }} hitSlop={10}>
-                  <Icon name="publish" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarNewIcon} accessibilityLabel="new post" />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="Covers" component={OpenCoversScreen} options={({ navigation, route }) => ({
-              title: "Covers",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
-                </Pressable>
-              )
-            })} />
-            <Stack.Screen name="DatePicker" component={DateScreen} options={({ navigation, route }) => ({
-              title: "Finished Date",
-              headerLeft: () => (
-                <Pressable onPress={() => { navigation.goBack(); }} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
-                </Pressable>
-              ),
-              headerRight: () => (
-                <Pressable onPress={() => { }}>
-                  <Text style={styles.navbarSubmit}>Update</Text>
                 </Pressable>
               )
             })} />

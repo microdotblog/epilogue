@@ -7,11 +7,12 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
-import { profileHeaderOptions } from "../ProfileHeaderButton";
+import { useProfileHeader } from "../ProfileHeaderButton";
 
 export function GoalsScreen({ navigation }) {
 	const windowSize = useWindowDimensions();
 	const styles = useEpilogueStyle();
+	useProfileHeader(navigation, styles);
 	const is_dark = (useColorScheme() == "dark");
 	const [ goals, setGoals ] = useState([]);
 	const [ bannerYear, setBannerYear ] = useState();
@@ -31,7 +32,6 @@ export function GoalsScreen({ navigation }) {
 	
 	function onFocus(navigation) {
 		setupPostDraftForBanner();		
-		setupProfileIcon();
 		loadGoals();
 	}
 
@@ -133,18 +133,6 @@ export function GoalsScreen({ navigation }) {
 		epilogueStorage.set(keys.currentTextExtra, extra);
 		epilogueStorage.remove(keys.currentPostURL);
 	}
-
-	function setupProfileIcon() {
-		epilogueStorage.get(keys.currentUsername).then(username => {
-			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
-		});
-	}	
-
-	function onShowProfile() {
-		navigation.navigate("Profile");
-	}
-	
 	const ProgressStatus = ({ progress, value }) => {
 		if (value == 0) {
 			return (

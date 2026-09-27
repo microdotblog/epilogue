@@ -3,6 +3,8 @@ import { Platform, useColorScheme, useWindowDimensions } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeBottomTabNavigator } from '@react-navigation/bottom-tabs/unstable';
 import { SafeAreaView } from 'react-native-screens/experimental';
+import { isWideTabletWindow, TabletLayout } from '../navigation/TabletLayout';
+import { SectionStack } from '../navigation/SectionStack';
 
 import { Icon } from '../Icon';
 import { HomeScreen } from "./HomeScreen";
@@ -15,8 +17,9 @@ const useNativeTabs = Platform.OS === 'ios';
 const Tab = useNativeTabs
 	? createNativeBottomTabNavigator()
 	: createBottomTabNavigator();
+const tabletLayout = props => <TabletLayout {...props} />;
 
-// Native sidebars overlay the screen; their width is included in its safe area.
+// Preserve the existing phone safe-area handling.
 const tabScreenLayout = ({ children }) => (
 	<SafeAreaView edges={{ left: true, right: true }}>
 		{children}
@@ -65,14 +68,16 @@ const jsTabIcon = (routeName, activeTintColor) => ({ focused }) => (
 export function TabsScreen({ navigation }) {
     const is_dark = (useColorScheme() == "dark");
 	const { width, height } = useWindowDimensions();
-	const isWideLandscape = width >= 768 && width > height;
+	const isWideLandscape = isWideTabletWindow(width, height);
+	const isTablet = useNativeTabs && Platform.isPad;
 	const enable_open_library = false;
 	const inactiveTintColor = "gray";
 	const tabActiveTintColor = is_dark ? darkTabActiveTintColor : lightTabActiveTintColor;
 
 	return (
 		<Tab.Navigator
-			screenLayout={useNativeTabs ? tabScreenLayout : undefined}
+			layout={isTablet ? tabletLayout : undefined}
+			screenLayout={useNativeTabs && !isTablet ? tabScreenLayout : undefined}
 			screenOptions={({ route }) => ({
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
 				headerLeftContainerStyle: { paddingLeft: 15 },
@@ -82,28 +87,29 @@ export function TabsScreen({ navigation }) {
 					? nativeTabIcon(route.name)
 					: jsTabIcon(route.name, tabActiveTintColor),
 				...(useNativeTabs ? {
-					headerShown: true,
+					headerShown: !isTablet,
 					lazy: false,
 					tabBarControllerMode: Number.parseInt(Platform.Version, 10) >= 18
-						? (isWideLandscape ? "tabSidebar" : "tabBar")
+						? "tabBar"
 						: undefined,
+					tabBarStyle: isTablet && isWideLandscape ? { display: "none" } : undefined,
 					tabBarMinimizeBehavior: "never",
 				} : null),
 			})}
 		>
-			<Tab.Screen name="Bookshelves" component={HomeScreen} options={{				
+			<Tab.Screen name="Bookshelves" component={isTablet ? SectionStack : HomeScreen} options={{
 				headerTitle: "",
 				tabBarLabel: "Bookshelves",
 			}} />
-			<Tab.Screen name="Goals" component={GoalsScreen} options={{
+			<Tab.Screen name="Goals" component={isTablet ? SectionStack : GoalsScreen} options={{
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
 				tabBarLabel: "Goals",
 			}} />
-			<Tab.Screen name="Movies" component={MoviesScreen} options={{
+			<Tab.Screen name="Movies" component={isTablet ? SectionStack : MoviesScreen} options={{
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
 				tabBarLabel: "Movies",
 			}} />
-			<Tab.Screen name="Discover" component={DiscoverScreen} options={{
+			<Tab.Screen name="Discover" component={isTablet ? SectionStack : DiscoverScreen} options={{
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
 				tabBarLabel: "Discover",
 			}} />

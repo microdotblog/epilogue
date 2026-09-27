@@ -11,11 +11,12 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Book } from "../models/Book";
-import { profileHeaderOptions } from "../ProfileHeaderButton";
+import { useProfileHeader } from "../ProfileHeaderButton";
 import { readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
 export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();
+	useProfileHeader(navigation, styles);
 	const iosMajorVersion = Number.parseInt(String(Platform.Version).split(".")[0], 10);
 	const shouldShowTabBacking = Platform.OS === "ios" && iosMajorVersion == 26;
 	
@@ -42,7 +43,6 @@ export function DiscoverScreen({ navigation }) {
 	}, [navigation]);	
 	
 	const onFocus = (navigation) =>  {
-		setupProfileIcon();
 		loadBooks();
 		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {			
 			var root_items;
@@ -93,18 +93,6 @@ export function DiscoverScreen({ navigation }) {
 			setMenuActions(root_items)
 		});
 	}
-
-	function setupProfileIcon() {
-		epilogueStorage.get(keys.currentUsername).then(username => {
-			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
-		});
-	}	
-
-	function onShowProfile() {
-		navigation.navigate("Profile");
-	}
-	
 	async function loadBooks() {
 		await fetch("https://micro.blog/posts/discover/books").then(response => response.json()).then(data => {
 			setData(data.items)

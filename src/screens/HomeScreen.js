@@ -13,7 +13,7 @@ import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
-import { profileHeaderOptions } from "../ProfileHeaderButton";
+import { refreshProfileAvatar, useProfileHeader } from "../ProfileHeaderButton";
 import {
 	booksFromJSONFeed,
 	cacheBookshelfDataForID,
@@ -83,6 +83,7 @@ function resolveBookshelfFromItems(items, preferred_bookshelf) {
 
 export function HomeScreen({ navigation }) {
 	const styles = useEpilogueStyle()
+	useProfileHeader(navigation, styles);
 	const colorScheme = useColorScheme();
 	const is_dark = (colorScheme == "dark");
 	const [ books, setBooks ] = useState();
@@ -211,7 +212,6 @@ export function HomeScreen({ navigation }) {
 		});
 		
 		const linking_sub = setupLinking();
-		setupProfileIcon();
 		
 		// cleanup
 		return () => {
@@ -328,9 +328,7 @@ export function HomeScreen({ navigation }) {
 				});
 
 				// save current username
-				epilogueStorage.set(keys.currentUsername, username).then(() => {
-					setupProfileIcon();
-				});
+				epilogueStorage.set(keys.currentUsername, username).then(refreshProfileAvatar);
 			}
 		});
 	}
@@ -545,18 +543,6 @@ export function HomeScreen({ navigation }) {
 			)
 		});
 	}
-	
-	function setupProfileIcon() {
-		epilogueStorage.get(keys.currentUsername).then(username => {
-			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
-		});
-	}	
-	
-	function onShowProfile() {
-		navigation.navigate("Profile");
-	}
-
 	function searchResultItems(new_books, searchText, local_books = []) {
 		var new_items = [];
 
