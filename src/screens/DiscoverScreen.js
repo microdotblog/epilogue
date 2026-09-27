@@ -20,9 +20,6 @@ export function DiscoverScreen({ navigation }) {
 	const iosMajorVersion = Number.parseInt(String(Platform.Version).split(".")[0], 10);
 	const shouldShowTabBacking = Platform.OS === "ios" && iosMajorVersion == 26;
 	
-	const height = Platform.isPad ? 260 : 180 // book cover height
-	const coverHeight = height - 4
-	
 	const [ data, setData ] = useState()
 	const [ refreshing , setRefreshing ] = useState(false)
 	const [ loaded, setLoaded ] = useState(false)
@@ -110,6 +107,10 @@ export function DiscoverScreen({ navigation }) {
 	}, [])
 	
 	function bestColumnsForWidth(width) {
+		if (Platform.isPad) {
+			// Target 160 points per column, including cover spacing, within this pane.
+			return Math.max(1, Math.round((width - 16) / 160));
+		}
 		var cols = Math.round(width / 150);
 		if (cols < 3) {
 			cols = 3;
@@ -334,7 +335,7 @@ export function DiscoverScreen({ navigation }) {
 	const BookCover = ({ url, title, author, id }) => {
 		if (url !== '') {
 			return (
-				<FastImage style={styles.bookCovers} source={{ 
+				<FastImage style={styles.bookCovers} resizeMode={Platform.isPad ? "contain" : "cover"} source={{
 					uri: url
 				}}/>
 			)
@@ -372,7 +373,9 @@ export function DiscoverScreen({ navigation }) {
 				<TouchableOpacity 
 					onPress={() => { onOpen(item.url) }}
 					onLongPress={() => { return null }}
-					style={ [styles.bookContainer, {height: coverHeight}] }>
+					style={[styles.bookContainer, Platform.isPad
+						? { flex: 0, height: undefined, aspectRatio: 2 / 3, ...(item._microblog.cover_url ? { backgroundColor: "transparent" } : {}) }
+						: { height: 176 }]}>
 					
 					<View style={[styles.addingBookSpinner, {opacity: itemUpdating === item.id.toString() ? 0.5 : 0.0, backgroundColor: itemUpdating === item.id.toString() ? '#111' : null, zIndex: itemUpdating === item.id.toString() ? 5 : 0}]}>
 						<ActivityIndicator color={'#fff'} animating={itemUpdating===item.id.toString()} hidesWhenStopped={true}/>
