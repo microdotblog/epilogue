@@ -94,6 +94,7 @@ export function HomeScreen({ navigation }) {
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
 	const [ currentBookshelfID, setCurrentBookshelfID ] = useState();
+	const [ pendingBookshelfID, setPendingBookshelfID ] = useState(null);
 	const [ isLoadingBooks, setIsLoadingBooks ] = useState(false);
 	const [ isSearching, setIsSearching ] = useState(false);
 	const searchFieldRef = useRef();
@@ -104,18 +105,23 @@ export function HomeScreen({ navigation }) {
 	const currentBookshelfRef = useRef(null);
 	const pendingBookshelfRef = useRef(null);
 
+	function setPendingBookshelf(bookshelf) {
+		pendingBookshelfRef.current = bookshelf;
+		setPendingBookshelfID(bookshelf?.id ?? null);
+	}
+
 	useScrollToTop(booksListRef);
 
 	React.useEffect(() => {
 		publishSidebarBookshelves?.({
 			bookshelves,
-			selectedBookshelfID: currentBookshelfID,
+			selectedBookshelfID: pendingBookshelfID ?? currentBookshelfID,
 			onSelect: bookshelf => {
 				selectBookshelf(bookshelf);
 				navigation.popTo("BookshelvesRoot");
 			}
 		});
-	}, [bookshelves, currentBookshelfID, navigation, publishSidebarBookshelves]);
+	}, [bookshelves, currentBookshelfID, pendingBookshelfID, navigation, publishSidebarBookshelves]);
 
 	React.useEffect(() => () => publishSidebarBookshelves?.(null), [publishSidebarBookshelves]);
     
@@ -192,7 +198,7 @@ export function HomeScreen({ navigation }) {
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			if ((auth_token == null) || (auth_token.length == 0)) {
 				currentBookshelfRef.current = null;
-				pendingBookshelfRef.current = null;
+				setPendingBookshelf(null);
 				booksRequestRef.current += 1;
 				bookshelvesRequestRef.current += 1;
 				setIsLoadingBooks(false);
@@ -408,7 +414,7 @@ export function HomeScreen({ navigation }) {
 			return;
 		}
 		if (pendingBookshelfRef.current != null && String(pendingBookshelfRef.current.id) != String(bookshelf_id)) {
-			pendingBookshelfRef.current = null;
+			setPendingBookshelf(null);
 		}
 
 		const request_id = booksRequestRef.current + 1;
@@ -437,7 +443,7 @@ export function HomeScreen({ navigation }) {
 			});		
 		}).catch(() => {
 			if (booksRequestRef.current == request_id && String(pendingBookshelfRef.current?.id) == String(bookshelf_id)) {
-				pendingBookshelfRef.current = null;
+				setPendingBookshelf(null);
 			}
 		}).finally(() => {
 			if (booksRequestRef.current == request_id) {
@@ -514,7 +520,7 @@ export function HomeScreen({ navigation }) {
 						const preferred_bookshelf = pendingBookshelfRef.current || currentBookshelfRef.current || stored_bookshelf;
 						const current_bookshelf = resolveBookshelfFromItems(new_items, preferred_bookshelf);
 						if (current_bookshelf == undefined) {
-							pendingBookshelfRef.current = null;
+							setPendingBookshelf(null);
 							return;
 						}
 
@@ -529,7 +535,7 @@ export function HomeScreen({ navigation }) {
 
 	function selectBookshelf(bookshelf) {
 		const latest_bookshelf = bookshelves.find(item => String(item.id) == String(bookshelf.id)) || bookshelf;
-		pendingBookshelfRef.current = latest_bookshelf;
+		setPendingBookshelf(latest_bookshelf);
 		loadBooks(latest_bookshelf, function() {
 			commitBookshelf(latest_bookshelf);
 		});
@@ -537,7 +543,7 @@ export function HomeScreen({ navigation }) {
 
 	function commitBookshelf(bookshelf) {
 		currentBookshelfRef.current = bookshelf;
-		pendingBookshelfRef.current = null;
+		setPendingBookshelf(null);
 		epilogueStorage.set(keys.currentBookshelf, bookshelf);
 		setCurrentBookshelfTitle(bookshelf.title);
 		setCurrentBookshelfID(bookshelf.id);

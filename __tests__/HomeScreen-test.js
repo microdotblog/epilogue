@@ -91,10 +91,11 @@ beforeEach(async () => {
 	await AsyncStorage.clear();
 });
 
-it("shares cached shelves with the sidebar, commits only successful selections, and restores the compact popup", async () => {
+it("highlights pending sidebar selections immediately, commits only on success, and restores the compact popup", async () => {
 	const shelf_a = { id: "A", title: "Shelf A" };
 	const shelf_b = { id: "B", title: "Shelf B" };
-	await seedHomeStorage([shelf_a, shelf_b], shelf_a);
+	const shelf_c = { id: "C", title: "Shelf C" };
+	await seedHomeStorage([shelf_a, shelf_b, shelf_c], shelf_a);
 	const harness = navigationHarness();
 	harness.navigation.popTo = jest.fn();
 	let menu;
@@ -115,21 +116,33 @@ it("shares cached shelves with the sidebar, commits only successful selections, 
 			await flushAsyncWork();
 		});
 		await renderer.act(async () => { harness.focus(); await flushAsyncWork(); });
-		expect(menu.bookshelves).toEqual([shelf_a, shelf_b]);
+		expect(menu.bookshelves).toEqual([shelf_a, shelf_b, shelf_c]);
 		expect(menu.selectedBookshelfID).toBe("A");
 		expect(screen.root.findAllByProps({ testID: "bookshelf-popup" })).toHaveLength(0);
 		expect(harness.navigation.setOptions).toHaveBeenCalledWith({ headerTitle: "Shelf A" });
 		await renderer.act(async () => { menu.onSelect(shelf_b); await flushAsyncWork(); });
 		expect(harness.navigation.popTo).toHaveBeenCalledWith("BookshelvesRoot");
-		expect(menu.selectedBookshelfID).toBe("A");
+		expect(menu.selectedBookshelfID).toBe("B");
+		expect(await storedBookshelf()).toEqual(shelf_a);
+		expect(harness.navigation.setOptions.mock.calls.filter(([options]) => options.headerTitle).at(-1)[0].headerTitle).toBe("Shelf A");
 		await renderer.act(async () => { resolveRequest({ json: async () => ({ items: [] }) }); await flushAsyncWork(); });
 		expect(menu.selectedBookshelfID).toBe("B");
 		expect(await storedBookshelf()).toEqual(shelf_b);
 		await renderer.act(async () => { menu.onSelect(shelf_a); await flushAsyncWork(); });
+		expect(menu.selectedBookshelfID).toBe("A");
 		await renderer.act(async () => { rejectRequest(new Error("Offline")); await flushAsyncWork(); });
 		expect(menu.selectedBookshelfID).toBe("B");
+		expect(await storedBookshelf()).toEqual(shelf_b);
+		// A superseded request must not undo the highlight for the latest tap.
+		await renderer.act(async () => { menu.onSelect(shelf_a); await flushAsyncWork(); });
+		const rejectOldRequest = rejectRequest;
+		await renderer.act(async () => { menu.onSelect(shelf_c); await flushAsyncWork(); });
+		expect(menu.selectedBookshelfID).toBe("C");
+		await renderer.act(async () => { rejectOldRequest(new Error("Offline")); await flushAsyncWork(); });
+		expect(menu.selectedBookshelfID).toBe("C");
+		await renderer.act(async () => { resolveRequest({ json: async () => ({ items: [] }) }); await flushAsyncWork(); });
 		await renderer.act(async () => screen.update(render(false)));
-		expect(screen.root.findByProps({ testID: "bookshelf-popup" }).props.selectedBookshelfID).toBe("B");
+		expect(screen.root.findByProps({ testID: "bookshelf-popup" }).props.selectedBookshelfID).toBe("C");
 		const titleOptions = harness.navigation.setOptions.mock.calls.filter(([options]) => options.headerTitle).at(-1)[0];
 		expect(typeof titleOptions.headerTitle).toBe("function");
 	} finally {
