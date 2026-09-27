@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Platform, Share, Modal } from 'react-native';
+import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Platform, Share, StyleSheet, useColorScheme } from 'react-native';
 import { useScrollToTop } from "@react-navigation/native";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -12,10 +12,16 @@ import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Book } from "../models/Book";
 import { useProfileHeader } from "../ProfileHeaderButton";
-import { readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
+import { booksFromJSONFeed, readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
+
+const discoverSources = [
+	{ id: "microblog", label: "Recently blogged on Micro.blog", icon: require("../../images/mb.png"), url: "https://micro.blog/posts/discover/books" },
+	{ id: "nyt", label: "New York Times bestsellers", icon: require("../../images/nyt.png"), url: "https://micro.blog/posts/discover/books/bestsellers" }
+];
 
 export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();
+	const dark = useColorScheme() === "dark";
 	useProfileHeader(navigation, styles);
 	const iosMajorVersion = Number.parseInt(String(Platform.Version).split(".")[0], 10);
 	const shouldShowTabBacking = Platform.OS === "ios" && iosMajorVersion == 26;
@@ -28,9 +34,47 @@ export function DiscoverScreen({ navigation }) {
 	const [ menuActions, setMenuActions] = useState([])	
 	const [ books, setBooks ] = useState()
 	const [ itemUpdating, setItemUpdating ] = useState('')
+	const [source, setSource] = useState("microblog");
+	const [loadError, setLoadError] = useState(null);
+	const sourceRef = React.useRef("microblog");
+	const feedRequestRef = React.useRef(0);
 	const discoverListRef = React.useRef(null);
 
 	useScrollToTop(discoverListRef);
+
+	React.useEffect(() => {
+		const selector = (
+			<View style={[sourceStyles.control, { backgroundColor: dark ? "#34343A" : "#E9E9EB" }]}>
+				{discoverSources.map(item => (
+					<Pressable key={item.id} testID={`discover-source-${item.id}`} accessibilityRole="button"
+						hitSlop={{ top: 6, bottom: 6 }}
+						accessibilityLabel={item.label} accessibilityState={{ selected: source === item.id }}
+						onPress={() => selectSource(item.id)} style={[sourceStyles.segment,
+							source === item.id && { backgroundColor: dark ? "#636366" : "white" }]}>
+						<Image source={item.icon} style={sourceStyles.icon} />
+					</Pressable>
+				))}
+			</View>
+		);
+		const headerTitle = source === "nyt" ? "NYT Best Sellers" : "Recently Blogged";
+		navigation.setOptions(Platform.OS === "ios" ? {
+			headerTitle,
+			unstable_headerRightItems: () => [{ type: "custom", element: selector, hidesSharedBackground: true }]
+		} : { headerTitle, headerRight: () => selector });
+	}, [navigation, source, dark]);
+
+	React.useEffect(() => () => { feedRequestRef.current += 1; }, []);
+
+	function selectSource(nextSource) {
+		if (sourceRef.current === nextSource) return;
+		sourceRef.current = nextSource;
+		setSource(nextSource);
+		setSearching(false);
+		setLoaded(false);
+		setData([]);
+		setRefreshing(false);
+		loadBooks();
+	}
 			
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
@@ -91,20 +135,29 @@ export function DiscoverScreen({ navigation }) {
 		});
 	}
 	async function loadBooks() {
-		await fetch("https://micro.blog/posts/discover/books").then(response => response.json()).then(data => {
-			setData(data.items)
-		})
-		setLoaded(true)
+		const requestID = ++feedRequestRef.current;
+		setLoadError(null);
+		try {
+			const endpoint = discoverSources.find(item => item.id === sourceRef.current).url;
+			const response = await fetch(endpoint);
+			if (response.ok === false) throw new Error("Feed request failed");
+			const feed = await response.json();
+			if (!Array.isArray(feed.items)) throw new Error("Invalid book feed");
+			if (requestID === feedRequestRef.current) setData(feed.items);
+		} catch (error) {
+			if (requestID === feedRequestRef.current) setLoadError("Couldn't load books. Please try again.");
+		} finally {
+			if (requestID === feedRequestRef.current) {
+				setLoaded(true);
+				setRefreshing(false);
+			}
+		}
 	}
 	
-	const onRefresh = React.useCallback(() => {
-		setRefreshing(true)
-		loadBooks()
-		
-		setTimeout(() => {
-			setRefreshing(false)
-		}, 750)
-	}, [])
+	function onRefresh() {
+		setRefreshing(true);
+		loadBooks();
+	}
 	
 	function bestColumnsForWidth(width) {
 		if (Platform.isPad) {
@@ -353,6 +406,17 @@ export function DiscoverScreen({ navigation }) {
 		}
 	}
 	
+	function onDiscoverBookPressed(item) {
+		if (source !== "nyt") {
+			return onOpen(item.url);
+		}
+		const book = booksFromJSONFeed({ items: [item] })[0];
+		onShowBookPressed({
+			...book,
+			is_search: true
+		});
+	}
+
 	const renderItem =({item}) => (
 		<View style={{flex: 1/columns}}>
 			<ContextMenu
@@ -371,7 +435,7 @@ export function DiscoverScreen({ navigation }) {
 				dropdownMenuMode={false}
 			>
 				<TouchableOpacity 
-					onPress={() => { onOpen(item.url) }}
+					onPress={() => { onDiscoverBookPressed(item) }}
 					onLongPress={() => { return null }}
 					style={[styles.bookContainer, Platform.isPad
 						? { flex: 0, height: undefined, aspectRatio: 2 / 3, ...(item._microblog.cover_url ? { backgroundColor: "transparent" } : {}) }
@@ -428,7 +492,14 @@ export function DiscoverScreen({ navigation }) {
 		<View style={{ flex: 1 }} onLayout={({ nativeEvent }) => {
 			setColumns(bestColumnsForWidth(nativeEvent.layout.width));
 		}}>
-		{loaded === true ? (
+		{loadError ? (
+			<View style={styles.loadingPage}>
+				<Text style={{ color: dark ? "white" : "black" }}>{loadError}</Text>
+				<Pressable testID="discover-retry" accessibilityRole="button" onPress={() => { setLoaded(false); loadBooks(); }} style={sourceStyles.retry}>
+					<Text style={{ color: dark ? "#FFB45A" : "#C85F00" }}>Try Again</Text>
+				</Pressable>
+			</View>
+		) : loaded === true ? (
 			searching === true ? (
 				<View style={styles.discoverView}> 
 					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" />
@@ -470,3 +541,10 @@ export function DiscoverScreen({ navigation }) {
 		</View>
 	)
 }
+
+const sourceStyles = StyleSheet.create({
+	control: { flexDirection: "row", padding: 3, borderRadius: 10 },
+	segment: { width: 44, height: 32, borderRadius: 7, alignItems: "center", justifyContent: "center" },
+	icon: { width: 24, height: 24, resizeMode: "contain" },
+	retry: { padding: 12 }
+});
