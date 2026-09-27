@@ -69,6 +69,9 @@
   "engines": {
     "node": ">=20.19.4"
   },
+  "overrides": {
+    "shell-quote": "1.9.0"
+  },
   "patchedDependencies": {
     "expo-modules-jsi@57.1.0": "patches/expo-modules-jsi@57.1.0.patch",
     "@react-navigation/bottom-tabs@7.18.3": "patches/@react-navigation%2Fbottom-tabs@7.18.3.patch",
