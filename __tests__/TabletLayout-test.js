@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions, Text } from "react-native";
+import { AccessibilityInfo, Animated, Dimensions, Text } from "react-native";
 import renderer from "react-test-renderer";
 import { TabletLayout } from "../src/navigation/TabletLayout";
 import { SidebarBookshelvesContext, SidebarVisibleContext } from "../src/navigation/SidebarContext";
@@ -24,6 +24,7 @@ afterEach(async () => {
 	await renderer.act(async () => screen?.unmount());
 	Dimensions.set({ window: originalWindow });
 	jest.clearAllMocks();
+	jest.restoreAllMocks();
 });
 
 function resize(width, height) {
@@ -31,6 +32,8 @@ function resize(width, height) {
 }
 
 it("shows individual shelves and selects them from another section", async () => {
+	const animate = jest.spyOn(Animated, "timing");
+	const accessibilityListener = jest.spyOn(AccessibilityInfo, "addEventListener");
 	resize(1133, 744);
 	const shelves = [{ id: "A", title: "Currently reading" }, { id: "B", title: "Want to read" }];
 	const onSelect = jest.fn();
@@ -51,6 +54,47 @@ it("shows individual shelves and selects them from another section", async () =>
 	await renderer.act(async () => screen.update(render(0)));
 	expect(screen.root.findByProps({ testID: "sidebar-shelf-A" }).props.accessibilityState.selected).toBe(false);
 	expect(screen.root.findByProps({ testID: "sidebar-shelf-B" }).props.accessibilityState.selected).toBe(true);
+
+	const disclosure = () => screen.root.findByProps({ testID: "sidebar-bookshelves-disclosure" });
+	const shelfContainer = () => screen.root.findByProps({ testID: "sidebar-shelf-container" });
+	await renderer.act(async () => screen.root.findByProps({ testID: "sidebar-shelf-content" }).props.onLayout({ nativeEvent: { layout: { height: 104 } } }));
+	expect(shelfContainer().props.style.height.__getValue()).toBe(104);
+	expect(disclosure().props.accessibilityState.expanded).toBe(true);
+	onSelect.mockClear();
+	navigation.navigate.mockClear();
+	await renderer.act(async () => disclosure().props.onPress());
+	expect(animate).toHaveBeenLastCalledWith(expect.anything(), expect.objectContaining({ toValue: 0, duration: 200, useNativeDriver: false }));
+	const progress = animate.mock.calls.at(-1)[0];
+	await renderer.act(async () => { progress.stopAnimation(); progress.setValue(0.5); });
+	expect(shelfContainer().props.style.height.__getValue()).toBe(52);
+	await renderer.act(async () => progress.setValue(0));
+	// Content measures at its natural height even when the outer container is closed.
+	expect(screen.root.findByProps({ testID: "sidebar-shelf-content" }).props.style).toEqual({ position: "absolute", top: 0, left: 0, right: 0 });
+	await renderer.act(async () => screen.root.findByProps({ testID: "sidebar-shelf-content" }).props.onLayout({ nativeEvent: { layout: { height: 156 } } }));
+	expect(shelfContainer().props.style.height.__getValue()).toBe(0);
+	expect(disclosure().props.accessibilityState.expanded).toBe(false);
+	expect(screen.root.findByProps({ testID: "sidebar-shelf-B" })).toBeDefined();
+	expect(shelfContainer().props.accessibilityElementsHidden).toBe(true);
+	expect(shelfContainer().props.pointerEvents).toBe("none");
+	expect(screen.root.findByProps({ testID: "sidebar-Goals" })).toBeDefined();
+	expect(onSelect).not.toHaveBeenCalled();
+	expect(navigation.navigate).not.toHaveBeenCalled();
+	await renderer.act(async () => resize(744, 1133));
+	await renderer.act(async () => resize(1133, 744));
+	expect(disclosure().props.accessibilityState.expanded).toBe(false);
+	await renderer.act(async () => disclosure().props.onPress());
+	expect(animate).toHaveBeenLastCalledWith(progress, expect.objectContaining({ toValue: 1, duration: 200, useNativeDriver: false }));
+	await renderer.act(async () => { progress.stopAnimation(); progress.setValue(1); });
+	expect(shelfContainer().props.style.height.__getValue()).toBe(156);
+	expect(disclosure().props.accessibilityState.expanded).toBe(true);
+	expect(screen.root.findByProps({ testID: "sidebar-shelf-B" }).props.accessibilityState.selected).toBe(true);
+	const motionChanged = accessibilityListener.mock.calls.find(([event]) => event === "reduceMotionChanged")[1];
+	motionChanged(true);
+	animate.mockClear();
+	await renderer.act(async () => disclosure().props.onPress());
+	expect(disclosure().props.accessibilityState.expanded).toBe(false);
+	expect(animate).not.toHaveBeenCalled();
+	expect(shelfContainer().props.style.height.__getValue()).toBe(0);
 });
 
 it("tiles two columns with a profile toolbar and no sidebar toggle", async () => {
