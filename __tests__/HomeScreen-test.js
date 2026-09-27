@@ -6,6 +6,7 @@ import renderer from "react-test-renderer";
 import { cacheBookshelfDataForID } from "../src/BookshelfCache";
 import { keys } from "../src/Constants";
 import { HomeScreen } from "../src/screens/HomeScreen";
+import { SidebarBookshelvesContext, SidebarVisibleContext } from "../src/navigation/SidebarContext";
 
 jest.mock("@react-navigation/native", () => ({
 	useScrollToTop: jest.fn()
@@ -88,6 +89,53 @@ function createHomeScreen(navigation) {
 beforeEach(async () => {
 	jest.clearAllMocks();
 	await AsyncStorage.clear();
+});
+
+it("shares cached shelves with the sidebar, commits only successful selections, and restores the compact popup", async () => {
+	const shelf_a = { id: "A", title: "Shelf A" };
+	const shelf_b = { id: "B", title: "Shelf B" };
+	await seedHomeStorage([shelf_a, shelf_b], shelf_a);
+	const harness = navigationHarness();
+	harness.navigation.popTo = jest.fn();
+	let menu;
+	const publish = value => { menu = value; };
+	const render = visible => <SidebarVisibleContext.Provider value={visible}>
+		<SidebarBookshelvesContext.Provider value={publish}>
+			<HomeScreen navigation={harness.navigation} />
+		</SidebarBookshelvesContext.Provider>
+	</SidebarVisibleContext.Provider>;
+	const previousFetch = global.fetch;
+	let resolveRequest;
+	let rejectRequest;
+	global.fetch = jest.fn(() => new Promise((resolve, reject) => { resolveRequest = resolve; rejectRequest = reject; }));
+	let screen;
+	try {
+		await renderer.act(async () => {
+			screen = renderer.create(render(true), { createNodeMock: () => ({ clear: jest.fn() }) });
+			await flushAsyncWork();
+		});
+		await renderer.act(async () => { harness.focus(); await flushAsyncWork(); });
+		expect(menu.bookshelves).toEqual([shelf_a, shelf_b]);
+		expect(menu.selectedBookshelfID).toBe("A");
+		expect(screen.root.findAllByProps({ testID: "bookshelf-popup" })).toHaveLength(0);
+		expect(harness.navigation.setOptions).toHaveBeenCalledWith({ headerTitle: "Shelf A" });
+		await renderer.act(async () => { menu.onSelect(shelf_b); await flushAsyncWork(); });
+		expect(harness.navigation.popTo).toHaveBeenCalledWith("BookshelvesRoot");
+		expect(menu.selectedBookshelfID).toBe("A");
+		await renderer.act(async () => { resolveRequest({ json: async () => ({ items: [] }) }); await flushAsyncWork(); });
+		expect(menu.selectedBookshelfID).toBe("B");
+		expect(await storedBookshelf()).toEqual(shelf_b);
+		await renderer.act(async () => { menu.onSelect(shelf_a); await flushAsyncWork(); });
+		await renderer.act(async () => { rejectRequest(new Error("Offline")); await flushAsyncWork(); });
+		expect(menu.selectedBookshelfID).toBe("B");
+		await renderer.act(async () => screen.update(render(false)));
+		expect(screen.root.findByProps({ testID: "bookshelf-popup" }).props.selectedBookshelfID).toBe("B");
+		const titleOptions = harness.navigation.setOptions.mock.calls.filter(([options]) => options.headerTitle).at(-1)[0];
+		expect(typeof titleOptions.headerTitle).toBe("function");
+	} finally {
+		await renderer.act(async () => screen?.unmount());
+		global.fetch = previousFetch;
+	}
 });
 
 it("does not persist a selected bookshelf until its books load", async () => {

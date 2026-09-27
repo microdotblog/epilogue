@@ -2,7 +2,7 @@ import React from "react";
 import { Dimensions, Text } from "react-native";
 import renderer from "react-test-renderer";
 import { TabletLayout } from "../src/navigation/TabletLayout";
-import { SidebarVisibleContext } from "../src/navigation/SidebarContext";
+import { SidebarBookshelvesContext, SidebarVisibleContext } from "../src/navigation/SidebarContext";
 
 jest.mock("react-native-screens/experimental", () => ({
 	Split: { Host: "SplitHost", Column: "SplitColumn" },
@@ -29,6 +29,29 @@ afterEach(async () => {
 function resize(width, height) {
 	Dimensions.set({ window: { width, height, scale: 2, fontScale: 1 } });
 }
+
+it("shows individual shelves and selects them from another section", async () => {
+	resize(1133, 744);
+	const shelves = [{ id: "A", title: "Currently reading" }, { id: "B", title: "Want to read" }];
+	const onSelect = jest.fn();
+	function Content() {
+		const publish = React.useContext(SidebarBookshelvesContext);
+		React.useEffect(() => {
+			publish({ bookshelves: shelves, selectedBookshelfID: "B", onSelect });
+		}, [publish]);
+		return content;
+	}
+	const render = index => <TabletLayout state={{ ...state, index }} navigation={navigation}><Content /></TabletLayout>;
+	await renderer.act(async () => { screen = renderer.create(render(2)); });
+	expect(screen.root.findAllByProps({ testID: "sidebar-Bookshelves" })).toHaveLength(0);
+	expect(screen.root.findByProps({ testID: "sidebar-shelf-B" }).props.accessibilityState.selected).toBe(false);
+	screen.root.findByProps({ testID: "sidebar-shelf-B" }).props.onPress();
+	expect(onSelect).toHaveBeenCalledWith(shelves[1]);
+	expect(navigation.navigate).toHaveBeenCalledWith("Bookshelves");
+	await renderer.act(async () => screen.update(render(0)));
+	expect(screen.root.findByProps({ testID: "sidebar-shelf-A" }).props.accessibilityState.selected).toBe(false);
+	expect(screen.root.findByProps({ testID: "sidebar-shelf-B" }).props.accessibilityState.selected).toBe(true);
+});
 
 it("tiles two columns with a profile toolbar and no sidebar toggle", async () => {
 	resize(1133, 744);

@@ -6,6 +6,11 @@ Landscape windows at least 768 points wide show the sidebar and hide the tabs.
 Portrait and narrower windows show only the secondary column with native tabs.
 The navigators stay mounted across these changes, preserving each section's stack.
 
+Home publishes its cached shelf list and committed selection to the sidebar.
+Choosing a shelf returns Bookshelves to its list through the existing loading
+path. While the sidebar is visible, the header is a plain shelf title; the popup
+is mounted only in layouts without a sidebar.
+
 Each iPad section uses `SectionStack`. Detail screens and their editing sheets
 are registered together in `ContentStackScreens`, so `popTo("Details")` stays in
 the originating section. Profile, sign-in and compose remain on the app's root

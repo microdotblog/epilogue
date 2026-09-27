@@ -65,5 +65,14 @@ it("keeps details and editing in their section while presenting profile at the r
 	expect(navigation.getRootState().routes.map(route => route.name)).toEqual(["Tabs", "Profile"]);
 	await renderer.act(async () => navigation.goBack());
 	expect(navigation.getCurrentRoute().key).toBe(detailKey);
+	// A shelf selected in the sidebar returns only Bookshelves to its list.
+	await renderer.act(async () => detail.navigate("Goals"));
+	await renderer.act(async () => {
+		books.popTo("BookshelvesRoot");
+		books.navigate("Bookshelves");
+	});
+	expect(navigation.getCurrentRoute().name).toBe("BookshelvesRoot");
+	expect(section("Bookshelves").routes).toHaveLength(1);
+	expect(section("Goals").routes[1].params.isbn).toBe("456");
 	await renderer.act(async () => screen.unmount());
 });

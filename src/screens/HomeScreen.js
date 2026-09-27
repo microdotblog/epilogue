@@ -14,6 +14,7 @@ import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
 import { refreshProfileAvatar, useProfileHeader } from "../ProfileHeaderButton";
+import { SidebarBookshelvesContext, SidebarVisibleContext } from "../navigation/SidebarContext";
 import {
 	booksFromJSONFeed,
 	cacheBookshelfDataForID,
@@ -84,6 +85,8 @@ function resolveBookshelfFromItems(items, preferred_bookshelf) {
 export function HomeScreen({ navigation }) {
 	const styles = useEpilogueStyle()
 	useProfileHeader(navigation, styles);
+	const sidebarVisible = React.useContext(SidebarVisibleContext);
+	const publishSidebarBookshelves = React.useContext(SidebarBookshelvesContext);
 	const colorScheme = useColorScheme();
 	const is_dark = (colorScheme == "dark");
 	const [ books, setBooks ] = useState();
@@ -102,6 +105,19 @@ export function HomeScreen({ navigation }) {
 	const pendingBookshelfRef = useRef(null);
 
 	useScrollToTop(booksListRef);
+
+	React.useEffect(() => {
+		publishSidebarBookshelves?.({
+			bookshelves,
+			selectedBookshelfID: currentBookshelfID,
+			onSelect: bookshelf => {
+				selectBookshelf(bookshelf);
+				navigation.popTo("BookshelvesRoot");
+			}
+		});
+	}, [bookshelves, currentBookshelfID, navigation, publishSidebarBookshelves]);
+
+	React.useEffect(() => () => publishSidebarBookshelves?.(null), [publishSidebarBookshelves]);
     
 	React.useEffect(() => {
 		const unsubscribe_focus = navigation.addListener("focus", () => {
@@ -133,7 +149,7 @@ export function HomeScreen({ navigation }) {
 		if (currentBookshelfTitle) {
 			setupBookshelves(navigation, currentBookshelfTitle);
 		}
-	}, [is_dark, currentBookshelfTitle, navigation, styles]);
+	}, [is_dark, currentBookshelfTitle, navigation, styles, sidebarVisible]);
 
 	React.useEffect(() => {
 		const renderProgressSpinner = () => (
@@ -160,10 +176,7 @@ export function HomeScreen({ navigation }) {
 	}, [navigation, isLoadingBooks, isSearching, is_dark, styles]);
   
 	function onFocus(navigation) {
-		if (currentBookshelfTitle) {
-			setupBookshelves(navigation, currentBookshelfTitle);
-		}
-		else {
+		if (!currentBookshelfTitle) {
 			epilogueStorage.get(keys.allBookshelves).then(saved_bookshelves => {
 				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 					if (saved_bookshelves && saved_bookshelves.length > 0 && current_bookshelf) {
@@ -171,7 +184,6 @@ export function HomeScreen({ navigation }) {
 						setBookshelves(saved_bookshelves);
 						setCurrentBookshelfTitle(current_bookshelf.title);
 						setCurrentBookshelfID(current_bookshelf.id);
-						setupBookshelves(navigation, current_bookshelf.title);
 					}
 				});
 			});
@@ -532,6 +544,10 @@ export function HomeScreen({ navigation }) {
 	}
 
 	function setupBookshelves(navigation, currentTitle) {
+		if (sidebarVisible) {
+			navigation.setOptions({ headerTitle: currentTitle });
+			return;
+		}
 		navigation.setOptions({
 			headerTitle: () => (
 				<BookshelfPopupMenuTrigger accessibilityLabel={currentTitle} menuRef={bookshelfPopupMenuRef}>
@@ -766,12 +782,12 @@ export function HomeScreen({ navigation }) {
 				}
 				keyExtractor = { item => item.list_id || item.id }
 			/>
-			<BookshelfPopupMenu
+			{!sidebarVisible && <BookshelfPopupMenu
 				bookshelves={bookshelves}
 				onSelect={selectBookshelf}
 				ref={bookshelfPopupMenuRef}
 				selectedBookshelfID={currentBookshelfID}
-			/>
+			/>}
 		</View>
 	);
 }
