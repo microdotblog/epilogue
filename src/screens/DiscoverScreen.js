@@ -44,7 +44,8 @@ export function DiscoverScreen({ navigation }) {
 
 	React.useEffect(() => {
 		const selector = (
-			<View style={[sourceStyles.control, { backgroundColor: dark ? "#34343A" : "#E9E9EB" }]}>
+			<View style={[sourceStyles.control, { backgroundColor: dark ? "#34343A" : "#E9E9EB" },
+				Platform.OS === "android" && { marginRight: 16 }]}>
 				{discoverSources.map(item => (
 					<Pressable key={item.id} testID={`discover-source-${item.id}`} accessibilityRole="button"
 						hitSlop={{ top: 6, bottom: 6 }}

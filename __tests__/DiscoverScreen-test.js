@@ -9,6 +9,7 @@ import epilogueStorage from "../src/Storage";
 import { keys } from "../src/Constants";
 
 jest.mock("@react-navigation/native", () => ({ useScrollToTop: jest.fn() }));
+jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }) }));
 jest.mock("../src/ProfileHeaderButton", () => ({ useProfileHeader: jest.fn() }));
 jest.mock("../src/Storage", () => ({ get: jest.fn(() => Promise.resolve([])) }));
 jest.mock("../src/BookshelfCache", () => ({
@@ -17,6 +18,7 @@ jest.mock("../src/BookshelfCache", () => ({
 }));
 
 const originalIsPad = Object.getOwnPropertyDescriptor(Platform, "isPad");
+const originalOS = Platform.OS;
 const originalFetch = global.fetch;
 const book = { id: "1", url: "https://example.com/post", _microblog: {
 	book_title: "A book", book_author: "An author", cover_url: "https://example.com/cover.jpg"
@@ -25,6 +27,7 @@ let screen;
 
 afterEach(async () => {
 	await renderer.act(async () => screen?.unmount());
+	Platform.OS = originalOS;
 	if (originalIsPad) Object.defineProperty(Platform, "isPad", originalIsPad);
 	else delete Platform.isPad;
 	global.fetch = originalFetch;
@@ -53,6 +56,14 @@ async function layout(width) {
 	await renderer.act(async () => screen.root.findAllByType(View).find(view => view.props.onLayout)
 		.props.onLayout({ nativeEvent: { layout: { width } } }));
 }
+
+it.each(["android", "ios"])("adds header control spacing only on Android (%s)", async os => {
+	Platform.OS = os;
+	const { navigation } = await openDiscover(false);
+	const options = navigation.setOptions.mock.calls.at(-1)[0];
+	const selector = os === "ios" ? options.unstable_headerRightItems()[0].element : options.headerRight();
+	expect(StyleSheet.flatten(selector.props.style).marginRight).toBe(os === "android" ? 16 : undefined);
+});
 
 it("adapts iPad columns to the pane and crops covers to a proportional 2:3 frame", async () => {
 	await openDiscover(true);
