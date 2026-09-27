@@ -1,7 +1,8 @@
 import React from "react";
-import { Platform, useColorScheme } from "react-native";
+import { Platform, useColorScheme, useWindowDimensions } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeBottomTabNavigator } from '@react-navigation/bottom-tabs/unstable';
+import { SafeAreaView } from 'react-native-screens/experimental';
 
 import { Icon } from '../Icon';
 import { HomeScreen } from "./HomeScreen";
@@ -14,6 +15,13 @@ const useNativeTabs = Platform.OS === 'ios';
 const Tab = useNativeTabs
 	? createNativeBottomTabNavigator()
 	: createBottomTabNavigator();
+
+// Native sidebars overlay the screen; their width is included in its safe area.
+const tabScreenLayout = ({ children }) => (
+	<SafeAreaView edges={{ left: true, right: true }}>
+		{children}
+	</SafeAreaView>
+);
 
 const tabIcons = {
 	Bookshelves: {
@@ -56,12 +64,15 @@ const jsTabIcon = (routeName, activeTintColor) => ({ focused }) => (
 
 export function TabsScreen({ navigation }) {
     const is_dark = (useColorScheme() == "dark");
+	const { width, height } = useWindowDimensions();
+	const isWideLandscape = width >= 768 && width > height;
 	const enable_open_library = false;
 	const inactiveTintColor = "gray";
 	const tabActiveTintColor = is_dark ? darkTabActiveTintColor : lightTabActiveTintColor;
 
 	return (
 		<Tab.Navigator
+			screenLayout={useNativeTabs ? tabScreenLayout : undefined}
 			screenOptions={({ route }) => ({
 				headerTintColor: is_dark ? "#FFFFFF" : "#000000",
 				headerLeftContainerStyle: { paddingLeft: 15 },
@@ -73,6 +84,9 @@ export function TabsScreen({ navigation }) {
 				...(useNativeTabs ? {
 					headerShown: true,
 					lazy: false,
+					tabBarControllerMode: Number.parseInt(Platform.Version, 10) >= 18
+						? (isWideLandscape ? "tabSidebar" : "tabBar")
+						: undefined,
 					tabBarMinimizeBehavior: "never",
 				} : null),
 			})}

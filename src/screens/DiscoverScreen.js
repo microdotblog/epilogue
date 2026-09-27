@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Dimensions, Platform, Share, Modal, useWindowDimensions } from 'react-native';
+import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Platform, Share, Modal } from 'react-native';
 import { useScrollToTop } from "@react-navigation/native";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -16,7 +16,6 @@ import { readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground }
 
 export function DiscoverScreen({ navigation }) {		
 	const styles = useEpilogueStyle();
-	const windowSize = useWindowDimensions();
 	const iosMajorVersion = Number.parseInt(String(Platform.Version).split(".")[0], 10);
 	const shouldShowTabBacking = Platform.OS === "ios" && iosMajorVersion == 26;
 	
@@ -27,7 +26,7 @@ export function DiscoverScreen({ navigation }) {
 	const [ refreshing , setRefreshing ] = useState(false)
 	const [ loaded, setLoaded ] = useState(false)
 	const [ searching, setSearching ] = useState(false)
-	const [ columns, setColumns ] = useState(bestColumnsForWidth(windowSize.width))
+	const [ columns, setColumns ] = useState(1)
 	const [ menuActions, setMenuActions] = useState([])	
 	const [ books, setBooks ] = useState()
 	const [ itemUpdating, setItemUpdating ] = useState('')
@@ -41,13 +40,6 @@ export function DiscoverScreen({ navigation }) {
 		});
 		return unsubscribe;
 	}, [navigation]);	
-	
-	React.useEffect(() => {
-		const subscription = Dimensions.addEventListener("change", ({screen}) => {
-			setColumns(bestColumnsForWidth(Dimensions.get("window").width));
-		});
-		return () => subscription?.remove()
-	})
 	
 	const onFocus = (navigation) =>  {
 		setupProfileIcon();
@@ -442,7 +434,10 @@ export function DiscoverScreen({ navigation }) {
 	);
 	
 	return (
-		loaded === true ? (
+		<View style={{ flex: 1 }} onLayout={({ nativeEvent }) => {
+			setColumns(bestColumnsForWidth(nativeEvent.layout.width));
+		}}>
+		{loaded === true ? (
 			searching === true ? (
 				<View style={styles.discoverView}> 
 					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" />
@@ -480,6 +475,7 @@ export function DiscoverScreen({ navigation }) {
 			<View style={styles.loadingPage}>
 				<ActivityIndicator size='small'/>
 			</View>
-		)	
+		)}
+		</View>
 	)
 }
