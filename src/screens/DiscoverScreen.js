@@ -335,7 +335,7 @@ export function DiscoverScreen({ navigation }) {
 	const BookCover = ({ url, title, author, id }) => {
 		if (url !== '') {
 			return (
-				<FastImage style={styles.bookCovers} resizeMode={Platform.isPad ? "contain" : "cover"} source={{
+				<FastImage style={styles.bookCovers} resizeMode="cover" source={{
 					uri: url
 				}}/>
 			)

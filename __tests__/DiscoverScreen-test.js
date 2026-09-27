@@ -36,7 +36,7 @@ async function layout(width) {
 		.props.onLayout({ nativeEvent: { layout: { width } } }));
 }
 
-it("adapts iPad columns to the pane and gives covers a 2:3 frame without cropping", async () => {
+it("adapts iPad columns to the pane and crops covers to a proportional 2:3 frame", async () => {
 	await openDiscover(true);
 	for (const [width, columns] of [[976, 6], [816, 5], [656, 4], [336, 2]]) {
 		await layout(width);
@@ -49,7 +49,7 @@ it("adapts iPad columns to the pane and gives covers a 2:3 frame without croppin
 		expect(style).toMatchObject({ aspectRatio: 2 / 3, flex: 0, backgroundColor: "transparent" });
 		expect(style.height).toBeUndefined();
 	}
-	expect(screen.root.findByType(FastImage).props.resizeMode).toBe("contain");
+	expect(screen.root.findByType(FastImage).props.resizeMode).toBe("cover");
 });
 
 it("preserves the phone grid sizing", async () => {
