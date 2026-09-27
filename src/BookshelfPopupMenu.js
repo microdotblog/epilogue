@@ -551,7 +551,7 @@ function bookshelfMenuColors(isDark) {
 
 const menuStyles = StyleSheet.create({
 	layer: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		elevation: 100,
 		zIndex: 100
 	},

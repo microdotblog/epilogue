@@ -131,7 +131,7 @@ export const light = StyleSheet.create({
 		width: "100%"
 	},
 	bookDetailsBackgroundImage: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		resizeMode: "cover"
 	},
 	bookDetailsCoverSlot: {
