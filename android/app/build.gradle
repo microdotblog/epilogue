@@ -48,8 +48,8 @@ android {
         applicationId "blog.micro.epilogue"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 50
-        versionName "2.5.2"
+        versionCode 51
+        versionName "2.6"
     }
     signingConfigs {
         debug {
