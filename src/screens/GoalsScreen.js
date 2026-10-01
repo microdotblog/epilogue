@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, RefreshControl, StyleSheet, useColorScheme, useWindowDimensions } from 'react-native';
+import { Button, Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, Platform, RefreshControl, StyleSheet, useColorScheme, useWindowDimensions } from 'react-native';
 import { useScrollToTop } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
@@ -8,6 +8,7 @@ import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { useProfileHeader } from "../ProfileHeaderButton";
+import { findBookCalendarPage } from "../CalendarData";
 import { CalendarScreen } from "./CalendarScreen";
 
 export function GoalsScreen({ navigation }) {
@@ -22,9 +23,16 @@ export function GoalsScreen({ navigation }) {
 	const [ refreshing, setRefreshing ] = useState(false);
 	const [ selectedView, setSelectedView ] = useState("goals");
 	const [ calendarOpened, setCalendarOpened ] = useState(false);
+	const [ calendarPage, setCalendarPage ] = useState({ status: "idle" });
+	const calendarPageRequest = React.useRef(0);
 	const goalsListRef = React.useRef(null);
 
 	useScrollToTop(goalsListRef);
+	React.useEffect(() => () => { calendarPageRequest.current += 1; }, []);
+	React.useEffect(() => {
+		if (selectedView === "calendar") loadCalendarPage();
+	}, [selectedView]);
+
 	React.useEffect(() => {
 		const control = (
 			<View style={[segmentStyles.control, { backgroundColor: is_dark ? "#34343A" : "#E9E9EB" }]}>
@@ -32,7 +40,10 @@ export function GoalsScreen({ navigation }) {
 					<Pressable key={item.id} testID={`goals-view-${item.id}`} accessibilityRole="tab"
 						accessibilityLabel={item.title} accessibilityState={{ selected: selectedView === item.id }}
 						onPress={() => {
-							if (item.id === "calendar") setCalendarOpened(true);
+							if (item.id === "calendar" && selectedView !== "calendar") {
+								setCalendarOpened(true);
+								setCalendarPage({ status: "loading" });
+							}
 							setSelectedView(item.id);
 						}}
 						style={[segmentStyles.segment, selectedView === item.id && {
@@ -44,19 +55,74 @@ export function GoalsScreen({ navigation }) {
 				))}
 			</View>
 		);
+		const pageButtonTitle = calendarPage.page ? "Edit Page" : "New Page";
+		const showPageButton = selectedView === "calendar" && calendarPage.status === "ready";
+		const showRetryButton = selectedView === "calendar" && calendarPage.status === "error";
 		navigation.setOptions({
 			headerTitle: () => control,
 			headerTitleAlign: "center",
-			...(Platform.OS === "ios" ? { unstable_headerRightItems: () => [] } : { headerRight: () => null })
+			...(Platform.OS === "ios" ? {
+				unstable_headerRightItems: () => showPageButton ? [{ type: "button", label: pageButtonTitle,
+					icon: { type: "sfSymbol", name: "square.and.pencil" }, onPress: openCalendarPage }] :
+					showRetryButton ? [{ type: "button", label: "Retry", onPress: loadCalendarPage }] : []
+			} : {
+				headerRight: () => showPageButton ? (
+					<Pressable onPress={openCalendarPage} hitSlop={10} accessibilityRole="button" accessibilityLabel={pageButtonTitle}>
+						<Icon name="publish" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarNewIcon} />
+					</Pressable>
+				) : showRetryButton ? <Button title="Retry" onPress={loadCalendarPage} /> : null
+			})
 		});
-	}, [navigation, is_dark, selectedView]);
+	}, [navigation, is_dark, selectedView, calendarPage]);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			if (selectedView === "goals") onFocus(navigation);
+			else loadCalendarPage();
 		});
 		return unsubscribe;
 	}, [navigation, selectedView]);
+
+	async function loadCalendarPage() {
+		const request = ++calendarPageRequest.current;
+		setCalendarPage({ status: "loading" });
+		try {
+			const [token, blogID, blogName] = await Promise.all([
+				epilogueStorage.get(keys.authToken),
+				epilogueStorage.get(keys.currentBlogID),
+				epilogueStorage.get(keys.currentBlogName)
+			]);
+			if (!token) throw new Error("Missing sign-in token");
+			let page = null;
+			let offset = 0;
+			while (true) {
+				const destination = blogID ? `&mp-destination=${encodeURIComponent(blogID)}` : "";
+				const url = `https://micro.blog/micropub?q=source&mp-channel=pages${destination}&limit=100&offset=${offset}`;
+				const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+				if (!response.ok) throw new Error("Could not load standalone pages");
+				const data = await response.json();
+				if (!Array.isArray(data.items)) throw new Error("Invalid standalone pages response");
+				page = findBookCalendarPage(data.items);
+				if (page || data.items.length < 100) break;
+				offset += data.items.length;
+			}
+			if (request === calendarPageRequest.current) {
+				setCalendarPage({ status: "ready", page, blogID: blogID || "", blogName: blogName || "" });
+			}
+		} catch {
+			if (request === calendarPageRequest.current) setCalendarPage({ status: "error" });
+		}
+	}
+
+	function openCalendarPage() {
+		navigation.navigate("Post", {
+			books: [],
+			calendarMode: true,
+			calendarPage: calendarPage.page,
+			calendarBlogID: calendarPage.blogID,
+			calendarBlogName: calendarPage.blogName
+		});
+	}
 	
 	function onFocus(navigation) {
 		setupPostDraftForBanner();		
@@ -243,7 +309,7 @@ export function GoalsScreen({ navigation }) {
 				/>
 			</View>
 			{calendarOpened && <View style={[segmentStyles.screen, selectedView !== "calendar" && segmentStyles.hidden]}>
-				<CalendarScreen navigation={navigation} />
+				<CalendarScreen navigation={navigation} pageLoading={calendarPage.status === "loading"} />
 			</View>}
 		</View>
 	)

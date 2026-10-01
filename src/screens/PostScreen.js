@@ -1,6 +1,6 @@
-import React, { Component, useState } from "react";
+import React, { Component, useRef, useState } from "react";
 import type { Node } from "react";
-import { InputAccessoryView, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions } from "react-native";
+import { Alert, InputAccessoryView, Keyboard, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import FastImage from "react-native-fast-image";
 
@@ -16,11 +16,17 @@ export function PostScreen({ route, navigation }) {
 	const windowSize = useWindowDimensions();
 	const headerHeight = useHeaderHeight();
 	const keyboardNoticeID = "KeyboardNoticeID";
-	const [ text, setText ] = useState();
-	const [ title, setTitle ] = useState();
+	const calendarMode = route.params?.calendarMode === true;
+	const calendarPage = route.params?.calendarPage;
+	const initialCalendarText = calendarPage ? calendarPage.content : '{{< bookcalendar view="list" >}}';
+	const [ text, setText ] = useState(calendarMode ? initialCalendarText : undefined);
+	const calendarText = useRef(initialCalendarText);
+	const calendarSending = useRef(false);
+	const [ title, setTitle ] = useState(calendarMode ? (calendarPage?.title || "Book calendar") : undefined);
 	const [ keyboardAccessoryHeight, setKeyboardAccessoryHeight ] = useState(0);
-	const [ blogID, setBlogID ] = useState();
-	const [ blogName, setBlogName ] = useState();
+	const [ calendarKeyboardHeight, setCalendarKeyboardHeight ] = useState(0);
+	const [ blogID, setBlogID ] = useState(calendarMode ? (route.params.calendarBlogID || "") : undefined);
+	const [ blogName, setBlogName ] = useState(calendarMode ? (route.params.calendarBlogName || "Micro.blog") : undefined);
 	const [ blogCount, setBlogCount ] = useState(0);
 	const [ postURL, setPostURL ] = useState();
 	const [ progressAnimating, setProgressAnimating ] = useState(false);
@@ -48,10 +54,25 @@ export function PostScreen({ route, navigation }) {
 			setKeyboardAccessoryHeight(0);
 		}
 	}, [showsPostNotice]);
+
+	React.useEffect(() => {
+		if (!calendarMode || Platform.OS !== "ios") return;
+		const frameSubscription = Keyboard.addListener("keyboardWillChangeFrame", (event) => {
+			setCalendarKeyboardHeight(event.endCoordinates.height);
+		});
+		const hideSubscription = Keyboard.addListener("keyboardWillHide", () => setCalendarKeyboardHeight(0));
+		return () => {
+			frameSubscription.remove();
+			hideSubscription.remove();
+		};
+	}, [calendarMode]);
 	
 	function onFocus(navigation) {
-		setupPostButton();
-		setupFields();
+		if (calendarMode) setupCalendarPageButton();
+		else {
+			setupPostButton();
+			setupFields();
+		}
 	}
 	
 	function bestColumnsForWidth(width) {
@@ -69,12 +90,13 @@ export function PostScreen({ route, navigation }) {
 	}
 
 	function onShowBlogs() {
-		navigation.navigate("Blogs");
+		if (!calendarMode) navigation.navigate("Blogs");
 	}
 		
 	function onChangeText(text) {
 		setText(text);
-		epilogueStorage.set(keys.currentText, text);
+		if (calendarMode) calendarText.current = text;
+		else epilogueStorage.set(keys.currentText, text);
 	}
 
 	function onKeyboardAccessoryLayout(event) {
@@ -102,6 +124,56 @@ export function PostScreen({ route, navigation }) {
 			  </Pressable>
 			)
 		});		
+	}
+
+	function setupCalendarPageButton() {
+		navigation.setOptions({
+			headerRight: () => (
+				<Pressable onPress={onSendCalendarPage} accessibilityRole="button" accessibilityLabel={calendarPage ? "Update Page" : "Add Page"}>
+					<Text style={styles.navbarSubmit}>{calendarPage ? "Update Page" : "Add Page"}</Text>
+				</Pressable>
+			)
+		});
+	}
+
+	async function onSendCalendarPage() {
+		if (calendarSending.current) return;
+		calendarSending.current = true;
+		setProgressAnimating(true);
+		try {
+			const token = await epilogueStorage.get(keys.authToken);
+			if (!token) throw new Error("Missing sign-in token");
+			let options;
+			if (calendarPage) {
+				const fields = {
+					action: "update",
+					url: calendarPage.url,
+					"mp-channel": "pages",
+					replace: { content: calendarText.current }
+				};
+				if (blogID) fields["mp-destination"] = blogID;
+				options = {
+					method: "POST",
+					headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+					body: JSON.stringify(fields)
+				};
+			} else {
+				const form = new FormData();
+				form.append("h", "entry");
+				form.append("mp-channel", "pages");
+				form.append("name", "Book calendar");
+				form.append("content", calendarText.current);
+				if (blogID) form.append("mp-destination", blogID);
+				options = { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form };
+			}
+			const response = await fetch("https://micro.blog/micropub", options);
+			if (!response.ok) throw new Error("Could not save book calendar page");
+			navigation.goBack();
+		} catch {
+			calendarSending.current = false;
+			setProgressAnimating(false);
+			Alert.alert("Couldn’t save page", "Please try again.");
+		}
 	}
 	
 	function setupFields() {
@@ -271,13 +343,14 @@ export function PostScreen({ route, navigation }) {
 		constructor(props) {
 			super(props);
 			this.title = props.title;
+			this.notice = props.notice;
 		}
 				
 		render() {
 			// we're just going to use title to know whether to show the notice text
 			if ((this.title != undefined) && (this.title.length > 0)) {
 				return (
-					<Text style={styles.postTextNotice}>Publishing this post will also install the Micro.blog plug-in "Book reading goals" on your blog.</Text>
+					<Text style={styles.postTextNotice}>{this.notice || 'Publishing this post will also install the Micro.blog plug-in "Book reading goals" on your blog.'}</Text>
 				);
 			}
 			else {
@@ -331,15 +404,21 @@ export function PostScreen({ route, navigation }) {
 		
 	return (
 		<KeyboardAvoidingView
-			style={styles.postTextBox}
-			behavior="height"
+			style={[styles.postTextBox, calendarMode && Platform.OS === "ios" && { paddingBottom: calendarKeyboardHeight }]}
+			behavior={calendarMode && Platform.OS === "ios" ? undefined : "height"}
 			keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight + keyboardAccessoryHeight : 0}
 		>
-			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs}>
+			{calendarMode && Platform.OS === "ios" && calendarKeyboardHeight > 0 && (
+				<View pointerEvents="none" style={[styles.postTextNotice, {
+					position: "absolute", bottom: 0, left: 0, right: 0,
+					height: calendarKeyboardHeight, borderTopWidth: 0
+				}]} />
+			)}
+			<Pressable style={styles.postHostnameBar} onPress={onShowBlogs} disabled={calendarMode}>
 				<Text style={styles.postHostnameLeft}></Text>
 				<View style={styles.postHostnameCenter}>
 					<Text style={styles.postHostnameText}>{blogName}</Text>
-					{ blogCount > 1 ? (
+					{ !calendarMode && blogCount > 1 ? (
 						<Icon name="popup-triangle" color="#777777" size={10} style={styles.postHostnameChevron} />
 					) : null }
 				</View>
@@ -348,8 +427,8 @@ export function PostScreen({ route, navigation }) {
 			<PostTitleField title={title} />
 
 			{Platform.OS === "ios" && <>
-				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} scrollEnabled={true} autoFocus={true} inputAccessoryViewID={showsPostNotice ? keyboardNoticeID : undefined} />
-				{showsPostNotice && (
+				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} scrollEnabled={true} autoFocus={true} inputAccessoryViewID={showsPostNotice && !calendarMode ? keyboardNoticeID : undefined} />
+				{calendarMode ? <PostNoticeField title={title} notice="Share the book calendar on your blog." /> : showsPostNotice && (
 					<InputAccessoryView nativeID={keyboardNoticeID}>
 						<View onLayout={onKeyboardAccessoryLayout}>
 							<PostNoticeField title={title} />
@@ -359,14 +438,14 @@ export function PostScreen({ route, navigation }) {
 			</>}
 			{Platform.OS === "android" && <>
 				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} scrollEnabled={true} autoFocus={true} />
-				<PostNoticeField title={title} />
+				<PostNoticeField title={title} notice={calendarMode ? "Share the book calendar on your blog." : undefined} />
 			</>}
 
 			{showsPlainPostSpacer && (
 				<View style={styles.postEditorBottomSpacer} />
 			)}
 			
-			<PostBooksGrid title={title} books={books} columns={bookColumns} />
+			{!calendarMode && <PostBooksGrid title={title} books={books} columns={bookColumns} />}
 		</KeyboardAvoidingView>
 	);
 }

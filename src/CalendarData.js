@@ -25,3 +25,20 @@ export function calendarMonthsFromResponse(response) {
 		})).sort((a, b) => a.day - b.day)
 	}));
 }
+
+export function findBookCalendarPage(items) {
+	for (const item of items) {
+		const properties = item.properties || {};
+		const url = properties.url?.[0];
+		const content = properties.content?.[0];
+		if (typeof content !== "string" || !content.includes("{{< bookcalendar")) continue;
+		const page = {
+			uid: properties.uid?.[0],
+			url,
+			title: properties.name?.[0] || "Book calendar",
+			content
+		};
+		return page;
+	}
+	return null;
+}

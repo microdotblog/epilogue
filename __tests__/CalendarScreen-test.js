@@ -1,6 +1,6 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { FlatList, ImageBackground, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, FlatList, ImageBackground, StyleSheet, Text } from "react-native";
 import { CalendarScreen } from "../src/screens/CalendarScreen";
 import { readBookshelfIDsContainingBook } from "../src/BookshelfCache";
 import epilogueStorage from "../src/Storage";
@@ -52,5 +52,18 @@ it("shows a retry message when loading fails", async () => {
 	let screen;
 	await renderer.act(async () => { screen = renderer.create(<CalendarScreen navigation={{ navigate: jest.fn() }} />); });
 	expect(screen.root.findAllByType(Text).some(item => String(item.props.children).includes("Couldn’t load"))).toBe(true);
+	await renderer.act(async () => screen.unmount());
+});
+
+it("keeps the center spinner until the page lookup finishes after calendar JSON", async () => {
+	global.fetch = jest.fn(async () => ({ ok: true, json: async () => ({ months: [] }) }));
+	const navigation = { navigate: jest.fn() };
+	let screen;
+	await renderer.act(async () => { screen = renderer.create(<CalendarScreen navigation={navigation} pageLoading={true} />); });
+	expect(screen.root.findAllByType(ActivityIndicator)).toHaveLength(1);
+	expect(screen.root.findAllByType(FlatList)).toHaveLength(0);
+	await renderer.act(async () => { screen.update(<CalendarScreen navigation={navigation} pageLoading={false} />); });
+	expect(screen.root.findAllByType(ActivityIndicator)).toHaveLength(0);
+	expect(screen.root.findAllByType(FlatList)).toHaveLength(1);
 	await renderer.act(async () => screen.unmount());
 });

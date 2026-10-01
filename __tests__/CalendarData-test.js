@@ -1,4 +1,4 @@
-import { calendarMonthsFromResponse } from "../src/CalendarData";
+import { calendarMonthsFromResponse, findBookCalendarPage } from "../src/CalendarData";
 
 it("uses the calendar's grouped months, local finish dates, totals, and backgrounds", () => {
 	const months = calendarMonthsFromResponse({ months: [
@@ -21,4 +21,14 @@ it("uses the calendar's grouped months, local finish dates, totals, and backgrou
 it("handles an empty calendar and rejects a non-calendar response", () => {
 	expect(calendarMonthsFromResponse({ months: [] })).toEqual([]);
 	expect(() => calendarMonthsFromResponse({ items: [] })).toThrow("Invalid book calendar response");
+});
+
+it("finds the shortcode page regardless of path and keeps its existing details", () => {
+	const items = [
+		{ properties: { uid: [1], url: ["https://example.com/other/"], content: ["Other content"] } },
+		{ properties: { uid: [2], url: ["https://example.com/book-calendar/"], content: ["Other content"] } },
+		{ properties: { uid: [3], url: ["https://example.com/my-reading/"], name: ["My Calendar"], content: ['Intro\n{{< bookcalendar view="list" >}}'] } }
+	];
+	expect(findBookCalendarPage(items)).toEqual({ uid: 3, url: "https://example.com/my-reading/", title: "My Calendar", content: 'Intro\n{{< bookcalendar view="list" >}}' });
+	expect(findBookCalendarPage(items.slice(0, 2))).toBeNull();
 });

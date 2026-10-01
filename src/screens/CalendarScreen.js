@@ -7,7 +7,7 @@ import { calendarMonthsFromResponse } from "../CalendarData";
 import { keys } from "../Constants";
 import epilogueStorage from "../Storage";
 
-export function CalendarScreen({ navigation }) {
+export function CalendarScreen({ navigation, pageLoading = false }) {
 	const dark = useColorScheme() === "dark";
 	const [months, setMonths] = React.useState([]);
 	const [bookshelves, setBookshelves] = React.useState([]);
@@ -100,7 +100,7 @@ export function CalendarScreen({ navigation }) {
 
 	return (
 		<View style={[calendarStyles.screen, { backgroundColor: dark ? "#212936" : "#F4F6F7" }]}>
-			{loading ? <ActivityIndicator style={calendarStyles.spinner} /> :
+			{loading || pageLoading ? <ActivityIndicator style={calendarStyles.spinner} /> :
 				<FlatList contentInsetAdjustmentBehavior="automatic" data={months} renderItem={renderMonth}
 					keyExtractor={item => item.key} contentContainerStyle={calendarStyles.list}
 					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadCalendar(true)} />}
