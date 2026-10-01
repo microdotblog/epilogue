@@ -1,22 +1,24 @@
-import { calendarMonthsFromFinishedFeed } from "../src/CalendarData";
+import { calendarMonthsFromResponse } from "../src/CalendarData";
 
-const now = new Date("2026-10-01T12:00:00Z");
-
-it("groups finished shelf books by month, newest month first and earliest day first", () => {
-	const months = calendarMonthsFromFinishedFeed({ items: [
-		{ id: 1, title: "Late September", date_published: "2026-09-21T12:00:00Z", authors: [{ name: "One" }], _microblog: { background_color: "#123456" } },
-		{ id: 2, title: "August", date_published: "2026-08-07T12:00:00Z" },
-		{ id: 3, title: "Early September", date_published: "2026-09-13T12:00:00Z", image: "https://example.com/cover.jpg", _microblog: { isbn: "123", background_url: "https://example.com/background.jpg", background_color: "#ABCDEF" } },
-		{ id: 4, title: "Too old", date_published: "2022-01-01T12:00:00Z" },
-		{ id: 5, title: "No date" }
-	] }, now);
+it("uses the calendar's grouped months, local finish dates, totals, and backgrounds", () => {
+	const months = calendarMonthsFromResponse({ months: [
+		{ month_key: "2026-09", year: 2026, month: 9, book_count: 2, page_count: 1315,
+			background_url: "https://example.com/background.jpg", books: [
+				{ id: 1, title: "Late September", author: "One", finished_date: "2026-09-21", day: 21, page_count: 675 },
+				{ id: 3, title: "Early September", isbn: "123", cover_url: "https://example.com/cover.jpg", finished_date: "2026-09-13", day: 13, page_count: 640 }
+			] },
+		{ month_key: "2026-08", year: 2026, month: 8, book_count: 1, page_count: 400, books: [
+			{ id: 2, title: "August", finished_date: "2026-08-07", day: 7, page_count: 400 }
+		] }
+	] });
 
 	expect(months.map(month => month.key)).toEqual(["2026-09", "2026-08"]);
 	expect(months[0].books.map(book => book.id)).toEqual([3, 1]);
-	expect(months[0]).toMatchObject({ name: "September", backgroundColor: "#ABCDEF", backgroundURL: "https://example.com/background.jpg" });
-	expect(months[0].books[0]).toMatchObject({ day: 13, isbn: "123", coverURL: "https://example.com/cover.jpg" });
+	expect(months[0]).toMatchObject({ name: "September", bookCount: 2, pageCount: 1315, backgroundURL: "https://example.com/background.jpg" });
+	expect(months[0].books[0]).toMatchObject({ day: 13, date: "2026-09-13", isbn: "123", coverURL: "https://example.com/cover.jpg", pageCount: 640 });
 });
 
-it("handles an empty feed", () => {
-	expect(calendarMonthsFromFinishedFeed({ items: [] }, now)).toEqual([]);
+it("handles an empty calendar and rejects a non-calendar response", () => {
+	expect(calendarMonthsFromResponse({ months: [] })).toEqual([]);
+	expect(() => calendarMonthsFromResponse({ items: [] })).toThrow("Invalid book calendar response");
 });

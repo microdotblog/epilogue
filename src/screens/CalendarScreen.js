@@ -2,14 +2,14 @@ import React from "react";
 import { ActivityIndicator, FlatList, ImageBackground, Pressable, RefreshControl, StyleSheet, Text, View, useColorScheme } from "react-native";
 import FastImage from "react-native-fast-image";
 
-import { calendarMonthsFromFinishedFeed } from "../CalendarData";
+import { readBookshelfIDsContainingBook } from "../BookshelfCache";
+import { calendarMonthsFromResponse } from "../CalendarData";
 import { keys } from "../Constants";
 import epilogueStorage from "../Storage";
 
 export function CalendarScreen({ navigation }) {
 	const dark = useColorScheme() === "dark";
 	const [months, setMonths] = React.useState([]);
-	const [bookshelf, setBookshelf] = React.useState(null);
 	const [bookshelves, setBookshelves] = React.useState([]);
 	const [loading, setLoading] = React.useState(true);
 	const [refreshing, setRefreshing] = React.useState(false);
@@ -28,23 +28,13 @@ export function CalendarScreen({ navigation }) {
 		try {
 			const token = await epilogueStorage.get(keys.authToken);
 			if (!token) throw new Error("Missing sign-in token");
-			const options = { headers: { Authorization: `Bearer ${token}` } };
-			const shelfResponse = await fetch("https://micro.blog/books/bookshelves", options);
-			if (!shelfResponse.ok) throw new Error("Could not load bookshelves");
-			const shelfFeed = await shelfResponse.json();
-			const shelves = (shelfFeed.items || []).map(item => ({
-				id: String(item.id), title: item.title, type: item._microblog?.type
-			}));
-			const finishedShelf = shelves.find(item => item.type === "finished");
-			if (!finishedShelf) throw new Error("No finished bookshelf");
-			const response = await fetch(`https://micro.blog/books/bookshelves/${finishedShelf.id}`, options);
-			if (!response.ok) throw new Error("Could not load finished books");
-			const feed = await response.json();
-			if (!Array.isArray(feed.items)) throw new Error("Invalid finished books feed");
+			const response = await fetch("https://micro.blog/books/calendar", { headers: { Authorization: `Bearer ${token}` } });
+			if (!response.ok) throw new Error("Could not load book calendar");
+			const months = calendarMonthsFromResponse(await response.json());
+			const savedShelves = await epilogueStorage.get(keys.allBookshelves).catch(() => []);
 			if (!mounted.current) return;
-			setBookshelves(shelves);
-			setBookshelf(finishedShelf);
-			setMonths(calendarMonthsFromFinishedFeed(feed));
+			setBookshelves(Array.isArray(savedShelves) ? savedShelves : []);
+			setMonths(months);
 		} catch (loadError) {
 			if (mounted.current) setError("Couldn’t load your book calendar. Pull down to try again.");
 		} finally {
@@ -55,21 +45,25 @@ export function CalendarScreen({ navigation }) {
 		}
 	}
 
-	function openBook(book) {
+	async function openBook(book) {
+		const bookshelfIDs = await readBookshelfIDsContainingBook(book.isbn, book.id);
+		const bookshelf = bookshelves.find(item => item.type === "finished" && bookshelfIDs.some(id => String(id) === String(item.id))) ||
+			bookshelves.find(item => bookshelfIDs.some(id => String(id) === String(item.id))) || null;
 		navigation.navigate("Details", {
 			id: book.id,
 			isbn: book.isbn,
 			title: book.title,
 			image: book.coverURL,
 			author: book.author,
-			author_id: book.authorID,
 			description: book.description,
-			date: book.date,
+			// The calendar API provides an account-local date, not a timestamp. Keep that day local in the date picker.
+			date: `${book.date}T00:00:00`,
 			background_color: book.backgroundColor,
 			background_url: book.backgroundURL,
 			bookshelves,
 			current_bookshelf: bookshelf,
-			is_search: false
+			is_search: false,
+			bookshelf_ids_with_book: bookshelfIDs
 		});
 	}
 
@@ -85,7 +79,7 @@ export function CalendarScreen({ navigation }) {
 				<View style={calendarStyles.details}>
 					<Text style={[calendarStyles.bookTitle, { color: dark ? "#FFFFFF" : "#26302F" }]}>{book.title}</Text>
 					{book.author ? <Text style={[calendarStyles.secondary, { color: dark ? "#BBC1C7" : "#647371" }]}>{book.author}</Text> : null}
-					<Text style={[calendarStyles.finished, { color: dark ? "#BBC1C7" : "#647371" }]}>Finished {month.name} {book.day}</Text>
+					<Text style={[calendarStyles.finished, { color: dark ? "#BBC1C7" : "#647371" }]}>Finished {month.name} {book.day}{book.pageCount > 0 ? ` · ${book.pageCount.toLocaleString()} ${book.pageCount === 1 ? "page" : "pages"}` : ""}</Text>
 				</View>
 			</Pressable>
 		);
@@ -97,7 +91,7 @@ export function CalendarScreen({ navigation }) {
 				<ImageBackground source={month.backgroundURL ? { uri: month.backgroundURL } : undefined}
 					style={calendarStyles.monthHeader} imageStyle={{ opacity: 0.45 }}>
 					<Text style={calendarStyles.monthTitle}>{month.name.toUpperCase()} <Text style={calendarStyles.year}>{month.year}</Text></Text>
-					<Text style={calendarStyles.monthSummary}>{month.books.length} {month.books.length === 1 ? "book" : "books"}</Text>
+					<Text style={calendarStyles.monthSummary}>{month.bookCount} {month.bookCount === 1 ? "book" : "books"}{month.pageCount > 0 ? ` · ${month.pageCount.toLocaleString()} ${month.pageCount === 1 ? "page" : "pages"}` : ""}</Text>
 				</ImageBackground>
 				{month.books.map((book, index) => renderBook(book, month, index))}
 			</View>
