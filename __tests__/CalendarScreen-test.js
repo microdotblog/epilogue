@@ -1,6 +1,6 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { FlatList, Text } from "react-native";
+import { FlatList, ImageBackground, StyleSheet, Text } from "react-native";
 import { CalendarScreen } from "../src/screens/CalendarScreen";
 import epilogueStorage from "../src/Storage";
 import { keys } from "../src/Constants";
@@ -20,7 +20,7 @@ it("loads the finished shelf and opens a calendar book in details", async () => 
 		] }) })
 		.mockResolvedValueOnce({ ok: true, json: async () => ({ items: [
 			{ id: 42, title: "A Book", image: "https://example.com/cover.jpg", date_published: new Date().toISOString(),
-				authors: [{ name: "An Author" }], _microblog: { isbn: "1234567890123" } }
+				authors: [{ name: "An Author" }], _microblog: { isbn: "1234567890123", background_url: "https://example.com/background.jpg" } }
 		] }) });
 	const navigation = { navigate: jest.fn() };
 	let screen;
@@ -31,6 +31,10 @@ it("loads the finished shelf and opens a calendar book in details", async () => 
 	const list = screen.root.findByType(FlatList);
 	expect(list.props.data).toHaveLength(1);
 	const month = list.props.renderItem({ item: list.props.data[0] });
+	const header = month.props.children[0];
+	expect(header.type).toBe(ImageBackground);
+	expect(header.props.imageStyle.opacity).toBe(0.45);
+	expect(StyleSheet.flatten(header.props.style).backgroundColor).toBe("#10191C");
 	const bookButton = month.props.children[1][0];
 	await renderer.act(async () => bookButton.props.onPress());
 	expect(navigation.navigate).toHaveBeenCalledWith("Details", expect.objectContaining({ id: 42, title: "A Book", current_bookshelf: { id: "7", title: "Finished reading", type: "finished" } }));

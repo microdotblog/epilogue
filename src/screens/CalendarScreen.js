@@ -95,8 +95,7 @@ export function CalendarScreen({ navigation }) {
 		return (
 			<View style={[calendarStyles.card, { backgroundColor: dark ? "#252B38" : "#FFFFFF", borderColor: dark ? "#414653" : "#DDE1E0" }]}>
 				<ImageBackground source={month.backgroundURL ? { uri: month.backgroundURL } : undefined}
-					style={[calendarStyles.monthHeader, { backgroundColor: month.backgroundColor }]} imageStyle={{ opacity: 0.78 }}>
-					<View style={calendarStyles.headerShade} />
+					style={calendarStyles.monthHeader} imageStyle={{ opacity: 0.45 }}>
 					<Text style={calendarStyles.monthTitle}>{month.name.toUpperCase()} <Text style={calendarStyles.year}>{month.year}</Text></Text>
 					<Text style={calendarStyles.monthSummary}>{month.books.length} {month.books.length === 1 ? "book" : "books"}</Text>
 				</ImageBackground>
@@ -121,8 +120,7 @@ const calendarStyles = StyleSheet.create({
 	spinner: { flex: 1 },
 	list: { width: "100%", maxWidth: 1000, alignSelf: "center", paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40 },
 	card: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 16, overflow: "hidden", marginBottom: 18 },
-	monthHeader: { minHeight: 116, justifyContent: "center", paddingHorizontal: 24, paddingVertical: 22 },
-	headerShade: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(16,25,28,0.40)" },
+	monthHeader: { minHeight: 116, justifyContent: "center", paddingHorizontal: 24, paddingVertical: 22, backgroundColor: "#10191C" },
 	monthTitle: { color: "#FFFAF2", fontSize: 23, fontWeight: "700" },
 	year: { color: "rgba(255,250,242,0.75)", fontWeight: "600" },
 	monthSummary: { color: "#FFFAF2", fontSize: 15, marginTop: 8 },
