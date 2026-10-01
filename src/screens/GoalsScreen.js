@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, RefreshControl, useColorScheme, useWindowDimensions } from 'react-native';
+import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, RefreshControl, StyleSheet, useColorScheme, useWindowDimensions } from 'react-native';
 import { useScrollToTop } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
@@ -8,6 +8,7 @@ import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { useProfileHeader } from "../ProfileHeaderButton";
+import { CalendarScreen } from "./CalendarScreen";
 
 export function GoalsScreen({ navigation }) {
 	const windowSize = useWindowDimensions();
@@ -19,16 +20,43 @@ export function GoalsScreen({ navigation }) {
 	const [ bannerCount, setBannerCount ] = useState();
 	const [ bannerBooks, setBannerBooks ] = useState([]);
 	const [ refreshing, setRefreshing ] = useState(false);
+	const [ selectedView, setSelectedView ] = useState("goals");
+	const [ calendarOpened, setCalendarOpened ] = useState(false);
 	const goalsListRef = React.useRef(null);
 
 	useScrollToTop(goalsListRef);
+	React.useEffect(() => {
+		const control = (
+			<View style={[segmentStyles.control, { backgroundColor: is_dark ? "#34343A" : "#E9E9EB" }]}>
+				{[{ id: "goals", title: "Goals" }, { id: "calendar", title: "Calendar" }].map(item => (
+					<Pressable key={item.id} testID={`goals-view-${item.id}`} accessibilityRole="tab"
+						accessibilityLabel={item.title} accessibilityState={{ selected: selectedView === item.id }}
+						onPress={() => {
+							if (item.id === "calendar") setCalendarOpened(true);
+							setSelectedView(item.id);
+						}}
+						style={[segmentStyles.segment, selectedView === item.id && {
+							backgroundColor: is_dark ? "#636366" : "#FFFFFF",
+							shadowOpacity: is_dark ? 0 : 0.12
+						}]}>
+						<Text style={[segmentStyles.label, { color: is_dark ? "#FFFFFF" : selectedView === item.id ? "#1C1C1E" : "#6B6B70" }]}>{item.title}</Text>
+					</Pressable>
+				))}
+			</View>
+		);
+		navigation.setOptions({
+			headerTitle: () => control,
+			headerTitleAlign: "center",
+			...(Platform.OS === "ios" ? { unstable_headerRightItems: () => [] } : { headerRight: () => null })
+		});
+	}, [navigation, is_dark, selectedView]);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
-			onFocus(navigation);
+			if (selectedView === "goals") onFocus(navigation);
 		});
 		return unsubscribe;
-	}, [navigation]);	
+	}, [navigation, selectedView]);
 	
 	function onFocus(navigation) {
 		setupPostDraftForBanner();		
@@ -180,38 +208,52 @@ export function GoalsScreen({ navigation }) {
 	}
 
 	return (
-		<View style={styles.goalsContainer}>
-			<FlatList
-				contentInsetAdjustmentBehavior="automatic"
-				ref={goalsListRef}
-				data = {goals}
-				renderItem = { ({item}) => 
-					<Pressable style={styles.goalItem} onPress={() => { onSelectGoal(item) }}>
-						<View style={styles.goalDetails}>
-							<Text style={styles.goalName}>{item.name}</Text>
-							<ProgressStatus progress={item.progress} value={item.value} />
-						</View>
-						<View style={styles.goalCovers}>
-							<FlatList
-								style = {{ marginRight: 80 }}
-								horizontal = {true}
-								data = {item.isbns}
-								renderItem = {({ item: isbn }) => {
-									return renderCoverItem(item, isbn);
-								}}
-								showsHorizontalScrollIndicator = {false}
-							/>
-						</View>
-					</Pressable>
-				}
-				ListHeaderComponent = {
-					<BannerView year={bannerYear} count={bannerCount} />
-				}
-				refreshControl = {
-					<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-				}
-				keyExtractor = { item => item.id }
-			/>
+		<View style={segmentStyles.screen}>
+			<View style={[styles.goalsContainer, selectedView !== "goals" && segmentStyles.hidden]}>
+				<FlatList
+					contentInsetAdjustmentBehavior="automatic"
+					ref={goalsListRef}
+					data = {goals}
+					renderItem = { ({item}) =>
+						<Pressable style={styles.goalItem} onPress={() => { onSelectGoal(item) }}>
+							<View style={styles.goalDetails}>
+								<Text style={styles.goalName}>{item.name}</Text>
+								<ProgressStatus progress={item.progress} value={item.value} />
+							</View>
+							<View style={styles.goalCovers}>
+								<FlatList
+									style = {{ marginRight: 80 }}
+									horizontal = {true}
+									data = {item.isbns}
+									renderItem = {({ item: isbn }) => {
+										return renderCoverItem(item, isbn);
+									}}
+									showsHorizontalScrollIndicator = {false}
+								/>
+							</View>
+						</Pressable>
+					}
+					ListHeaderComponent = {
+						<BannerView year={bannerYear} count={bannerCount} />
+					}
+					refreshControl = {
+						<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+					}
+					keyExtractor = { item => item.id }
+				/>
+			</View>
+			{calendarOpened && <View style={[segmentStyles.screen, selectedView !== "calendar" && segmentStyles.hidden]}>
+				<CalendarScreen navigation={navigation} />
+			</View>}
 		</View>
 	)
 }
+
+const segmentStyles = StyleSheet.create({
+	screen: { flex: 1 },
+	hidden: { display: "none" },
+	control: { flexDirection: "row", padding: 3, borderRadius: 10 },
+	segment: { height: 32, paddingHorizontal: 13, alignItems: "center", justifyContent: "center", borderRadius: 7,
+		shadowColor: "#000000", shadowOffset: { width: 0, height: 1 }, shadowRadius: 2, elevation: 0 },
+	label: { fontSize: 14, fontWeight: "600" }
+});
