@@ -66,6 +66,7 @@ export function GoalsScreen({ navigation }) {
 					icon: { type: "sfSymbol", name: "square.and.pencil" }, onPress: openCalendarPage }] :
 					showRetryButton ? [{ type: "button", label: "Retry", onPress: loadCalendarPage }] : []
 			} : {
+				headerRightContainerStyle: { paddingRight: 15 },
 				headerRight: () => showPageButton ? (
 					<Pressable onPress={openCalendarPage} hitSlop={10} accessibilityRole="button" accessibilityLabel={pageButtonTitle}>
 						<Icon name="publish" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarNewIcon} />
