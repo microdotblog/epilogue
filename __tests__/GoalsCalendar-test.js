@@ -1,6 +1,7 @@
 import React from "react";
 import renderer from "react-test-renderer";
 import { FlatList, Platform } from "react-native";
+import { useScrollToTop } from "@react-navigation/native";
 import { GoalsScreen } from "../src/screens/GoalsScreen";
 
 jest.mock("@react-navigation/native", () => ({ useScrollToTop: jest.fn() }));
@@ -40,10 +41,36 @@ it.each(["ios", "android"])("switches the Goals title segments without navigatin
 	expect(segments()[0].props.accessibilityState.selected).toBe(false);
 	expect(segments()[1].props.accessibilityState.selected).toBe(true);
 	expect(screen.root.findAllByType("CalendarView")).toHaveLength(1);
+	expect(useScrollToTop).toHaveBeenLastCalledWith(screen.root.findByType("CalendarView").props.listRef);
 	expect(navigation.navigate).not.toHaveBeenCalled();
 	await renderer.act(async () => segments()[0].props.onPress());
+	expect(useScrollToTop).not.toHaveBeenLastCalledWith(screen.root.findByType("CalendarView").props.listRef);
 	expect(screen.root.findAllByType("CalendarView")).toHaveLength(1);
 	expect(screen.root.findAllByType(FlatList)).toHaveLength(1);
+	await renderer.act(async () => screen.unmount());
+});
+
+it("keeps the loaded calendar when returning from a book, but rechecks pages after opening the editor", async () => {
+	Platform.OS = "ios";
+	global.fetch = jest.fn(async () => ({ ok: true, json: async () => ({ items: [] }) }));
+	let onFocus;
+	const navigation = {
+		setOptions: jest.fn(), navigate: jest.fn(),
+		addListener: jest.fn((event, listener) => {
+			if (event === "focus") onFocus = listener;
+			return () => {};
+		})
+	};
+	let screen;
+	await renderer.act(async () => { screen = renderer.create(<GoalsScreen navigation={navigation} />); });
+	await renderer.act(async () => navigation.setOptions.mock.calls.at(-1)[0].headerTitle().props.children[1].props.onPress());
+	expect(global.fetch).toHaveBeenCalledTimes(1);
+	await renderer.act(async () => onFocus());
+	expect(global.fetch).toHaveBeenCalledTimes(1);
+	expect(screen.root.findByType("CalendarView").props.pageLoading).toBe(false);
+	navigation.setOptions.mock.calls.at(-1)[0].unstable_headerRightItems()[0].onPress();
+	await renderer.act(async () => onFocus());
+	expect(global.fetch).toHaveBeenCalledTimes(2);
 	await renderer.act(async () => screen.unmount());
 });
 

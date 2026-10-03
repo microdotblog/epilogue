@@ -25,9 +25,11 @@ export function GoalsScreen({ navigation }) {
 	const [ calendarOpened, setCalendarOpened ] = useState(false);
 	const [ calendarPage, setCalendarPage ] = useState({ status: "idle" });
 	const calendarPageRequest = React.useRef(0);
+	const calendarPageEditorOpened = React.useRef(false);
 	const goalsListRef = React.useRef(null);
+	const calendarListRef = React.useRef(null);
 
-	useScrollToTop(goalsListRef);
+	useScrollToTop(selectedView === "calendar" ? calendarListRef : goalsListRef);
 	React.useEffect(() => () => { calendarPageRequest.current += 1; }, []);
 	React.useEffect(() => {
 		if (selectedView === "calendar") loadCalendarPage();
@@ -79,7 +81,10 @@ export function GoalsScreen({ navigation }) {
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			if (selectedView === "goals") onFocus(navigation);
-			else loadCalendarPage();
+			else if (calendarPageEditorOpened.current) {
+				calendarPageEditorOpened.current = false;
+				loadCalendarPage();
+			}
 		});
 		return unsubscribe;
 	}, [navigation, selectedView]);
@@ -116,6 +121,7 @@ export function GoalsScreen({ navigation }) {
 	}
 
 	function openCalendarPage() {
+		calendarPageEditorOpened.current = true;
 		navigation.navigate("Post", {
 			books: [],
 			calendarMode: true,
@@ -310,7 +316,7 @@ export function GoalsScreen({ navigation }) {
 				/>
 			</View>
 			{calendarOpened && <View style={[segmentStyles.screen, selectedView !== "calendar" && segmentStyles.hidden]}>
-				<CalendarScreen navigation={navigation} pageLoading={calendarPage.status === "loading"} />
+				<CalendarScreen navigation={navigation} pageLoading={calendarPage.status === "loading"} listRef={calendarListRef} />
 			</View>}
 		</View>
 	)

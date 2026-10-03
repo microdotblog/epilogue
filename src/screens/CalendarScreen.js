@@ -7,7 +7,7 @@ import { calendarMonthsFromResponse } from "../CalendarData";
 import { keys } from "../Constants";
 import epilogueStorage from "../Storage";
 
-export function CalendarScreen({ navigation, pageLoading = false }) {
+export function CalendarScreen({ navigation, pageLoading = false, listRef }) {
 	const dark = useColorScheme() === "dark";
 	const [months, setMonths] = React.useState([]);
 	const [bookshelves, setBookshelves] = React.useState([]);
@@ -101,7 +101,7 @@ export function CalendarScreen({ navigation, pageLoading = false }) {
 	return (
 		<View style={[calendarStyles.screen, { backgroundColor: dark ? "#212936" : "#F4F6F7" }]}>
 			{loading || pageLoading ? <ActivityIndicator style={calendarStyles.spinner} /> :
-				<FlatList contentInsetAdjustmentBehavior="automatic" data={months} renderItem={renderMonth}
+				<FlatList ref={listRef} contentInsetAdjustmentBehavior="automatic" data={months} renderItem={renderMonth}
 					keyExtractor={item => item.key} contentContainerStyle={calendarStyles.list}
 					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadCalendar(true)} />}
 					ListEmptyComponent={<Text style={[calendarStyles.empty, { color: dark ? "#BBC1C7" : "#647371" }]}>{error || "No finished books in the last 2 years."}</Text>} />}

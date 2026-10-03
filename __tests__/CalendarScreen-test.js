@@ -25,13 +25,15 @@ it("loads the authenticated calendar and opens a book in details", async () => {
 			] }
 	] }) });
 	const navigation = { navigate: jest.fn() };
+	const listRef = React.createRef();
 	let screen;
-	await renderer.act(async () => { screen = renderer.create(<CalendarScreen navigation={navigation} />); });
+	await renderer.act(async () => { screen = renderer.create(<CalendarScreen navigation={navigation} listRef={listRef} />); });
 	expect(epilogueStorage.get).toHaveBeenCalledWith(keys.authToken);
 	expect(epilogueStorage.get).toHaveBeenCalledWith(keys.allBookshelves);
 	expect(global.fetch).toHaveBeenCalledTimes(1);
 	expect(global.fetch).toHaveBeenCalledWith("https://micro.blog/books/calendar", { headers: { Authorization: "Bearer test-token" } });
 	const list = screen.root.findByType(FlatList);
+	expect(list.props.ref).toBe(listRef);
 	expect(list.props.data).toHaveLength(1);
 	const month = list.props.renderItem({ item: list.props.data[0] });
 	const header = month.props.children[0];
