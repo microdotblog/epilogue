@@ -22,6 +22,27 @@ async function openEditor(props = {}) {
   return { screen, editor, webview, message, lastConfig };
 }
 
+it.each([
+  ["dark", "#212936", "#E5E7EB"],
+  ["light", "#EFEFEF", "#000000"]
+])("starts with %s HTML and native colors before the editor is ready", async (colorScheme, backgroundColor, textColor) => {
+  let screen;
+  await renderer.act(async () => {
+    screen = renderer.create(<HighlightingText value="draft" colorScheme={colorScheme} style={{ flex: 1 }} />);
+  });
+  const webview = screen.root.findByType(WebView);
+  const htmlTheme = webview.props.source.html.match(/<html style="([^"]+)">/)?.[1];
+  const bodyTheme = webview.props.source.html.match(/<body class="([^"]*)" style="([^"]+)">/);
+  expect(htmlTheme).toContain(`--editor-background: ${backgroundColor}`);
+  expect(htmlTheme).toContain(`--editor-text: ${textColor}`);
+  expect(bodyTheme?.[1]).toBe(colorScheme === "dark" ? "dark" : "");
+  expect(bodyTheme?.[2]).toBe(htmlTheme);
+  expect(StyleSheet.flatten(webview.props.style).backgroundColor).toBe(backgroundColor);
+  expect(webview.props.containerStyle.backgroundColor).toBe(backgroundColor);
+  expect(webview.instance.injectJavaScript).not.toHaveBeenCalled();
+  await renderer.act(async () => screen.unmount());
+});
+
 it("does not rewrite the document or selection when React echoes typing", async () => {
   const onChangeText = jest.fn();
   const { screen, webview, message } = await openEditor({ onChangeText });

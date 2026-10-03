@@ -481,6 +481,24 @@ const editorHtml = String.raw`<!doctype html>
         requestAnimationFrame(clampScrollOffsets);
       }
 
+      function updateViewportHeight() {
+        var height = viewportHeight || window.innerHeight;
+        // On iOS the keyboard can obscure part of the WebView even after its
+        // native frame is resized. Only the visual viewport is fully visible.
+        if (window.visualViewport && window.visualViewport.height > 0) {
+          height = Math.min(height, window.visualViewport.height);
+        }
+        document.documentElement.style.setProperty("--editor-viewport-height", height + "px");
+        scheduleClampScrollOffsets();
+      }
+
+      function handleViewportResize() {
+        updateViewportHeight();
+        if (document.activeElement === editor()) {
+          requestAnimationFrame(scrollSelectionIntoView);
+        }
+      }
+
       function scrollSelectionIntoView() {
         var root = editor();
         var selection = window.getSelection();
@@ -1590,11 +1608,16 @@ const editorHtml = String.raw`<!doctype html>
         var body = document.body;
 
         body.classList.toggle("dark", config.colorScheme === "dark");
+        root.style.colorScheme = config.colorScheme === "dark" ? "dark" : "light";
+        body.style.colorScheme = root.style.colorScheme;
 
         if (config.backgroundColor) {
+          root.style.setProperty("--editor-background", config.backgroundColor);
           body.style.setProperty("--editor-background", config.backgroundColor);
         }
         if (config.textColor) {
+          root.style.setProperty("--editor-text", config.textColor);
+          root.style.setProperty("--editor-caret", config.textColor);
           body.style.setProperty("--editor-text", config.textColor);
           body.style.setProperty("--editor-caret", config.textColor);
         }
@@ -1613,8 +1636,7 @@ const editorHtml = String.raw`<!doctype html>
         var bottomOverlayHeight = Number(config.bottomOverlayHeight || 0);
         root.style.setProperty("--editor-bottom-overlay", bottomOverlayHeight + "px");
         viewportHeight = Number(config.viewportHeight || 0) || null;
-        root.style.setProperty("--editor-viewport-height", (viewportHeight || window.innerHeight) + "px");
-        scheduleClampScrollOffsets();
+        updateViewportHeight();
 
         setEditable(config.editable !== false);
       }
@@ -1727,6 +1749,10 @@ const editorHtml = String.raw`<!doctype html>
         });
         window.addEventListener("scroll", clampScrollOffsets);
         document.addEventListener("scroll", clampScrollOffsets);
+        window.addEventListener("resize", handleViewportResize);
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", handleViewportResize);
+        }
 
         root.addEventListener("compositionstart", function () {
           isComposing = true;

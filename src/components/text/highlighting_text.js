@@ -3,10 +3,6 @@ import { PixelRatio, Platform, StyleSheet, TextInput, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import editorHtml from './editor_html'
 
-// Text, selection, and theme updates use the bridge, not a WebView reload
-// (which would discard focus, selection, and undo history).
-const source = { html: editorHtml, baseUrl: 'https://micro.blog' }
-
 export default class HighlightingText extends React.Component {
   constructor(props) {
     super(props)
@@ -20,6 +16,17 @@ export default class HighlightingText extends React.Component {
     this.pendingFocus = null
     this.textRequests = new Map()
     this.nextRequestID = 0
+
+    // Match the native colors before the HTML's first paint. Keep this source
+    // stable: subsequent changes use the bridge to preserve focus and selection.
+    const config = this.editorConfig()
+    const theme = `--editor-background: ${config.backgroundColor}; --editor-text: ${config.textColor}; --editor-caret: ${config.textColor}; color-scheme: ${config.colorScheme};`
+    this.source = {
+      html: editorHtml
+        .replace('<html>', `<html style="${theme}">`)
+        .replace('<body>', `<body class="${config.colorScheme === 'dark' ? 'dark' : ''}" style="${theme}">`),
+      baseUrl: 'https://micro.blog'
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -203,7 +210,7 @@ export default class HighlightingText extends React.Component {
         )}
         <WebView
           ref={this.webview}
-          source={source}
+          source={this.source}
           originWhitelist={['https://micro.blog', 'about:blank']}
           javaScriptEnabled={true}
           domStorageEnabled={false}
