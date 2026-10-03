@@ -1,6 +1,6 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { InputAccessoryView, Platform, Text } from "react-native";
+import { ActivityIndicator, Alert, InputAccessoryView, Platform, Text } from "react-native";
 import { PostScreen } from "../src/screens/PostScreen";
 import HighlightingText from "../src/components/text/highlighting_text";
 import epilogueStorage from "../src/Storage";
@@ -14,6 +14,7 @@ const originalFetch = global.fetch;
 let values;
 beforeEach(() => {
   Platform.OS = "ios";
+  jest.spyOn(Alert, "alert").mockImplementation(() => {});
   values = {
     [keys.currentText]: "existing **draft**",
     [keys.currentTitle]: "",
@@ -27,7 +28,7 @@ beforeEach(() => {
   epilogueStorage.set.mockImplementation(async (key, value) => { values[key] = value; });
   global.fetch = jest.fn(async () => ({ ok: true }));
 });
-afterEach(() => { Platform.OS = originalOS; global.fetch = originalFetch; jest.clearAllMocks(); });
+afterEach(() => { Platform.OS = originalOS; global.fetch = originalFetch; jest.restoreAllMocks(); jest.clearAllMocks(); });
 
 async function openPost() {
   const events = {};
@@ -77,5 +78,83 @@ it("submits the newest WebView text and preserves reading-goals extra content", 
   expect(options.body.get("content")).toBe('**Last keystroke**\n{{< bookgoals >}}');
   expect(options.body.get("name")).toBe("My reading goals");
   expect(options.headers.Authorization).toBe("Bearer test-token");
+  await renderer.act(async () => screen.unmount());
+});
+
+it.each(["network rejection", "HTTP error"])("preserves the draft and allows retry after a %s", async failure => {
+  const { screen, navigation, editor, submit } = await openPost();
+  jest.spyOn(editor().instance, "getText").mockResolvedValue("unsent **draft**");
+  if (failure === "network rejection") global.fetch.mockRejectedValueOnce(new Error("Offline"));
+  else global.fetch.mockResolvedValueOnce({ ok: false, status: 503 });
+
+  await renderer.act(async () => submit().props.onPress());
+  expect(navigation.goBack).not.toHaveBeenCalled();
+  expect(Alert.alert).toHaveBeenCalledWith("Couldn’t send post", "Please try again.");
+  expect(editor().props.value).toBe("unsent **draft**");
+  expect(values[keys.currentText]).toBe("unsent **draft**");
+  expect(editor().props.editable).toBe(true);
+  expect(screen.root.findByType(ActivityIndicator).props.animating).toBe(false);
+
+  await renderer.act(async () => submit().props.onPress());
+  expect(global.fetch).toHaveBeenCalledTimes(2);
+  expect(global.fetch.mock.calls[1][1].body.get("content")).toBe("unsent **draft**");
+  expect(navigation.goBack).toHaveBeenCalledTimes(1);
+  await renderer.act(async () => screen.unmount());
+});
+
+it.each([keys.currentText, keys.micropubURL])("allows retry if the %s storage lookup fails before sending", async failingKey => {
+  const { screen, navigation, editor, submit } = await openPost();
+  jest.spyOn(editor().instance, "getText").mockResolvedValue("saved draft");
+  let shouldFail = true;
+  epilogueStorage.get.mockImplementation(async key => {
+    if (key === failingKey && shouldFail) {
+      shouldFail = false;
+      throw new Error("Storage unavailable");
+    }
+    return values[key];
+  });
+
+  await renderer.act(async () => submit().props.onPress());
+  expect(global.fetch).not.toHaveBeenCalled();
+  expect(navigation.goBack).not.toHaveBeenCalled();
+  expect(editor().props.editable).toBe(true);
+  expect(screen.root.findByType(ActivityIndicator).props.animating).toBe(false);
+
+  await renderer.act(async () => submit().props.onPress());
+  expect(global.fetch).toHaveBeenCalledTimes(1);
+  expect(navigation.goBack).toHaveBeenCalledTimes(1);
+  await renderer.act(async () => screen.unmount());
+});
+
+it("still sends edits as JSON using the Micropub token and destination", async () => {
+  values[keys.currentPostURL] = "https://example.com/existing-post";
+  values[keys.micropubToken] = "micropub-token";
+  const { screen, navigation, editor, submit } = await openPost();
+  jest.spyOn(editor().instance, "getText").mockResolvedValue("updated **text**");
+
+  await renderer.act(async () => submit().props.onPress());
+  const [, options] = global.fetch.mock.calls[0];
+  expect(options.headers).toEqual({ Authorization: "Bearer micropub-token", "Content-Type": "application/json" });
+  expect(JSON.parse(options.body)).toEqual({
+    action: "update", url: values[keys.currentPostURL],
+    replace: { content: "updated **text**" }, "mp-destination": values[keys.currentBlogID]
+  });
+  expect(navigation.goBack).toHaveBeenCalledTimes(1);
+  await renderer.act(async () => screen.unmount());
+});
+
+it("ignores repeated Post taps while the request is still in flight", async () => {
+  const { screen, navigation, editor, submit } = await openPost();
+  jest.spyOn(editor().instance, "getText").mockResolvedValue("draft");
+  let finish;
+  global.fetch.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
+
+  await renderer.act(async () => submit().props.onPress());
+  expect(editor().props.editable).toBe(false);
+  expect(screen.root.findByType(ActivityIndicator).props.animating).toBe(true);
+  await renderer.act(async () => submit().props.onPress());
+  expect(global.fetch).toHaveBeenCalledTimes(1);
+  await renderer.act(async () => finish({ ok: true }));
+  expect(navigation.goBack).toHaveBeenCalledTimes(1);
   await renderer.act(async () => screen.unmount());
 });

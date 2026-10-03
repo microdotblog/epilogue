@@ -231,16 +231,16 @@ export function PostScreen({ route, navigation }) {
 			return;
 		}
 		
-		epilogueStorage.get(keys.currentText).then(current_text => {
-			epilogueStorage.get(keys.currentTitle).then(current_title => {
-				epilogueStorage.get(keys.currentTextExtra).then(current_extra => {
-					epilogueStorage.get(keys.currentBlogID).then(blog_id => {
-						epilogueStorage.get(keys.currentPostURL).then(post_url => {
+		return epilogueStorage.get(keys.currentText).then(current_text => {
+			return epilogueStorage.get(keys.currentTitle).then(current_title => {
+				return epilogueStorage.get(keys.currentTextExtra).then(current_extra => {
+					return epilogueStorage.get(keys.currentBlogID).then(blog_id => {
+						return epilogueStorage.get(keys.currentPostURL).then(post_url => {
 							var options = {};
 							
-							epilogueStorage.get("auth_token").then(auth_token => {
+							return epilogueStorage.get("auth_token").then(auth_token => {
 								var use_token = auth_token;
-								epilogueStorage.get(keys.micropubToken).then(micropub_token => {
+								return epilogueStorage.get(keys.micropubToken).then(micropub_token => {
 									if (micropub_token != undefined) {
 										use_token = micropub_token;
 									}
@@ -298,7 +298,7 @@ export function PostScreen({ route, navigation }) {
 								
 									// setProgressAnimating(true);
 								
-									epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+									return epilogueStorage.get(keys.micropubURL).then(micropub_url => {
 										var use_url = micropub_url;
 										if (use_url == undefined) {
 											use_url = "https://micro.blog/micropub";
@@ -310,8 +310,9 @@ export function PostScreen({ route, navigation }) {
 											navigation.goBack();
 										}
 										else {
-											fetch(use_url, options).then(async response => {
-												if (response.ok && post_url != undefined) {
+											return fetch(use_url, options).then(async response => {
+												if (!response.ok) throw new Error("Could not send post");
+												if (post_url != undefined) {
 													// An edited older post may fall outside the next incremental refresh.
 													const username = await epilogueStorage.get(keys.currentUsername);
 													await deleteProfilePostsCache([username || "", use_url, blog_id || ""]);
@@ -326,6 +327,10 @@ export function PostScreen({ route, navigation }) {
 					});
 				});
 			});
+		}).catch(() => {
+			postSending.current = false;
+			setProgressAnimating(false);
+			Alert.alert("Couldn’t send post", "Please try again.");
 		});
 	}
 

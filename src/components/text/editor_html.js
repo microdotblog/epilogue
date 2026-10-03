@@ -1502,6 +1502,9 @@ const editorHtml = String.raw`<!doctype html>
         var root = editor();
         var text = editorPlainText(root);
         if (shouldSkipHighlighting(text)) {
+          if (selection) {
+            setSelectionRange(selection.start, selection.end);
+          }
           return;
         }
 
