@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, ActivityIndicator, Platform, RefreshControl, useColorScheme, useWindowDimensions } from 'react-native';
+import { Button, Pressable, FlatList, Image, View, ScrollView, TouchableOpacity, Text, Platform, RefreshControl, StyleSheet, useColorScheme, useWindowDimensions } from 'react-native';
 import { useScrollToTop } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 
@@ -7,31 +7,132 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
-import { profileHeaderOptions } from "../ProfileHeaderButton";
+import { useProfileHeader } from "../ProfileHeaderButton";
+import { findBookCalendarPage } from "../CalendarData";
+import { CalendarScreen } from "./CalendarScreen";
 
 export function GoalsScreen({ navigation }) {
 	const windowSize = useWindowDimensions();
 	const styles = useEpilogueStyle();
+	useProfileHeader(navigation, styles);
 	const is_dark = (useColorScheme() == "dark");
 	const [ goals, setGoals ] = useState([]);
 	const [ bannerYear, setBannerYear ] = useState();
 	const [ bannerCount, setBannerCount ] = useState();
 	const [ bannerBooks, setBannerBooks ] = useState([]);
 	const [ refreshing, setRefreshing ] = useState(false);
+	const [ selectedView, setSelectedView ] = useState("goals");
+	const [ calendarOpened, setCalendarOpened ] = useState(false);
+	const [ calendarPage, setCalendarPage ] = useState({ status: "idle" });
+	const calendarPageRequest = React.useRef(0);
+	const calendarPageEditorOpened = React.useRef(false);
 	const goalsListRef = React.useRef(null);
+	const calendarListRef = React.useRef(null);
 
-	useScrollToTop(goalsListRef);
+	useScrollToTop(selectedView === "calendar" ? calendarListRef : goalsListRef);
+	React.useEffect(() => () => { calendarPageRequest.current += 1; }, []);
+	React.useEffect(() => {
+		if (selectedView === "calendar") loadCalendarPage();
+	}, [selectedView]);
+
+	React.useEffect(() => {
+		const control = (
+			<View style={[segmentStyles.control, { backgroundColor: is_dark ? "#34343A" : "#E9E9EB" }]}>
+				{[{ id: "goals", title: "Goals" }, { id: "calendar", title: "Calendar" }].map(item => (
+					<Pressable key={item.id} testID={`goals-view-${item.id}`} accessibilityRole="tab"
+						accessibilityLabel={item.title} accessibilityState={{ selected: selectedView === item.id }}
+						onPress={() => {
+							if (item.id === "calendar" && selectedView !== "calendar") {
+								setCalendarOpened(true);
+								setCalendarPage({ status: "loading" });
+							}
+							setSelectedView(item.id);
+						}}
+						style={[segmentStyles.segment, selectedView === item.id && {
+							backgroundColor: is_dark ? "#636366" : "#FFFFFF",
+							shadowOpacity: is_dark ? 0 : 0.12
+						}]}>
+						<Text style={[segmentStyles.label, { color: is_dark ? "#FFFFFF" : selectedView === item.id ? "#1C1C1E" : "#6B6B70" }]}>{item.title}</Text>
+					</Pressable>
+				))}
+			</View>
+		);
+		const pageButtonTitle = calendarPage.page ? "Edit Page" : "New Page";
+		const showPageButton = selectedView === "calendar" && calendarPage.status === "ready";
+		const showRetryButton = selectedView === "calendar" && calendarPage.status === "error";
+		navigation.setOptions({
+			headerTitle: () => control,
+			headerTitleAlign: "center",
+			...(Platform.OS === "ios" ? {
+				unstable_headerRightItems: () => showPageButton ? [{ type: "button", label: pageButtonTitle,
+					icon: { type: "sfSymbol", name: "square.and.pencil" }, onPress: openCalendarPage }] :
+					showRetryButton ? [{ type: "button", label: "Retry", onPress: loadCalendarPage }] : []
+			} : {
+				headerRightContainerStyle: { paddingRight: 15 },
+				headerRight: () => showPageButton ? (
+					<Pressable onPress={openCalendarPage} hitSlop={10} accessibilityRole="button" accessibilityLabel={pageButtonTitle}>
+						<Icon name="publish" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarNewIcon} />
+					</Pressable>
+				) : showRetryButton ? <Button title="Retry" onPress={loadCalendarPage} /> : null
+			})
+		});
+	}, [navigation, is_dark, selectedView, calendarPage]);
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
-			onFocus(navigation);
+			if (selectedView === "goals") onFocus(navigation);
+			else if (calendarPageEditorOpened.current) {
+				calendarPageEditorOpened.current = false;
+				loadCalendarPage();
+			}
 		});
 		return unsubscribe;
-	}, [navigation]);	
+	}, [navigation, selectedView]);
+
+	async function loadCalendarPage() {
+		const request = ++calendarPageRequest.current;
+		setCalendarPage({ status: "loading" });
+		try {
+			const [token, blogID, blogName] = await Promise.all([
+				epilogueStorage.get(keys.authToken),
+				epilogueStorage.get(keys.currentBlogID),
+				epilogueStorage.get(keys.currentBlogName)
+			]);
+			if (!token) throw new Error("Missing sign-in token");
+			let page = null;
+			let offset = 0;
+			while (true) {
+				const destination = blogID ? `&mp-destination=${encodeURIComponent(blogID)}` : "";
+				const url = `https://micro.blog/micropub?q=source&mp-channel=pages${destination}&limit=100&offset=${offset}`;
+				const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+				if (!response.ok) throw new Error("Could not load standalone pages");
+				const data = await response.json();
+				if (!Array.isArray(data.items)) throw new Error("Invalid standalone pages response");
+				page = findBookCalendarPage(data.items);
+				if (page || data.items.length < 100) break;
+				offset += data.items.length;
+			}
+			if (request === calendarPageRequest.current) {
+				setCalendarPage({ status: "ready", page, blogID: blogID || "", blogName: blogName || "" });
+			}
+		} catch {
+			if (request === calendarPageRequest.current) setCalendarPage({ status: "error" });
+		}
+	}
+
+	function openCalendarPage() {
+		calendarPageEditorOpened.current = true;
+		navigation.navigate("Post", {
+			books: [],
+			calendarMode: true,
+			calendarPage: calendarPage.page,
+			calendarBlogID: calendarPage.blogID,
+			calendarBlogName: calendarPage.blogName
+		});
+	}
 	
 	function onFocus(navigation) {
 		setupPostDraftForBanner();		
-		setupProfileIcon();
 		loadGoals();
 	}
 
@@ -133,18 +234,6 @@ export function GoalsScreen({ navigation }) {
 		epilogueStorage.set(keys.currentTextExtra, extra);
 		epilogueStorage.remove(keys.currentPostURL);
 	}
-
-	function setupProfileIcon() {
-		epilogueStorage.get(keys.currentUsername).then(username => {
-			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
-		});
-	}	
-
-	function onShowProfile() {
-		navigation.navigate("Profile");
-	}
-	
 	const ProgressStatus = ({ progress, value }) => {
 		if (value == 0) {
 			return (
@@ -192,37 +281,52 @@ export function GoalsScreen({ navigation }) {
 	}
 
 	return (
-		<View style={styles.goalsContainer}>
-			<FlatList
-				ref={goalsListRef}
-				data = {goals}
-				renderItem = { ({item}) => 
-					<Pressable style={styles.goalItem} onPress={() => { onSelectGoal(item) }}>
-						<View style={styles.goalDetails}>
-							<Text style={styles.goalName}>{item.name}</Text>
-							<ProgressStatus progress={item.progress} value={item.value} />
-						</View>
-						<View style={styles.goalCovers}>
-							<FlatList
-								style = {{ marginRight: 80 }}
-								horizontal = {true}
-								data = {item.isbns}
-								renderItem = {({ item: isbn }) => {
-									return renderCoverItem(item, isbn);
-								}}
-								showsHorizontalScrollIndicator = {false}
-							/>
-						</View>
-					</Pressable>
-				}
-				ListHeaderComponent = {
-					<BannerView year={bannerYear} count={bannerCount} />
-				}
-				refreshControl = {
-					<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-				}
-				keyExtractor = { item => item.id }
-			/>
+		<View style={segmentStyles.screen}>
+			<View style={[styles.goalsContainer, selectedView !== "goals" && segmentStyles.hidden]}>
+				<FlatList
+					contentInsetAdjustmentBehavior="automatic"
+					ref={goalsListRef}
+					data = {goals}
+					renderItem = { ({item}) =>
+						<Pressable style={styles.goalItem} onPress={() => { onSelectGoal(item) }}>
+							<View style={styles.goalDetails}>
+								<Text style={styles.goalName}>{item.name}</Text>
+								<ProgressStatus progress={item.progress} value={item.value} />
+							</View>
+							<View style={styles.goalCovers}>
+								<FlatList
+									style = {{ marginRight: 80 }}
+									horizontal = {true}
+									data = {item.isbns}
+									renderItem = {({ item: isbn }) => {
+										return renderCoverItem(item, isbn);
+									}}
+									showsHorizontalScrollIndicator = {false}
+								/>
+							</View>
+						</Pressable>
+					}
+					ListHeaderComponent = {
+						<BannerView year={bannerYear} count={bannerCount} />
+					}
+					refreshControl = {
+						<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+					}
+					keyExtractor = { item => item.id }
+				/>
+			</View>
+			{calendarOpened && <View style={[segmentStyles.screen, selectedView !== "calendar" && segmentStyles.hidden]}>
+				<CalendarScreen navigation={navigation} pageLoading={calendarPage.status === "loading"} listRef={calendarListRef} />
+			</View>}
 		</View>
 	)
 }
+
+const segmentStyles = StyleSheet.create({
+	screen: { flex: 1 },
+	hidden: { display: "none" },
+	control: { flexDirection: "row", padding: 3, borderRadius: 10 },
+	segment: { height: 32, paddingHorizontal: 13, alignItems: "center", justifyContent: "center", borderRadius: 7,
+		shadowColor: "#000000", shadowOffset: { width: 0, height: 1 }, shadowRadius: 2, elevation: 0 },
+	label: { fontSize: 14, fontWeight: "600" }
+});

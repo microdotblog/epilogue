@@ -1,8 +1,8 @@
 diff --git a/lib/module/unstable/NativeBottomTabView.native.js b/lib/module/unstable/NativeBottomTabView.native.js
-index 9010f181c4e80cdf74cf730238d7cc6bf431e5ca..3e4ce6998ae3d3e15687eae9d828fc4f18fb3a6d 100644
+index 20a6a5cf5694d2633ce26f8960d8d53cebbfc082..1d59a2bd3df0ba3de323b3dc83b4c0441904d13d 100644
 --- a/lib/module/unstable/NativeBottomTabView.native.js
 +++ b/lib/module/unstable/NativeBottomTabView.native.js
-@@ -259,6 +259,25 @@ export function NativeBottomTabView({
+@@ -263,6 +263,25 @@ export function NativeBottomTabView({
            tabBarItemTitleFontColor: activeTintColor,
            tabBarItemIconColor: activeTintColor
          };
@@ -28,7 +28,7 @@ index 9010f181c4e80cdf74cf730238d7cc6bf431e5ca..3e4ce6998ae3d3e15687eae9d828fc4f
          const icon = typeof tabBarIcon === 'function' ? getPlatformIcon(tabBarIcon({
            focused: false
          })) : tabBarIcon != null ? getPlatformIcon(tabBarIcon) : undefined;
-@@ -320,29 +339,13 @@ export function NativeBottomTabView({
+@@ -324,29 +343,13 @@ export function NativeBottomTabView({
                tabBarBackgroundColor,
                tabBarShadowColor,
                tabBarBlurEffect,

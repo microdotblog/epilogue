@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import type { Node } from "react";
-import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, Platform, useColorScheme } from "react-native";
-import { MenuView } from "@react-native-menu/menu";
-import ContextMenu from "react-native-context-menu-view";
+import { ActivityIndicator, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, Share, Platform, useColorScheme, Animated } from "react-native";
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
+import { ContextMenu } from "../ContextMenu";
 import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
@@ -12,9 +11,11 @@ import { Icon } from "../Icon";
 import { Note } from "../models/Note";
 import CryptoUtils from '../utils/crypto';
 import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
+import { cacheBookBackgroundImage, cachedBookBackgroundImageURL, cleanupBookBackgroundImageCache } from "../BookBackgroundCache";
 
 const BOOK_DETAILS_COVER_MAX_WIDTH = 200;
 const BOOK_DETAILS_COVER_MAX_HEIGHT = 200;
+const BOOK_DETAILS_BACKGROUND_OPACITY = 0.2;
 
 export function BookDetailsScreen({ route, navigation }) {
 	const styles = useEpilogueStyle()
@@ -25,10 +26,19 @@ export function BookDetailsScreen({ route, navigation }) {
 	const [ notes, setNotes] = useState([])
 	const [ hasSecretKey, setHasSecretKey ] = useState(false)	
 	const [ coverSize, setCoverSize ] = useState(null)
-	const { id, isbn, title, image, author, description, date, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
+	const { id, isbn, title, image, author, author_id, description, date, background_color, background_url, bookshelves, current_bookshelf, is_search, bookshelf_ids_with_book } = route.params;
+	const authorBooksMenuTitle = author;
+	const canShowAuthorBooks = (author_id != null) && (String(author_id).length > 0);
 	const initial_bookshelf_ids_with_book = bookshelf_ids_with_book || ((!is_search && current_bookshelf?.id != null) ? [current_bookshelf.id] : []);
 	const bookshelfIDsWithBook = new Set(initial_bookshelf_ids_with_book.map(shelf_id => String(shelf_id)));
+	const canEditBook = !is_search && (current_bookshelf?.id != null) && bookshelfIDsWithBook.has(String(current_bookshelf.id));
 	const coverURL = image.replace("http://", "https://");
+	const remoteBackgroundImageURL = normalizedBackgroundImageURL(background_url);
+	const backgroundColor = normalizedBackgroundColor(background_color);
+	const backgroundColorStyle = remoteBackgroundImageURL == null ? backgroundColorStyleWithOpacity(backgroundColor, BOOK_DETAILS_BACKGROUND_OPACITY) : null;
+	const backgroundImageOpacity = React.useRef(new Animated.Value(0)).current;
+	const [ backgroundImageURL, setBackgroundImageURL ] = useState(null);
+	const [ shouldAnimateBackgroundImage, setShouldAnimateBackgroundImage ] = useState(false);
 
 	React.useEffect(() => {
 		setupBookDetails();
@@ -40,6 +50,39 @@ export function BookDetailsScreen({ route, navigation }) {
 	}, [coverURL]);
 
 	React.useEffect(() => {
+		let is_cancelled = false;
+
+		backgroundImageOpacity.stopAnimation();
+		backgroundImageOpacity.setValue(0);
+		setBackgroundImageURL(null);
+		setShouldAnimateBackgroundImage(false);
+
+		if (remoteBackgroundImageURL == null) {
+			return;
+		}
+
+		cleanupBookBackgroundImageCache();
+		cachedBookBackgroundImageURL(isbn, remoteBackgroundImageURL).then(cached_url => {
+			if (is_cancelled) {
+				return;
+			}
+
+			if (cached_url != null) {
+				backgroundImageOpacity.setValue(BOOK_DETAILS_BACKGROUND_OPACITY);
+				setBackgroundImageURL(cached_url);
+			}
+			else {
+				setShouldAnimateBackgroundImage(true);
+				setBackgroundImageURL(remoteBackgroundImageURL);
+			}
+		});
+
+		return () => {
+			is_cancelled = true;
+		};
+	}, [isbn, remoteBackgroundImageURL, backgroundImageOpacity]);
+
+	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
 			refreshNotes();
 		});
@@ -47,14 +90,14 @@ export function BookDetailsScreen({ route, navigation }) {
 	}, [navigation, isbn]);
 	
 	function setupBookDetails() {
-		let bookshelf_title = current_bookshelf.title;
+		let bookshelf_title = current_bookshelf?.title || "Books";
 		let s = bookshelf_title + ": [" + title + "](https://micro.blog/books/" + isbn + ") by " + author + " 📚";
 		epilogueStorage.set(keys.currentTitle, "");
 		epilogueStorage.set(keys.currentText, s);
 		epilogueStorage.set(keys.currentTextExtra, "");
 		epilogueStorage.remove(keys.currentPostURL);
 
-		var menu_items = [
+		var view_on_actions = [
 			{
 				id: "amazon",
 				title: "Amazon"
@@ -76,36 +119,51 @@ export function BookDetailsScreen({ route, navigation }) {
 				title: "WorldCat"
 			},
 		];
+		var menu_items = [];
+
+		if (canShowAuthorBooks) {
+			menu_items.push({
+				id: "authorbooks",
+				title: authorBooksMenuTitle,
+				systemIcon: "person.crop.circle"
+			});
+		}
+
+		menu_items.push({
+			id: "sharebutton",
+			title: "Share Link",
+			systemIcon: "square.and.arrow.up"
+		});
+
+		menu_items.push({
+			id: "viewon",
+			title: "View on...",
+			inlineChildren: true,
+			actions: view_on_actions
+		});
 		
 		var edit_actions = [];
-		var share_actions = [];
 
-		if (!is_search) {
+		if (canEditBook) {
 			edit_actions.push({
 				id: "editbook",
 				title: "Edit Title & Author"
 			});
 		}
 
-		if (!is_search) {
+		if (canEditBook) {
 			edit_actions.push({
 				id: "setopenlibrary",
 				title: "Set Cover"
 			});
 		}
 
-		if (!is_search && current_bookshelf.type == "finished") {
+		if (canEditBook && current_bookshelf.type == "finished") {
 			edit_actions.push({
 				id: "setfinisheddate",
 				title: "Set Finished Date"
 			});
 		}
-
-		share_actions.push({
-			id: "sharebutton",
-			title: "Share",
-			systemIcon: "square.and.arrow.up"
-		})
 
 		if (Platform.OS === "ios") {
 			menu_items.push({
@@ -114,22 +172,13 @@ export function BookDetailsScreen({ route, navigation }) {
 				inlineChildren: true,
 				actions: edit_actions
 			});
-
-			menu_items.push({
-				id: "sharelabel",
-				title: "micro.blog/books/" + isbn,
-				inlineChildren: true,
-				actions: share_actions
-			})
 		}
-		else {
+		else if (edit_actions.length > 0) {
 			menu_items.push({
 				id: "separator",
-				title: "────────────────────",
-				disabled: true
+				separator: true
 			});
 			menu_items.push(...edit_actions);
-			menu_items.push(...share_actions);
 		}
 		
 		setMenuActions(menu_items);
@@ -294,6 +343,16 @@ export function BookDetailsScreen({ route, navigation }) {
 		};
 		navigation.navigate("EditBookInfo", params);
 	}
+
+	function showAuthorBooks() {
+		const params = {
+			author_id: author_id,
+			author: author,
+			bookshelves: bookshelves,
+			current_bookshelf: current_bookshelf
+		};
+		navigation.navigate("AuthorBooks", params);
+	}
 	
 	function viewBookOn(service) {
 		var url;
@@ -374,16 +433,67 @@ export function BookDetailsScreen({ route, navigation }) {
 		}
 	}
 
+	function onBackgroundImageLoad() {
+		if (shouldAnimateBackgroundImage) {
+			Animated.timing(backgroundImageOpacity, {
+				toValue: BOOK_DETAILS_BACKGROUND_OPACITY,
+				duration: 350,
+				useNativeDriver: true
+			}).start();
+
+			cacheBookBackgroundImage(isbn, remoteBackgroundImageURL);
+		}
+	}
+
+	function normalizedBackgroundImageURL(url) {
+		if ((typeof url != "string") || (url.trim().length == 0)) {
+			return null;
+		}
+
+		return url.trim().replace("http://", "https://");
+	}
+
+	function normalizedBackgroundColor(color) {
+		if ((typeof color != "string") || !/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/.test(color.trim())) {
+			return null;
+		}
+
+		return color.trim();
+	}
+
+	function backgroundColorStyleWithOpacity(color, opacity) {
+		if (color == null) {
+			return null;
+		}
+
+		let hex = color.slice(1);
+		if (hex.length == 3) {
+			hex = hex.split("").map(char => char + char).join("");
+		}
+		else if (hex.length == 8) {
+			hex = hex.slice(0, 6);
+		}
+
+		const red = parseInt(hex.slice(0, 2), 16);
+		const green = parseInt(hex.slice(2, 4), 16);
+		const blue = parseInt(hex.slice(4, 6), 16);
+		return { backgroundColor: `rgba(${red}, ${green}, ${blue}, ${opacity})` };
+	}
+
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
 			<View style={[styles.container, styles.bookDetailsContainer]}>
 				<ContextMenu
-						title="View on..."
 						onPress={({nativeEvent}) => {
-							viewBookOn(nativeEvent.name);
-							if (nativeEvent.name === "Share") {
+							if (nativeEvent.name === authorBooksMenuTitle) {
+								showAuthorBooks();
+							}
+							else if (nativeEvent.name === "Share Link") {
 								let url = "https://micro.blog/books/" + isbn
 								onShare(url)
+							}
+							else {
+								viewBookOn(nativeEvent.name);
 							}
 						}}
 						actions={menuActions}
@@ -391,7 +501,16 @@ export function BookDetailsScreen({ route, navigation }) {
 						dropdownMenuMode={true}
 				>
 					<View style={styles.bookDetails}>
-						<View style={styles.bookDetailsTop}>
+						<View style={[styles.bookDetailsTop, backgroundColorStyle]}>
+							{backgroundImageURL == null ? null : (
+								<Animated.Image
+									pointerEvents="none"
+									style={[styles.bookDetailsBackgroundImage, { opacity: backgroundImageOpacity }]}
+									resizeMode="cover"
+									source={{ uri: backgroundImageURL }}
+									onLoad={onBackgroundImageLoad}
+								/>
+							)}
 							<View style={styles.bookDetailsCoverSlot}>
 								<Image
 									style={[

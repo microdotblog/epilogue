@@ -196,9 +196,13 @@ export function OpenLibraryScreen({ route, navigation }) {
 					<FlatList
 						data = {books}
 						renderItem = { ({item}) => 						
-						<Pressable onPress={() => {
+						<Pressable
+							onPress={() => {
 								onShowBookPressed(item);
-							}}>
+							}}
+							style={({ pressed }) => pressed ? styles.bookListItemPressed : null}
+							unstable_pressDelay={100}
+						>
 							<View style={[styles.item, styles.openLibraryItem]}>
 								<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 								<View style={styles.bookItem}>

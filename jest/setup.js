@@ -1,5 +1,16 @@
 import "react-native-gesture-handler/jestSetup";
 
+jest.mock("react-native-webview", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  class WebView extends React.Component {
+    injectJavaScript = jest.fn();
+    requestFocus = jest.fn();
+    render() { return React.createElement(View, this.props); }
+  }
+  return { WebView };
+});
+
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock")
 );
@@ -8,9 +19,11 @@ jest.mock("react-native-fs", () => ({
   CachesDirectoryPath: "/tmp/cache",
   TemporaryDirectoryPath: "/tmp",
   copyFile: jest.fn(() => Promise.resolve()),
+  downloadFile: jest.fn(() => ({ promise: Promise.resolve({ statusCode: 200 }) })),
   mkdir: jest.fn(() => Promise.resolve()),
   readDir: jest.fn(() => Promise.resolve([])),
   readFile: jest.fn(() => Promise.resolve("{}")),
+  stat: jest.fn(() => Promise.reject(new Error("Not found"))),
   unlink: jest.fn(() => Promise.resolve()),
   writeFile: jest.fn(() => Promise.resolve())
 }));
@@ -73,6 +86,11 @@ jest.mock("react-native-inappbrowser-reborn", () => ({
 }));
 
 jest.mock("react-native-navigation-bar-color", () => jest.fn(() => Promise.resolve()));
+
+jest.mock("expo-application", () => ({
+  nativeApplicationVersion: "2.4",
+  nativeBuildVersion: "131"
+}));
 
 jest.mock("react-native-sfsymbols", () => {
   const React = require("react");

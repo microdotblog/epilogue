@@ -2,6 +2,10 @@
   "expo": {
     "name": "Epilogue",
     "slug": "epilogue",
-    "version": "2.3.1"
+    "version": "2.4",
+    "plugins": [
+      "@react-native-community/datetimepicker",
+      ["expo-build-properties", { "ios": { "enableSceneSupport": true } }]
+    ]
   }
 }

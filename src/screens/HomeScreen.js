@@ -2,18 +2,19 @@ import React, { useState, useRef } from "react";
 import type { Node } from "react";
 import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
-import { MenuView } from "@react-native-menu/menu";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import FastImage from "react-native-fast-image";
 
+import { BookshelfPopupMenu, BookshelfPopupMenuTrigger } from "../BookshelfPopupMenu";
 import { keys, errors } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
-import { profileHeaderOptions } from "../ProfileHeaderButton";
+import { refreshProfileAvatar, useProfileHeader } from "../ProfileHeaderButton";
+import { SidebarBookshelvesContext, SidebarVisibleContext } from "../navigation/SidebarContext";
 import {
 	booksFromJSONFeed,
 	cacheBookshelfDataForID,
@@ -66,77 +67,129 @@ function BookSwipeableRow({ bookID, bookshelfID, children, onRemove, styles }) {
 	);
 }
 
+function resolveBookshelfFromItems(items, preferred_bookshelf) {
+	if (!items || items.length == 0) {
+		return undefined;
+	}
+
+	if (preferred_bookshelf?.id != null) {
+		const matching_bookshelf = items.find(item => String(item.id) == String(preferred_bookshelf.id));
+		if (matching_bookshelf != undefined) {
+			return matching_bookshelf;
+		}
+	}
+
+	return items[0];
+}
+
 export function HomeScreen({ navigation }) {
 	const styles = useEpilogueStyle()
+	useProfileHeader(navigation, styles);
+	const sidebarVisible = React.useContext(SidebarVisibleContext);
+	const publishSidebarBookshelves = React.useContext(SidebarBookshelvesContext);
 	const colorScheme = useColorScheme();
 	const is_dark = (colorScheme == "dark");
 	const [ books, setBooks ] = useState();
 	const [ latestBooks, setLatestBooks ] = useState([]);
 	const [ bookshelves, setBookshelves ] = useState([]);
 	const [ currentBookshelfTitle, setCurrentBookshelfTitle ] = useState();
+	const [ currentBookshelfID, setCurrentBookshelfID ] = useState();
+	const [ pendingBookshelfID, setPendingBookshelfID ] = useState(null);
+	const [ isLoadingBooks, setIsLoadingBooks ] = useState(false);
 	const [ isSearching, setIsSearching ] = useState(false);
 	const searchFieldRef = useRef();
 	const booksListRef = useRef(null);
+	const bookshelfPopupMenuRef = useRef(null);
+	const booksRequestRef = useRef(0);
+	const bookshelvesRequestRef = useRef(0);
+	const currentBookshelfRef = useRef(null);
+	const pendingBookshelfRef = useRef(null);
+
+	function setPendingBookshelf(bookshelf) {
+		pendingBookshelfRef.current = bookshelf;
+		setPendingBookshelfID(bookshelf?.id ?? null);
+	}
 
 	useScrollToTop(booksListRef);
+
+	React.useEffect(() => {
+		publishSidebarBookshelves?.({
+			bookshelves,
+			selectedBookshelfID: pendingBookshelfID ?? currentBookshelfID,
+			onSelect: bookshelf => {
+				selectBookshelf(bookshelf);
+				navigation.popTo("BookshelvesRoot");
+			}
+		});
+	}, [bookshelves, currentBookshelfID, pendingBookshelfID, navigation, publishSidebarBookshelves]);
+
+	React.useEffect(() => () => publishSidebarBookshelves?.(null), [publishSidebarBookshelves]);
     
 	React.useEffect(() => {
 		const unsubscribe_focus = navigation.addListener("focus", () => {
+			bookshelfPopupMenuRef.current?.setEnabled(true);
 			onFocus(navigation);
+		});
+		const unsubscribe_blur = navigation.addListener("blur", () => {
+			bookshelfPopupMenuRef.current?.setEnabled(false);
 		});
 
 		const unsubscribe_change = AppState.addEventListener("change", nextAppState => {
 			if (nextAppState == "active") {
+				bookshelfPopupMenuRef.current?.setEnabled(navigation.isFocused?.() ?? true);
 				onBecomeActive();
+			}
+			else {
+				bookshelfPopupMenuRef.current?.setEnabled(false);
 			}
 		});
 
 		return () => {
 			unsubscribe_focus();
+			unsubscribe_blur();
 			unsubscribe_change.remove();
 		};
 	}, [navigation]);
 
 	React.useEffect(() => {
-		if (currentBookshelfTitle && bookshelves.length > 0) {
-			setupBookshelves(navigation, bookshelves, currentBookshelfTitle);
+		if (currentBookshelfTitle) {
+			setupBookshelves(navigation, currentBookshelfTitle);
 		}
-	}, [is_dark, currentBookshelfTitle, bookshelves, navigation]);
+	}, [is_dark, currentBookshelfTitle, navigation, styles, sidebarVisible]);
 
 	React.useEffect(() => {
-		const renderSearchSpinner = () => (
-			<View style={styles.navbarSearchSpinner}>
+		const renderProgressSpinner = () => (
+			<View style={styles.navbarProgressSpinner}>
 				<ActivityIndicator size="small" color={is_dark ? "#FFFFFF" : "#000000"} />
 			</View>
 		);
+		const shouldShowProgress = isLoadingBooks || isSearching;
 
 		if (Platform.OS === "ios") {
 			navigation.setOptions({
-				unstable_headerRightItems: () => isSearching ? [{
+				unstable_headerRightItems: () => shouldShowProgress ? [{
 					type: "custom",
-					element: renderSearchSpinner(),
+					element: renderProgressSpinner(),
 					hidesSharedBackground: true
 				}] : []
 			});
 		}
 		else {
 			navigation.setOptions({
-				headerRight: () => isSearching ? renderSearchSpinner() : null
+				headerRight: () => shouldShowProgress ? renderProgressSpinner() : null
 			});
 		}
-	}, [navigation, isSearching, is_dark, styles]);
+	}, [navigation, isLoadingBooks, isSearching, is_dark, styles]);
   
 	function onFocus(navigation) {
-		if (currentBookshelfTitle && bookshelves.length > 0) {
-			setupBookshelves(navigation, bookshelves, currentBookshelfTitle);
-		}
-		else {
+		if (!currentBookshelfTitle) {
 			epilogueStorage.get(keys.allBookshelves).then(saved_bookshelves => {
 				epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 					if (saved_bookshelves && saved_bookshelves.length > 0 && current_bookshelf) {
+						currentBookshelfRef.current = current_bookshelf;
 						setBookshelves(saved_bookshelves);
 						setCurrentBookshelfTitle(current_bookshelf.title);
-						setupBookshelves(navigation, saved_bookshelves, current_bookshelf.title);
+						setCurrentBookshelfID(current_bookshelf.id);
 					}
 				});
 			});
@@ -144,6 +197,11 @@ export function HomeScreen({ navigation }) {
 		
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			if ((auth_token == null) || (auth_token.length == 0)) {
+				currentBookshelfRef.current = null;
+				setPendingBookshelf(null);
+				booksRequestRef.current += 1;
+				bookshelvesRequestRef.current += 1;
+				setIsLoadingBooks(false);
 				navigation.navigate("SignIn");
 			}
 			else {
@@ -172,7 +230,6 @@ export function HomeScreen({ navigation }) {
 		});
 		
 		const linking_sub = setupLinking();
-		setupProfileIcon();
 		
 		// cleanup
 		return () => {
@@ -289,9 +346,7 @@ export function HomeScreen({ navigation }) {
 				});
 
 				// save current username
-				epilogueStorage.set(keys.currentUsername, username).then(() => {
-					setupProfileIcon();
-				});
+				epilogueStorage.set(keys.currentUsername, username).then(refreshProfileAvatar);
 			}
 		});
 	}
@@ -353,45 +408,73 @@ export function HomeScreen({ navigation }) {
 		});
 	}
   
-	function loadBooks(bookshelf_id, handler = function() {}) {
+	function loadBooks(bookshelf, handler = function() {}) {
+		const bookshelf_id = typeof bookshelf == "object" ? bookshelf?.id : bookshelf;
 		if (bookshelf_id == undefined) {
 			return;
 		}
+		if (pendingBookshelfRef.current != null && String(pendingBookshelfRef.current.id) != String(bookshelf_id)) {
+			setPendingBookshelf(null);
+		}
+
+		const request_id = booksRequestRef.current + 1;
+		booksRequestRef.current = request_id;
+		setIsLoadingBooks(true);
 		
-		epilogueStorage.get(keys.authToken).then(auth_token => {
+		return epilogueStorage.get(keys.authToken).then(auth_token => {
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + auth_token
 				}
 			};
 						
-			fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
-				const new_books = booksFromJSONFeed(data);
+			return fetch("https://micro.blog/books/bookshelves/" + bookshelf_id, options).then(response => response.json()).then(data => {
+				if (booksRequestRef.current != request_id) {
+					return;
+				}
+
+				cacheBookshelfDataForID(bookshelf_id, data);
+				const source_bookshelf = typeof bookshelf == "object" ? bookshelf : null;
+				const new_books = booksFromJSONFeed(data, source_bookshelf);
 				setBooks(new_books);
 				setLatestBooks(new_books);
 				writeLatestBooksCache(data);
-				cacheBookshelfDataForID(bookshelf_id, data);
 				handler();
 			});		
+		}).catch(() => {
+			if (booksRequestRef.current == request_id && String(pendingBookshelfRef.current?.id) == String(bookshelf_id)) {
+				setPendingBookshelf(null);
+			}
+		}).finally(() => {
+			if (booksRequestRef.current == request_id) {
+				setIsLoadingBooks(false);
+			}
 		});
 	}
 
 	function loadCachedBooks() {
-		readLatestBooksCache().then(data => {
-			const new_books = booksFromJSONFeed(data);
-			setBooks(new_books);
-			setLatestBooks(new_books);
-		}).catch(() => {
-			epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+		epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
+			readLatestBooksCache().then(data => {
+				const new_books = booksFromJSONFeed(data, current_bookshelf);
+				setBooks(new_books);
+				setLatestBooks(new_books);
+			}).catch(() => {
 				if (current_bookshelf != null) {
-					loadBooks(current_bookshelf.id);
+					loadBooks(current_bookshelf);
 				}
 			});
 		});
 	}
 
 	function loadBookshelves(navigation) {
+		const request_id = bookshelvesRequestRef.current + 1;
+		bookshelvesRequestRef.current = request_id;
+
 		epilogueStorage.get(keys.authToken).then(auth_token => {
+			if (bookshelvesRequestRef.current != request_id) {
+				return;
+			}
+
 			var options = {
 				headers: {
 					"Authorization": "Bearer " + auth_token
@@ -399,6 +482,10 @@ export function HomeScreen({ navigation }) {
 			};
 
 			fetch("https://micro.blog/books/bookshelves", options).then(response => response.json()).then(data => {
+				if (bookshelvesRequestRef.current != request_id) {
+					return;
+				}
+
 				var new_items = [];
 				for (let item of data.items) {
 					var s;
@@ -419,68 +506,65 @@ export function HomeScreen({ navigation }) {
 				
 				setBookshelves(new_items);
 				epilogueStorage.set(keys.allBookshelves, new_items).then(() => {
+					if (bookshelvesRequestRef.current != request_id) {
+						return;
+					}
+
 					warmAllBookshelfCachesInBackground(new_items);
 
-					epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
-						if (current_bookshelf == null) {
-							let first_bookshelf = new_items[0];
-							epilogueStorage.set(keys.currentBookshelf, first_bookshelf).then(() => {
-								loadBooks(first_bookshelf.id);
-								setCurrentBookshelfTitle(first_bookshelf.title);
-								setupBookshelves(navigation, new_items, first_bookshelf.title);
-							});
+					epilogueStorage.get(keys.currentBookshelf).then(stored_bookshelf => {
+						if (bookshelvesRequestRef.current != request_id) {
+							return;
 						}
-						else {
-							loadBooks(current_bookshelf.id);
-							setCurrentBookshelfTitle(current_bookshelf.title);
-							setupBookshelves(navigation, new_items, current_bookshelf.title);
+
+						const preferred_bookshelf = pendingBookshelfRef.current || currentBookshelfRef.current || stored_bookshelf;
+						const current_bookshelf = resolveBookshelfFromItems(new_items, preferred_bookshelf);
+						if (current_bookshelf == undefined) {
+							setPendingBookshelf(null);
+							return;
 						}
+
+						loadBooks(current_bookshelf, function() {
+							commitBookshelf(current_bookshelf);
+						});
 					});
 				});
 			});		
 		});
 	}
 
-	function setupBookshelves(navigation, items, currentTitle) {
+	function selectBookshelf(bookshelf) {
+		const latest_bookshelf = bookshelves.find(item => String(item.id) == String(bookshelf.id)) || bookshelf;
+		setPendingBookshelf(latest_bookshelf);
+		loadBooks(latest_bookshelf, function() {
+			commitBookshelf(latest_bookshelf);
+		});
+	}
+
+	function commitBookshelf(bookshelf) {
+		currentBookshelfRef.current = bookshelf;
+		setPendingBookshelf(null);
+		epilogueStorage.set(keys.currentBookshelf, bookshelf);
+		setCurrentBookshelfTitle(bookshelf.title);
+		setCurrentBookshelfID(bookshelf.id);
+	}
+
+	function setupBookshelves(navigation, currentTitle) {
+		if (sidebarVisible) {
+			navigation.setOptions({ headerTitle: currentTitle });
+			return;
+		}
 		navigation.setOptions({
 			headerTitle: () => (
-				<MenuView accessibilityLabel={currentTitle}
-				onPressAction = {({ nativeEvent }) => {
-					let shelf_id = nativeEvent.event;
-					loadBooks(shelf_id, function() {
-						epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
-							for (let shelf of bookshelves) {
-								if (shelf.id == shelf_id) {
-									epilogueStorage.set(keys.currentBookshelf, shelf);
-									setCurrentBookshelfTitle(shelf.title);
-									setupBookshelves(navigation, bookshelves, shelf.title);
-								}
-							}
-						});
-					});
-				}}
-				actions = {items}
-				>
+				<BookshelfPopupMenuTrigger accessibilityLabel={currentTitle} menuRef={bookshelfPopupMenuRef}>
 					<View style={styles.navbarBookshelf}>
 						<Text style={[ styles.navbarBookshelfTitle, { marginLeft: Platform.OS == "ios" ? 15 : 0, color: is_dark ? "#FFFFFF" : "#000000" } ]}>{currentTitle}</Text>
 						<Icon name="popup-triangle" color={is_dark ? "#FFFFFF" : "#000000"} size={10} style={styles.navbarBookshelfTriangle} />
 					</View>
-				</MenuView>
+				</BookshelfPopupMenuTrigger>
 			)
 		});
 	}
-	
-	function setupProfileIcon() {
-		epilogueStorage.get(keys.currentUsername).then(username => {
-			let avatar_url = "https://micro.blog/" + username + "/avatar.jpg";
-			navigation.setOptions(profileHeaderOptions(avatar_url, onShowProfile, styles));
-		});
-	}	
-	
-	function onShowProfile() {
-		navigation.navigate("Profile");
-	}
-
 	function searchResultItems(new_books, searchText, local_books = []) {
 		var new_items = [];
 
@@ -499,8 +583,11 @@ export function HomeScreen({ navigation }) {
 				title: b.title,
 				image: b.cover_url,
 				author: b.author,
+				author_id: b.author_id,
 				description: b.description,
 				date: "",
+				background_color: b.background_color,
+				background_url: b.background_url,
 				is_search: true
 			});
 		}
@@ -584,8 +671,11 @@ export function HomeScreen({ navigation }) {
 					title: item.title,
 					image: item.image,
 					author: item.author,
+					author_id: item.author_id,
 					description: item.description,
 					date: item.date,
+					background_color: item.background_color,
+					background_url: item.background_url,
 					bookshelves: bookshelves,
 					current_bookshelf: selected_bookshelf,
 					is_search: item.is_search,
@@ -621,7 +711,7 @@ export function HomeScreen({ navigation }) {
 				fetch(url, options).then(response => response.json()).then(data => {
 					refreshAllBookshelfCachesInBackground();
 					if (target_bookshelf_id == current_bookshelf.id) {
-						loadBooks(current_bookshelf.id);
+						loadBooks(current_bookshelf);
 					}
 					else {
 						setBooks(current_books => (current_books || []).filter(item => {
@@ -662,6 +752,7 @@ export function HomeScreen({ navigation }) {
 		<View style={styles.container}>
 			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" ref={searchFieldRef} />
 			<FlatList
+				contentInsetAdjustmentBehavior="automatic"
 				ref={booksListRef}
 				data = {books}
 				renderItem = { ({item}) => 
@@ -674,9 +765,13 @@ export function HomeScreen({ navigation }) {
 					</View>
 				) : (
 				<BookSwipeableRow bookID={item.id} bookshelfID={item.bookshelf_id} onRemove={removeFromBookshelf} styles={styles}>
-					<Pressable onPress={() => {
-						onShowBookPressed(item);
-					}}>
+					<Pressable
+						onPress={() => {
+							onShowBookPressed(item);
+						}}
+						style={({ pressed }) => pressed ? styles.bookListItemPressed : null}
+						unstable_pressDelay={100}
+					>
 						<View style={styles.item}>
 							<FastImage style={styles.bookCover} source={{ uri: item.image.replace("http://", "https://") }} />
 							<View style={styles.bookItem}>
@@ -693,6 +788,12 @@ export function HomeScreen({ navigation }) {
 				}
 				keyExtractor = { item => item.list_id || item.id }
 			/>
+			{!sidebarVisible && <BookshelfPopupMenu
+				bookshelves={bookshelves}
+				onSelect={selectBookshelf}
+				ref={bookshelfPopupMenuRef}
+				selectedBookshelfID={currentBookshelfID}
+			/>}
 		</View>
 	);
 }

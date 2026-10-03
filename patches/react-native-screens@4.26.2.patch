@@ -1,0 +1,39 @@
+diff --git a/ios/gamma/split/RNSSplitAppearanceApplicator.swift b/ios/gamma/split/RNSSplitAppearanceApplicator.swift
+index 36493d519f81ae1aee8620591969ce41f10a31a6..8ecd71a317e92f6d065a3d29d15936bd5f465b1c 100644
+--- a/ios/gamma/split/RNSSplitAppearanceApplicator.swift
++++ b/ios/gamma/split/RNSSplitAppearanceApplicator.swift
+@@ -73,6 +73,15 @@ class RNSSplitAppearanceApplicator {
+     splitHostController.primaryEdge = splitHost.primaryEdge
+     splitHostController.showsSecondaryOnlyButton = splitHost.showSecondaryToggleButton
+ 
++    // Epilogue supplies a navigation stack inside each column. When all split
++    // toggles are disabled, the wrapper bars are empty and must not add a
++    // second row above those stacks' own bars.
++    if splitHost.displayModeButtonVisibility == .never && !splitHost.showSecondaryToggleButton {
++      for case let navigationController as UINavigationController in splitHostController.viewControllers {
++        navigationController.setNavigationBarHidden(true, animated: false)
++      }
++    }
++
+     // Step 2.1 - validating column constraints
+     validateColumnConstraints(
+       minWidth: splitHost.minimumPrimaryColumnWidth,
+diff --git a/ios/gamma/split/RNSSplitHostComponentView.mm b/ios/gamma/split/RNSSplitHostComponentView.mm
+index 3c1b9d5b88c868f976cbedddc7fb3fbc57ddfe9e..cf0171987a512b2f3b96f4e116b9dd0db3258926 100644
+--- a/ios/gamma/split/RNSSplitHostComponentView.mm
++++ b/ios/gamma/split/RNSSplitHostComponentView.mm
+@@ -117,6 +117,14 @@ - (void)setupController
+     int numberOfColumns = [self getNumberOfColumns];
+ 
+     _controller = [[RNSSplitHostController alloc] initWithSplitHostComponentView:self numberOfColumns:numberOfColumns];
++
++    // A detached navigation screen can finish its mounting transaction before
++    // reaching a window. Replay the initial children and appearance now that
++    // the controller exists; otherwise its columns remain empty.
++    [_controller setNeedsUpdateOfChildViewControllers];
++    [self requestSplitHostControllerForAppearanceUpdate];
++    [_controller reactMountingTransactionDidMount];
++    _hasModifiedReactSubviewsInCurrentTransaction = false;
+   }
+ }
+ 

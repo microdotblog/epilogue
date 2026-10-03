@@ -17,11 +17,13 @@ export const light = StyleSheet.create({
 		borderRadius: 12
 	},
 	profileHeaderButton: {
-		marginLeft: -8,
 		width: 32,
 		height: 32,
 		alignItems: "center",
 		justifyContent: "center"
+	},
+	profileHeaderButtonIOS: {
+		marginLeft: -8
 	},
 	profileHeaderIcon: {
 		width: 28,
@@ -53,6 +55,9 @@ export const light = StyleSheet.create({
 		paddingTop: 5,
 		paddingBottom: 5,
 		marginBottom: 5
+	},
+	bookListItemPressed: {
+		backgroundColor: "rgba(0, 0, 0, 0.06)"
 	},
 	bookItem: {
 		flex: 1,
@@ -120,9 +125,14 @@ export const light = StyleSheet.create({
 	bookDetailsTop: {
 		alignItems: "center",
 		backgroundColor: "#EEF1F4",
+		overflow: "hidden",
 		paddingBottom: 25,
 		paddingTop: 25,
 		width: "100%"
+	},
+	bookDetailsBackgroundImage: {
+		...StyleSheet.absoluteFill,
+		resizeMode: "cover"
 	},
 	bookDetailsCoverSlot: {
 		width: 200,
@@ -283,7 +293,7 @@ export const light = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "600"
 	},
-	navbarSearchSpinner: {
+	navbarProgressSpinner: {
 		width: 32,
 		height: 32,
 		alignItems: "center",
@@ -412,14 +422,28 @@ export const light = StyleSheet.create({
 		flex: 1
 	},
 	blogListItem: {
-		paddingLeft: 15,
+		alignItems: "center",
+		flexDirection: "row",
+		paddingLeft: 0,
 		paddingRight: 15,
 		paddingTop: 16,
 		paddingBottom: 16,
 		borderBottomWidth: 0.5,
 		borderBottomColor: "#d6d6d6"
 	},
+	blogListCheckSlot: {
+		alignItems: "center",
+		justifyContent: "center",
+		width: 42
+	},
+	blogListCheckmark: {
+		color: "#C85F00",
+		fontSize: 17,
+		fontWeight: "600",
+		transform: [{ translateX: 2 }]
+	},
 	blogListName: {
+		flex: 1
 	},
 	profilePane: {
 		flexDirection: "row",
@@ -439,6 +463,9 @@ export const light = StyleSheet.create({
 		marginLeft: 10
 	},
 	profilePosts: {		
+	},
+	profilePostsContent: {
+		paddingBottom: 86
 	},
 	profilePost: {
 		flexDirection: "row",
@@ -478,6 +505,37 @@ export const light = StyleSheet.create({
 	profileSpinner: {
 		alignItems: "flex-end"
 	},
+	profileVersionPaneContainer: {
+		position: "absolute",
+		left: 0,
+		right: 0,
+		bottom: 16,
+		alignItems: "center",
+		zIndex: 10
+	},
+	profileVersionPane: {
+		paddingHorizontal: 22,
+		paddingVertical: 9,
+		borderRadius: 22,
+		backgroundColor: "#e1e1e1",
+		borderWidth: 0.5,
+		borderColor: "#d6d6d6",
+		shadowColor: "#000000",
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.10,
+		shadowRadius: 5,
+		elevation: 4
+	},
+	profileVersionText: {
+		fontSize: 14,
+		color: "#000000"
+	},
+	profileVersionBuildText: {
+		color: "#777777"
+	},
 	notesKeyIntro: {
 		paddingLeft: 15,
 		paddingRight: 15,
@@ -516,6 +574,9 @@ export const light = StyleSheet.create({
 	},
 	micropubButtonTitle: {
 		fontSize: 13
+	},
+	profileMicropubButton: {
+		backgroundColor: "#d1d1d1"
 	},
 	micropubIntro: {
 		marginLeft: 12,
@@ -938,11 +999,18 @@ export const light = StyleSheet.create({
 	},
 	openLibraryEditionsButtonTitle: {		
 	},
-	openLibraryCoverSearch: {		
+	openLibraryCoverSearch: {
+		flex: 1,
 		marginLeft: 20,
 		marginRight: 20,
 		marginTop: 0,
 		marginBottom: 15		
+	},
+	openLibraryCoverResultsList: {
+		flex: 1
+	},
+	openLibraryCoverResultsFooter: {
+		height: 20
 	},
 	mediumBookCover: {
 		width: 100,
@@ -1068,6 +1136,9 @@ export const dark = StyleSheet.create({
 		backgroundColor: "#212936",
 		color: "#E5E7EB"
 	},
+	bookListItemPressed: {
+		backgroundColor: "rgba(255, 255, 255, 0.07)"
+	},
 	bookTitle: {
 		color: "#FFFFFF"	
 	},
@@ -1133,6 +1204,9 @@ export const dark = StyleSheet.create({
 	},
 	blogListItem: {
 		borderBottomColor: "#444444"			
+	},
+	blogListCheckmark: {
+		color: "#FFB45A"
 	},
 	blogListName: {
 		color: "#E5E7EB"
@@ -1202,8 +1276,21 @@ export const dark = StyleSheet.create({
 	micropubButton: {
 		backgroundColor: "#141723"
 	},
+	profileMicropubButton: {
+		backgroundColor: "#141723"
+	},
 	micropubButtonTitle: {
 		color: "#E5E7EB",
+	},
+	profileVersionPane: {
+		backgroundColor: "#272f3d",
+		borderColor: "#444444"
+	},
+	profileVersionText: {
+		color: "#E5E7EB"
+	},
+	profileVersionBuildText: {
+		color: "#8E98AA"
 	},
 	micropubIntro: {
 		color: "#E5E7EB"
