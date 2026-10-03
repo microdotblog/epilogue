@@ -1,6 +1,5 @@
 import React, { Component, useRef, useState } from "react";
-import type { Node } from "react";
-import { Alert, InputAccessoryView, Keyboard, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator, Pressable, Button, Image, StyleSheet, Text, SafeAreaView, View, FlatList, useWindowDimensions, Dimensions } from "react-native";
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, ActivityIndicator, Pressable, Text, View, FlatList, useWindowDimensions, Dimensions, useColorScheme } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import FastImage from "react-native-fast-image";
 
@@ -10,12 +9,17 @@ import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { deleteProfilePostsCache } from "../ProfilePostsCache";
+import HighlightingText from "../components/text/highlighting_text";
 
 export function PostScreen({ route, navigation }) {
 	const styles = useEpilogueStyle();
+	const colorScheme = useColorScheme();
 	const windowSize = useWindowDimensions();
 	const headerHeight = useHeaderHeight();
-	const keyboardNoticeID = "KeyboardNoticeID";
+	const editorRef = useRef();
+	const didLoadText = useRef(false);
+	const postSending = useRef(false);
+	const [ editorActive, setEditorActive ] = useState(navigation.isFocused?.() !== false);
 	const calendarMode = route.params?.calendarMode === true;
 	const calendarPage = route.params?.calendarPage;
 	const initialCalendarText = calendarPage ? calendarPage.content : '{{< bookcalendar view="list" >}}';
@@ -23,7 +27,6 @@ export function PostScreen({ route, navigation }) {
 	const calendarText = useRef(initialCalendarText);
 	const calendarSending = useRef(false);
 	const [ title, setTitle ] = useState(calendarMode ? (calendarPage?.title || "Book calendar") : undefined);
-	const [ keyboardAccessoryHeight, setKeyboardAccessoryHeight ] = useState(0);
 	const [ calendarKeyboardHeight, setCalendarKeyboardHeight ] = useState(0);
 	const [ blogID, setBlogID ] = useState(calendarMode ? (route.params.calendarBlogID || "") : undefined);
 	const [ blogName, setBlogName ] = useState(calendarMode ? (route.params.calendarBlogName || "Micro.blog") : undefined);
@@ -37,9 +40,16 @@ export function PostScreen({ route, navigation }) {
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener("focus", () => {
+			setEditorActive(true);
 			onFocus(navigation);
+			editorRef.current?.focus();
 		});
-		return unsubscribe;
+		const blur = navigation.addListener("blur", () => setEditorActive(false));
+		const transitionEnd = navigation.addListener("transitionEnd", ({ data }) => {
+			if (!data.closing && navigation.isFocused?.() !== false) editorRef.current?.focus();
+		});
+		if (navigation.isFocused?.()) onFocus(navigation);
+		return () => { unsubscribe(); blur(); transitionEnd(); };
 	}, [navigation]);	
 
 	React.useEffect(() => {
@@ -47,13 +57,7 @@ export function PostScreen({ route, navigation }) {
 			setBookColumns(bestColumnsForWidth(Dimensions.get("window").width));
 		});
 		return () => subscription?.remove()
-	})
-
-	React.useEffect(() => {
-		if (!showsPostNotice) {
-			setKeyboardAccessoryHeight(0);
-		}
-	}, [showsPostNotice]);
+	}, []);
 
 	React.useEffect(() => {
 		if (!calendarMode || Platform.OS !== "ios") return;
@@ -66,7 +70,7 @@ export function PostScreen({ route, navigation }) {
 			hideSubscription.remove();
 		};
 	}, [calendarMode]);
-	
+
 	function onFocus(navigation) {
 		if (calendarMode) setupCalendarPageButton();
 		else {
@@ -99,13 +103,6 @@ export function PostScreen({ route, navigation }) {
 		else epilogueStorage.set(keys.currentText, text);
 	}
 
-	function onKeyboardAccessoryLayout(event) {
-		const height = Math.ceil(event.nativeEvent.layout.height);
-		if (height != keyboardAccessoryHeight) {
-			setKeyboardAccessoryHeight(height);
-		}
-	}
-	
 	function setupPostButton() {
 		navigation.setOptions({
 			headerRight: () => (
@@ -139,8 +136,10 @@ export function PostScreen({ route, navigation }) {
 	async function onSendCalendarPage() {
 		if (calendarSending.current) return;
 		calendarSending.current = true;
-		setProgressAnimating(true);
 		try {
+			calendarText.current = await editorRef.current.getText();
+			setText(calendarText.current);
+			setProgressAnimating(true);
 			const token = await epilogueStorage.get(keys.authToken);
 			if (!token) throw new Error("Missing sign-in token");
 			let options;
@@ -177,11 +176,11 @@ export function PostScreen({ route, navigation }) {
 	}
 	
 	function setupFields() {
-		epilogueStorage.get(keys.currentText).then(current_text => {
-			if (current_text != null) {
-				setText(current_text);
-			}
-		});
+		// Returning from Blogs must not replace the live editor text or its selection.
+		if (!didLoadText.current) {
+			didLoadText.current = true;
+			epilogueStorage.get(keys.currentText).then(current_text => setText(current_text || ""));
+		}
 
 		epilogueStorage.get(keys.currentTitle).then(current_title => {
 			if (current_title != null) {
@@ -218,19 +217,30 @@ export function PostScreen({ route, navigation }) {
 		});
 	}
 	
-	function onSendPost() {
-		setProgressAnimating(true);
+	async function onSendPost() {
+		if (postSending.current) return;
+		postSending.current = true;
+		try {
+			const currentText = await editorRef.current.getText();
+			setText(currentText);
+			await epilogueStorage.set(keys.currentText, currentText);
+			setProgressAnimating(true);
+		} catch {
+			postSending.current = false;
+			Alert.alert("Couldn’t read post", "Please try again.");
+			return;
+		}
 		
-		epilogueStorage.get(keys.currentText).then(current_text => {
-			epilogueStorage.get(keys.currentTitle).then(current_title => {
-				epilogueStorage.get(keys.currentTextExtra).then(current_extra => {
-					epilogueStorage.get(keys.currentBlogID).then(blog_id => {
-						epilogueStorage.get(keys.currentPostURL).then(post_url => {
+		return epilogueStorage.get(keys.currentText).then(current_text => {
+			return epilogueStorage.get(keys.currentTitle).then(current_title => {
+				return epilogueStorage.get(keys.currentTextExtra).then(current_extra => {
+					return epilogueStorage.get(keys.currentBlogID).then(blog_id => {
+						return epilogueStorage.get(keys.currentPostURL).then(post_url => {
 							var options = {};
 							
-							epilogueStorage.get("auth_token").then(auth_token => {
+							return epilogueStorage.get("auth_token").then(auth_token => {
 								var use_token = auth_token;
-								epilogueStorage.get(keys.micropubToken).then(micropub_token => {
+								return epilogueStorage.get(keys.micropubToken).then(micropub_token => {
 									if (micropub_token != undefined) {
 										use_token = micropub_token;
 									}
@@ -288,7 +298,7 @@ export function PostScreen({ route, navigation }) {
 								
 									// setProgressAnimating(true);
 								
-									epilogueStorage.get(keys.micropubURL).then(micropub_url => {
+									return epilogueStorage.get(keys.micropubURL).then(micropub_url => {
 										var use_url = micropub_url;
 										if (use_url == undefined) {
 											use_url = "https://micro.blog/micropub";
@@ -300,8 +310,9 @@ export function PostScreen({ route, navigation }) {
 											navigation.goBack();
 										}
 										else {
-											fetch(use_url, options).then(async response => {
-												if (response.ok && post_url != undefined) {
+											return fetch(use_url, options).then(async response => {
+												if (!response.ok) throw new Error("Could not send post");
+												if (post_url != undefined) {
 													// An edited older post may fall outside the next incremental refresh.
 													const username = await epilogueStorage.get(keys.currentUsername);
 													await deleteProfilePostsCache([username || "", use_url, blog_id || ""]);
@@ -316,6 +327,10 @@ export function PostScreen({ route, navigation }) {
 					});
 				});
 			});
+		}).catch(() => {
+			postSending.current = false;
+			setProgressAnimating(false);
+			Alert.alert("Couldn’t send post", "Please try again.");
 		});
 	}
 
@@ -405,8 +420,8 @@ export function PostScreen({ route, navigation }) {
 	return (
 		<KeyboardAvoidingView
 			style={[styles.postTextBox, calendarMode && Platform.OS === "ios" && { paddingBottom: calendarKeyboardHeight }]}
-			behavior={calendarMode && Platform.OS === "ios" ? undefined : "height"}
-			keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight + keyboardAccessoryHeight : 0}
+			behavior={Platform.OS === "ios" && !calendarMode ? "padding" : undefined}
+			keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : 0}
 		>
 			{calendarMode && Platform.OS === "ios" && calendarKeyboardHeight > 0 && (
 				<View pointerEvents="none" style={[styles.postTextNotice, {
@@ -426,20 +441,18 @@ export function PostScreen({ route, navigation }) {
 			</Pressable>
 			<PostTitleField title={title} />
 
-			{Platform.OS === "ios" && <>
-				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} scrollEnabled={true} autoFocus={true} inputAccessoryViewID={showsPostNotice && !calendarMode ? keyboardNoticeID : undefined} />
-				{calendarMode ? <PostNoticeField title={title} notice="Share the book calendar on your blog." /> : showsPostNotice && (
-					<InputAccessoryView nativeID={keyboardNoticeID}>
-						<View onLayout={onKeyboardAccessoryLayout}>
-							<PostNoticeField title={title} />
-						</View>
-					</InputAccessoryView>
-				)}
-			</>}
-			{Platform.OS === "android" && <>
-				<TextInput style={[styles.postTextInput, styles.postEditorTextInput]} value={text} onChangeText={onChangeText} multiline={true} scrollEnabled={true} autoFocus={true} />
-				<PostNoticeField title={title} notice={calendarMode ? "Share the book calendar on your blog." : undefined} />
-			</>}
+			{ text !== undefined && <HighlightingText
+				ref={editorRef}
+				style={[styles.postTextInput, styles.postEditorTextInput]}
+				value={text}
+				onChangeText={onChangeText}
+				autoFocus={editorActive}
+				editable={editorActive && !progressAnimating}
+				colorScheme={colorScheme}
+				fontScale={windowSize.fontScale}
+				scrollEnabled={true}
+			/> }
+			<PostNoticeField title={title} notice={calendarMode ? "Share the book calendar on your blog." : undefined} />
 
 			{showsPlainPostSpacer && (
 				<View style={styles.postEditorBottomSpacer} />

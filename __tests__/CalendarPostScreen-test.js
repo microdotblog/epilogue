@@ -1,7 +1,8 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { InputAccessoryView, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { InputAccessoryView, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from "react-native";
 import { PostScreen } from "../src/screens/PostScreen";
+import HighlightingText from "../src/components/text/highlighting_text";
 import epilogueStorage from "../src/Storage";
 
 jest.mock("@react-navigation/elements", () => ({ useHeaderHeight: () => 0 }));
@@ -28,6 +29,7 @@ async function openCalendarEditor(calendarPage, os = "android") {
 		} }} />);
 	});
 	await renderer.act(async () => onFocus());
+	jest.spyOn(screen.root.findByType(HighlightingText).instance, "getText").mockImplementation(async () => screen.root.findByType(HighlightingText).props.value);
 	return { screen, navigation, submit: () => navigation.setOptions.mock.calls.at(-1)[0].headerRight() };
 }
 
@@ -38,7 +40,7 @@ it("keeps the calendar notice in the iOS editor instead of a keyboard accessory"
 		return { remove: jest.fn() };
 	});
 	const { screen } = await openCalendarEditor(null, "ios");
-	expect(screen.root.findByType(TextInput).props.inputAccessoryViewID).toBeUndefined();
+	expect(screen.root.findByType(HighlightingText).props.autoFocus).toBe(true);
 	expect(screen.root.findAllByType(InputAccessoryView)).toHaveLength(0);
 	expect(screen.root.findAllByType(Text).some(item => item.props.children === "Share the book calendar on your blog.")).toBe(true);
 	await renderer.act(async () => keyboardFrameChanged({ endCoordinates: { height: 320 } }));
@@ -53,7 +55,7 @@ it("keeps the calendar notice in the iOS editor instead of a keyboard accessory"
 it("prefills and creates the standalone book calendar page", async () => {
 	global.fetch = jest.fn(async () => ({ ok: true }));
 	const { screen, navigation, submit } = await openCalendarEditor(null);
-	expect(screen.root.findByType(TextInput).props.value).toBe('{{< bookcalendar view="list" >}}');
+	expect(screen.root.findByType(HighlightingText).props.value).toBe('{{< bookcalendar view="list" >}}');
 	expect(screen.root.findAllByType(Text).some(item => item.props.children === "Book calendar")).toBe(true);
 	expect(screen.root.findAllByType(Text).some(item => item.props.children === "Share the book calendar on your blog.")).toBe(true);
 	expect(submit().props.children.props.children).toBe("Add Page");
@@ -77,15 +79,15 @@ it("updates the existing page by URL with edited content", async () => {
 	const page = { uid: 77, url: "https://example.com/my-reading/", title: "My Reading Calendar", content: 'Intro\n{{< bookcalendar view="list" >}}' };
 	const { screen, navigation, submit } = await openCalendarEditor(page);
 	expect(screen.root.findAllByType(Text).some(item => item.props.children === "My Reading Calendar")).toBe(true);
-	expect(screen.root.findByType(TextInput).props.value).toBe(page.content);
+	expect(screen.root.findByType(HighlightingText).props.value).toBe(page.content);
 	expect(submit().props.children.props.children).toBe("Update Page");
-	await renderer.act(async () => screen.root.findByType(TextInput).props.onChangeText('Intro\n{{< bookcalendar view="list" >}}'));
+	screen.root.findByType(HighlightingText).instance.getText.mockResolvedValue('Edited intro\n{{< bookcalendar view="list" >}}');
 	await renderer.act(async () => submit().props.onPress());
 	const [url, options] = global.fetch.mock.calls[0];
 	expect(url).toBe("https://micro.blog/micropub");
 	expect(JSON.parse(options.body)).toEqual({
 		action: "update", url: "https://example.com/my-reading/", "mp-channel": "pages",
-		"mp-destination": "https://example.com/", replace: { content: 'Intro\n{{< bookcalendar view="list" >}}' }
+		"mp-destination": "https://example.com/", replace: { content: 'Edited intro\n{{< bookcalendar view="list" >}}' }
 	});
 	expect(navigation.goBack).toHaveBeenCalled();
 	expect(epilogueStorage.set).not.toHaveBeenCalled();
