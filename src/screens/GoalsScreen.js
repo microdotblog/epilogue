@@ -25,6 +25,7 @@ export function GoalsScreen({ navigation }) {
 	const [ calendarOpened, setCalendarOpened ] = useState(false);
 	const [ calendarPage, setCalendarPage ] = useState({ status: "idle" });
 	const calendarPageRequest = React.useRef(0);
+	const calendarPageBlog = React.useRef(null);
 	const calendarPageEditorOpened = React.useRef(false);
 	const goalsListRef = React.useRef(null);
 	const calendarListRef = React.useRef(null);
@@ -79,11 +80,21 @@ export function GoalsScreen({ navigation }) {
 	}, [navigation, is_dark, selectedView, calendarPage]);
 
 	React.useEffect(() => {
-		const unsubscribe = navigation.addListener("focus", () => {
+		const unsubscribe = navigation.addListener("focus", async () => {
 			if (selectedView === "goals") onFocus(navigation);
 			else if (calendarPageEditorOpened.current) {
 				calendarPageEditorOpened.current = false;
-				loadCalendarPage();
+				await loadCalendarPage();
+			} else {
+				const [blogID, blogName] = await Promise.all([
+					epilogueStorage.get(keys.currentBlogID),
+					epilogueStorage.get(keys.currentBlogName)
+				]);
+				// Profile can change the destination while Calendar stays mounted.
+				if (calendarPageBlog.current?.blogID !== (blogID || "") ||
+					calendarPageBlog.current?.blogName !== (blogName || "")) {
+					await loadCalendarPage();
+				}
 			}
 		});
 		return unsubscribe;
@@ -98,6 +109,8 @@ export function GoalsScreen({ navigation }) {
 				epilogueStorage.get(keys.currentBlogID),
 				epilogueStorage.get(keys.currentBlogName)
 			]);
+			if (request !== calendarPageRequest.current) return;
+			calendarPageBlog.current = { blogID: blogID || "", blogName: blogName || "" };
 			if (!token) throw new Error("Missing sign-in token");
 			let page = null;
 			let offset = 0;
