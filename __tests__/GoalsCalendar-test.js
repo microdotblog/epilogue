@@ -3,6 +3,7 @@ import renderer from "react-test-renderer";
 import { FlatList, Platform } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
 import { GoalsScreen } from "../src/screens/GoalsScreen";
+import epilogueStorage from "../src/Storage";
 
 jest.mock("@react-navigation/native", () => ({ useScrollToTop: jest.fn() }));
 jest.mock("../src/ProfileHeaderButton", () => ({ useProfileHeader: jest.fn() }));
@@ -17,6 +18,11 @@ jest.mock("../src/screens/CalendarScreen", () => ({
 
 const originalOS = Platform.OS;
 const originalFetch = global.fetch;
+beforeEach(() => epilogueStorage.get.mockImplementation(async key => ({
+	auth_token: "test-token",
+	current_blog_id: "https://example.com/",
+	current_blog_name: "example.com"
+})[key]));
 afterEach(() => { Platform.OS = originalOS; global.fetch = originalFetch; jest.clearAllMocks(); });
 
 it.each(["ios", "android"])("switches the Goals title segments without navigating on %s", async os => {
@@ -71,6 +77,54 @@ it("keeps the loaded calendar when returning from a book, but rechecks pages aft
 	navigation.setOptions.mock.calls.at(-1)[0].unstable_headerRightItems()[0].onPress();
 	await renderer.act(async () => onFocus());
 	expect(global.fetch).toHaveBeenCalledTimes(2);
+	await renderer.act(async () => screen.unmount());
+});
+
+it.each([
+	["another blog", "https://other.example/", "other.example"],
+	["the default blog", null, null],
+	["a renamed blog", "https://example.com/", "renamed.example"]
+])("rechecks calendar pages after switching to %s in Profile", async (_, blogID, blogName) => {
+	Platform.OS = "ios";
+	let resolveList;
+	global.fetch = jest.fn()
+		.mockResolvedValueOnce({ ok: true, json: async () => ({ items: [
+			{ properties: { uid: [77], name: ["Old calendar"], content: ['{{< bookcalendar view="list" >}}'] } }
+		] }) })
+		.mockImplementationOnce(() => new Promise(resolve => { resolveList = resolve; }));
+	let onFocus;
+	const navigation = {
+		setOptions: jest.fn(), navigate: jest.fn(),
+		addListener: jest.fn((event, listener) => {
+			if (event === "focus") onFocus = listener;
+			return () => {};
+		})
+	};
+	let screen;
+	await renderer.act(async () => { screen = renderer.create(<GoalsScreen navigation={navigation} />); });
+	await renderer.act(async () => navigation.setOptions.mock.calls.at(-1)[0].headerTitle().props.children[1].props.onPress());
+	expect(navigation.setOptions.mock.calls.at(-1)[0].unstable_headerRightItems()[0].label).toBe("Edit Page");
+
+	epilogueStorage.get.mockImplementation(async key => ({
+		auth_token: "test-token", current_blog_id: blogID, current_blog_name: blogName
+	})[key]);
+	await renderer.act(async () => { onFocus(); });
+	expect(global.fetch).toHaveBeenCalledTimes(2);
+	const destination = blogID ? `&mp-destination=${encodeURIComponent(blogID)}` : "";
+	expect(global.fetch).toHaveBeenLastCalledWith(
+		`https://micro.blog/micropub?q=source&mp-channel=pages${destination}&limit=100&offset=0`,
+		{ headers: { Authorization: "Bearer test-token" } }
+	);
+	expect(navigation.setOptions.mock.calls.at(-1)[0].unstable_headerRightItems()).toEqual([]);
+	expect(screen.root.findByType("CalendarView").props.pageLoading).toBe(true);
+
+	await renderer.act(async () => resolveList({ ok: true, json: async () => ({ items: [] }) }));
+	const button = navigation.setOptions.mock.calls.at(-1)[0].unstable_headerRightItems()[0];
+	expect(button.label).toBe("New Page");
+	button.onPress();
+	expect(navigation.navigate).toHaveBeenLastCalledWith("Post", expect.objectContaining({
+		calendarPage: null, calendarBlogID: blogID || "", calendarBlogName: blogName || ""
+	}));
 	await renderer.act(async () => screen.unmount());
 });
 

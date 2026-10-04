@@ -11,6 +11,9 @@ function openEditor(text, start = text.length, end = start) {
   })
   const context = {
     isIgnoringInput: false, isApplyingStyles: false, isComposing: false,
+    isEditable: true, undoStack: [], redoStack: [], undoTimer: null, caretTimer: null,
+    historyText: text, historySelection: selection, pendingHistoryCheckpoint: false,
+    undoDelay: 1000, undoMaxSize: 50,
     editor: () => root, editorPlainText: () => text,
     document: { activeElement: root },
     currentSelection: () => selection,
@@ -21,6 +24,7 @@ function openEditor(text, start = text.length, end = start) {
   }
   const script = editorHtml.match(/<script[^>]*>([\s\S]*?)<\/script>/)[1]
   vm.runInNewContext(script.slice(script.indexOf('function shouldSkipHighlighting('), script.indexOf('function setEditable(')), context)
+  context.resetHistory()
   return { context, root, selection: () => selection, text: () => text }
 }
 

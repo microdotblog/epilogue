@@ -208,6 +208,16 @@ const editorHtml = String.raw`<!doctype html>
       var viewportHeight = null;
       var lastText = "";
       var didApplyInitialValue = false;
+      var isEditable = true;
+      var undoStack = [];
+      var redoStack = [];
+      var undoTimer = null;
+      var undoDelay = 1000;
+      var undoMaxSize = 50;
+      var historyText = "";
+      var historySelection = null;
+      var pendingHistoryCheckpoint = false;
+      var caretTimer = null;
       var editorMarkerSelector = '[data-editor-marker="caret"]';
       var markdownCharacters = [' ', '*', '_', '[', ']', '(', ')', '<', '>', '"', '\`', '#', '-', '@', '~', '\\'];
 
@@ -1522,6 +1532,112 @@ const editorHtml = String.raw`<!doctype html>
         isApplyingStyles = false;
       }
 
+      // Keep plain-text history independent of the DOM rebuilt by highlighting.
+      function historyState() {
+        return {
+          text: editorPlainText(editor()),
+          selection: currentSelection(),
+          scrollTop: editor().scrollTop
+        };
+      }
+
+      function saveStateForUndo() {
+        var state = historyState();
+        var last = undoStack[undoStack.length - 1];
+        if (last && last.text === state.text) {
+          undoStack[undoStack.length - 1] = state;
+          return;
+        }
+        undoStack.push(state);
+        if (undoStack.length > undoMaxSize) undoStack.shift();
+      }
+
+      function checkpointUndo() {
+        clearTimeout(undoTimer);
+        undoTimer = null;
+        saveStateForUndo();
+      }
+
+      function resetHistory() {
+        clearTimeout(undoTimer);
+        clearTimeout(caretTimer);
+        undoTimer = null;
+        undoStack = [historyState()];
+        redoStack = [];
+        historyText = undoStack[0].text;
+        historySelection = undoStack[0].selection;
+        pendingHistoryCheckpoint = false;
+      }
+
+      function beginHistoryEdit(separate) {
+        var selection = currentSelection();
+        if (separate || !undoTimer || !historySelection ||
+          selection.start !== historySelection.start || selection.end !== historySelection.end) {
+          checkpointUndo();
+        }
+        pendingHistoryCheckpoint = !!separate;
+      }
+
+      function finishHistoryEdit(separate) {
+        if (isComposing) return;
+        separate = separate || pendingHistoryCheckpoint;
+        pendingHistoryCheckpoint = false;
+        var text = editorPlainText(editor());
+        if (text === historyText) return;
+        // Invalidate Redo now, not when the delayed typing snapshot is saved.
+        redoStack = [];
+        historyText = text;
+        historySelection = currentSelection();
+        if (separate) {
+          checkpointUndo();
+        } else {
+          clearTimeout(undoTimer);
+          undoTimer = setTimeout(function () {
+            undoTimer = null;
+            saveStateForUndo();
+          }, undoDelay);
+        }
+      }
+
+      function restoreHistoryState(state) {
+        clearTimeout(caretTimer);
+        clearTimeout(changeTimer);
+        clearTimeout(selectionTimer);
+        var root = editor();
+        var hadFocus = editorHasFocus(root);
+        root.textContent = state.text;
+        applyStyles(state.selection, { force: true, hadFocus: hadFocus });
+        root.scrollTop = state.scrollTop;
+        historyText = state.text;
+        historySelection = currentSelection();
+        pendingHistoryCheckpoint = false;
+        sendChangeNow();
+        sendSelectionNow();
+        if (hadFocus) requestAnimationFrame(scrollSelectionIntoView);
+      }
+
+      function undo() {
+        if (isComposing || !isEditable || undoStack.length === 0) return;
+        clearTimeout(undoTimer);
+        undoTimer = null;
+        var state = historyState();
+        var last = undoStack[undoStack.length - 1];
+        if (last.text === state.text) {
+          if (undoStack.length === 1) return;
+          undoStack.pop();
+        }
+        redoStack.push(state);
+        restoreHistoryState(undoStack[undoStack.length - 1]);
+      }
+
+      function redo() {
+        if (isComposing || !isEditable || redoStack.length === 0) return;
+        clearTimeout(undoTimer);
+        undoTimer = null;
+        saveStateForUndo();
+        restoreHistoryState(redoStack.pop());
+      }
+
       function sendSelectionNow() {
         postMessage("selection", currentSelection());
       }
@@ -1545,7 +1661,9 @@ const editorHtml = String.raw`<!doctype html>
         changeTimer = setTimeout(sendChangeNow, 60);
       }
 
-      function replaceSelectionWithText(insertedText) {
+      function replaceSelectionWithText(insertedText, separateEdit) {
+        if (!isEditable) return;
+        separateEdit = separateEdit !== false;
         var root = editor();
         var hadFocus = editorHasFocus(root);
         var text = editorPlainText(root);
@@ -1556,6 +1674,7 @@ const editorHtml = String.raw`<!doctype html>
         var nextPosition = start + insertedText.length;
         var insertedNewline = insertedText.indexOf("\n") > -1;
 
+        beginHistoryEdit(separateEdit);
         root.textContent = nextText;
         applyStyles({
           start: nextPosition,
@@ -1564,8 +1683,10 @@ const editorHtml = String.raw`<!doctype html>
           force: true,
           hadFocus: hadFocus || insertedNewline
         });
+        finishHistoryEdit(separateEdit);
         if (insertedNewline) {
-          setTimeout(function () {
+          clearTimeout(caretTimer);
+          caretTimer = setTimeout(function () {
             editor().focus();
             setSelectionRange(nextPosition, nextPosition);
             scrollSelectionIntoView();
@@ -1595,10 +1716,12 @@ const editorHtml = String.raw`<!doctype html>
         }
 
         lastText = nextText;
+        resetHistory();
         scheduleClampScrollOffsets();
       }
 
       function setEditable(editable) {
+        isEditable = editable;
         var root = editor();
         root.setAttribute("contenteditable", editable ? "true" : "false");
         if (!editable) {
@@ -1681,6 +1804,7 @@ const editorHtml = String.raw`<!doctype html>
         }
 
         if (event.inputType === "insertParagraph" || event.inputType === "insertLineBreak") {
+          finishHistoryEdit(true);
           scheduleChange();
           scheduleSelection();
           scheduleClampScrollOffsets();
@@ -1700,6 +1824,7 @@ const editorHtml = String.raw`<!doctype html>
           });
         }
 
+        finishHistoryEdit(event.data === ".");
         scheduleChange();
         scheduleSelection();
         scheduleClampScrollOffsets();
@@ -1709,9 +1834,23 @@ const editorHtml = String.raw`<!doctype html>
         var root = editor();
 
         root.addEventListener("beforeinput", function (event) {
-          if (event.isComposing) {
+          if (event.isComposing || isComposing) {
             return;
           }
+
+          if (event.inputType === "historyUndo" || event.inputType === "historyRedo") {
+            event.preventDefault();
+            if (event.inputType === "historyUndo") undo();
+            else redo();
+            return;
+          }
+
+          var selection = currentSelection();
+          var separate = selection.start !== selection.end || [
+            "insertParagraph", "insertLineBreak", "insertFromPaste", "insertFromDrop",
+            "insertReplacementText", "deleteByCut"
+          ].indexOf(event.inputType) !== -1;
+          beginHistoryEdit(separate);
 
           if (event.inputType === "insertParagraph" || event.inputType === "insertLineBreak") {
             event.preventDefault();
@@ -1727,6 +1866,7 @@ const editorHtml = String.raw`<!doctype html>
               if (!insertedNewline) {
                 insertLineBreakInPlace();
               }
+              finishHistoryEdit(true);
             }
             else {
               replaceSelectionWithText("\n");
@@ -1739,13 +1879,14 @@ const editorHtml = String.raw`<!doctype html>
 
           if (event.inputType === "insertText" && event.data && hasTrailingMarker(root)) {
             event.preventDefault();
-            replaceSelectionWithText(event.data);
+            replaceSelectionWithText(event.data, false);
           }
         });
 
         root.addEventListener("input", handleInput);
         root.addEventListener("focus", function () { postMessage("focus"); });
         root.addEventListener("blur", function () {
+          if (!isComposing) checkpointUndo();
           clearTimeout(changeTimer);
           sendChangeNow();
           postMessage("blur");
@@ -1758,6 +1899,7 @@ const editorHtml = String.raw`<!doctype html>
         }
 
         root.addEventListener("compositionstart", function () {
+          beginHistoryEdit(true);
           isComposing = true;
           isIgnoringInput = true;
         });
@@ -1766,11 +1908,23 @@ const editorHtml = String.raw`<!doctype html>
           isComposing = false;
           isIgnoringInput = false;
           applyStyles();
+          finishHistoryEdit(true);
           sendChangeNow();
           sendSelectionNow();
         });
 
         root.addEventListener("keydown", function (event) {
+          if (event.isComposing || isComposing) return;
+          var key = event.key.toLowerCase();
+          if ((event.metaKey || event.ctrlKey) && !event.altKey) {
+            if (key === "z" || (event.ctrlKey && key === "y")) {
+              event.preventDefault();
+              if (event.shiftKey || key === "y") redo();
+              else undo();
+              return;
+            }
+          }
+          if (event.key.indexOf("Arrow") === 0) checkpointUndo();
           if (/^[a-z]$/i.test(event.key)) {
             isIgnoringInput = true;
           }
@@ -1853,6 +2007,8 @@ const editorHtml = String.raw`<!doctype html>
         },
         setSelection: setSelectionRange,
         insertText: replaceSelectionWithText,
+        undo: undo,
+        redo: redo,
         scrollSelectionIntoView: scrollSelectionIntoView
       };
 

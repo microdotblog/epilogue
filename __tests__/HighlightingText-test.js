@@ -56,6 +56,25 @@ it("does not rewrite the document or selection when React echoes typing", async 
   await renderer.act(async () => screen.unmount());
 });
 
+it("routes native Undo/Redo commands to the editor without reloading it", async () => {
+  const { screen, editor, webview } = await openEditor();
+  const source = webview.props.source;
+  webview.instance.injectJavaScript.mockClear();
+  editor.undo();
+  editor.redo();
+  expect(webview.instance.injectJavaScript.mock.calls.map(([script]) => script)).toEqual([
+    'window.MicroBlogReactEditor.undo()\ntrue;',
+    'window.MicroBlogReactEditor.redo()\ntrue;'
+  ]);
+  expect(webview.props.source).toBe(source);
+  await renderer.act(async () => screen.update(<HighlightingText value="draft" editable={false} />));
+  webview.instance.injectJavaScript.mockClear();
+  editor.undo();
+  editor.redo();
+  expect(webview.instance.injectJavaScript).not.toHaveBeenCalled();
+  await renderer.act(async () => screen.unmount());
+});
+
 it("uses the local flex height and keeps the caret visible when the keyboard resizes it", async () => {
   const { screen, message, lastConfig } = await openEditor();
   await message("focus");

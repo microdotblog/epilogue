@@ -118,6 +118,14 @@ export default class HighlightingText extends React.Component {
     else this.syncEditor(focusOptions)
   }
 
+  undo() {
+    if (this.isReady && this.props.editable !== false) this.injectJavaScript('window.MicroBlogReactEditor.undo()')
+  }
+
+  redo() {
+    if (this.isReady && this.props.editable !== false) this.injectJavaScript('window.MicroBlogReactEditor.redo()')
+  }
+
   // Typing notifications are batched. Read the WebView before submitting instead
   // of relying on the last notification or an asynchronous draft-storage write.
   getText() {
