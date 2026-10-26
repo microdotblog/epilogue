@@ -7,6 +7,7 @@ import { DiscoverScreen } from "../src/screens/DiscoverScreen";
 import { readBookshelfIDsContainingBook } from "../src/BookshelfCache";
 import epilogueStorage from "../src/Storage";
 import { keys } from "../src/Constants";
+import { BookSearchField } from "../src/BookSearchField";
 
 jest.mock("@react-navigation/native", () => ({ useScrollToTop: jest.fn() }));
 jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }) }));
@@ -40,7 +41,7 @@ async function openDiscover(isPad) {
 	Object.defineProperty(Platform, "isPad", { configurable: true, value: isPad });
 	global.fetch = jest.fn(async () => ({ json: async () => ({ items: [book] }) }));
 	let focus;
-	const navigation = { navigate: jest.fn(), setOptions: jest.fn(), addListener: (event, handler) => { focus = handler; return () => {}; } };
+	const navigation = { navigate: jest.fn(), setOptions: jest.fn(), addListener: (event, handler) => { if (event === "focus") focus = handler; return () => {}; } };
 	await renderer.act(async () => { screen = renderer.create(<DiscoverScreen navigation={navigation} />); });
 	await renderer.act(async () => focus());
 	return { navigation, focus };
@@ -56,6 +57,14 @@ async function layout(width) {
 	await renderer.act(async () => screen.root.findAllByType(View).find(view => view.props.onLayout)
 		.props.onLayout({ nativeEvent: { layout: { width } } }));
 }
+
+it("opens scanned books in native details without adding them to a shelf", async () => {
+	const { navigation } = await openDiscover(false);
+	const scan = { id: "/books/OL7353617M", isbn: "9780140328721", title: "Matilda", author: "Roald Dahl", image: "https://example.com/cover.jpg", is_search: true };
+	await renderer.act(async () => screen.root.findByType(BookSearchField).props.onBook(scan));
+	expect(navigation.navigate).toHaveBeenCalledWith("Details", expect.objectContaining(scan));
+	expect(global.fetch.mock.calls).toHaveLength(1); // Only the initial Discover feed.
+});
 
 it.each(["android", "ios"])("adds header control spacing only on Android (%s)", async os => {
 	Platform.OS = os;

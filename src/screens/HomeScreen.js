@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import type { Node } from "react";
-import { Alert, Linking, TextInput, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
+import { Alert, Linking, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
@@ -13,6 +13,7 @@ import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
 import { Book } from "../models/Book";
+import { BookSearchField } from "../BookSearchField";
 import { refreshProfileAvatar, useProfileHeader } from "../ProfileHeaderButton";
 import { SidebarBookshelvesContext, SidebarVisibleContext } from "../navigation/SidebarContext";
 import {
@@ -750,7 +751,8 @@ export function HomeScreen({ navigation }) {
 
 	return (
 		<View style={styles.container}>
-			<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" ref={searchFieldRef} />
+			<BookSearchField styles={styles} navigation={navigation} onBook={onShowBookPressed} onManualEntry={onAddBookInfoPressed}
+				onChangeText={onChangeSearch} onEndEditing={onRunSearch} ref={searchFieldRef} />
 			<FlatList
 				contentInsetAdjustmentBehavior="automatic"
 				ref={booksListRef}

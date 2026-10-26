@@ -1,6 +1,7 @@
 import { Edition } from "./Edition";
 import { keys } from "../Constants";
 import epilogueStorage from "../Storage";
+import { isBookISBN, normalizedISBN } from "../ISBN";
 
 export class Book {	
 	constructor(isbn, title, author, cover_url) {
@@ -16,8 +17,36 @@ export class Book {
 	}
 	
 	static isISBN(isbn) {
-		let s = isbn.replace("-", "");
-		return ((s.length == 13) && s.includes("97"));
+		return isBookISBN(isbn);
+	}
+
+	// Use the scanned edition, not a work's first (possibly unrelated) ISBN.
+	static async findByISBN(value, signal) {
+		const isbn = normalizedISBN(value);
+		if (!isBookISBN(isbn)) return null;
+		const response = await fetch(`https://openlibrary.org/isbn/${isbn}.json`, { signal });
+		if (response.status === 404) return null;
+		if (!response.ok) throw new Error("Could not look up this ISBN.");
+		const edition = await response.json();
+		if (!edition.title) throw new Error("Invalid book response.");
+		const authorNames = await Promise.all((edition.authors || []).map(async author => {
+			if (!/^\/authors\/OL\d+A$/.test(author.key || "")) return "";
+			try {
+				const authorResponse = await fetch(`https://openlibrary.org${author.key}.json`, { signal });
+				if (!authorResponse.ok) return "";
+				return (await authorResponse.json()).name || "";
+			} catch (error) {
+				if (signal?.aborted) throw error;
+				return "";
+			}
+		}));
+		const coverID = (edition.covers || []).find(id => id > 0);
+		const cover = coverID ? Book.coverFromOpenLibraryID(coverID) : Book.coverFromOpenLibraryISBN(isbn);
+		const book = new Book(isbn, edition.title, authorNames.filter(Boolean).join(", "), cover);
+		book.id = edition.key || isbn;
+		book.work_key = (edition.works?.[0]?.key || "").replace("/works/", "");
+		book.description = typeof edition.description === "string" ? edition.description : edition.description?.value || "";
+		return book;
 	}
 
 	static downloadOpenLibraryEditions(work_key, handler = function(editions) {}) {

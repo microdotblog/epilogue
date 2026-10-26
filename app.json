@@ -5,7 +5,8 @@
     "version": "2.4",
     "plugins": [
       "@react-native-community/datetimepicker",
-      ["expo-build-properties", { "ios": { "enableSceneSupport": true } }]
+      ["expo-camera", { "cameraPermission": "Epilogue uses your camera to scan book ISBN barcodes.", "microphonePermission": false, "recordAudioAndroid": false }],
+      ["expo-build-properties", { "ios": { "enableSceneSupport": true, "usePrecompiledModules": false } }]
     ]
   }
 }

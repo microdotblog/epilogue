@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { TextInput, Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Platform, Share, StyleSheet, useColorScheme } from 'react-native';
+import { Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Platform, Share, StyleSheet, useColorScheme } from 'react-native';
 import { useScrollToTop } from "@react-navigation/native";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
@@ -11,6 +11,7 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Book } from "../models/Book";
+import { BookSearchField } from "../BookSearchField";
 import { useProfileHeader } from "../ProfileHeaderButton";
 import { booksFromJSONFeed, readBookshelfIDsContainingBook, refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
 
@@ -503,7 +504,8 @@ export function DiscoverScreen({ navigation }) {
 		) : loaded === true ? (
 			searching === true ? (
 				<View style={styles.discoverView}> 
-					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" />
+					<BookSearchField styles={styles} navigation={navigation} onBook={onShowBookPressed} onManualEntry={onAddBookInfoPressed}
+						onChangeText={onChangeSearch} onEndEditing={onRunSearch} />
 					<FlatList
 						contentInsetAdjustmentBehavior="automatic"
 						ref={discoverListRef}
@@ -517,7 +519,8 @@ export function DiscoverScreen({ navigation }) {
 				</View>
 			) : (
 				<View style={styles.discoverView}> 
-					<TextInput style={styles.searchField} onChangeText={onChangeSearch} onEndEditing={onRunSearch} returnKeyType="search" placeholder="Search for books to add" placeholderTextColor="#6d6d72" clearButtonMode="always" />
+					<BookSearchField styles={styles} navigation={navigation} onBook={onShowBookPressed} onManualEntry={onAddBookInfoPressed}
+						onChangeText={onChangeSearch} onEndEditing={onRunSearch} />
 					<FlatList
 						contentInsetAdjustmentBehavior="automatic"
 						ref={discoverListRef}

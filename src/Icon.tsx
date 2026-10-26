@@ -17,6 +17,8 @@ const IconNames = {
   "bookshelf": { ios: "books.vertical", android: "bookshelf" },
   "bookshelves": { ios: "books.vertical", android: "bookshelf" },
   "discover": { ios: "magnifyingglass", android: "magnify" },
+  "barcode": { ios: "barcode.viewfinder", android: "barcode-scan" },
+  "flashlight": { ios: "flashlight.on.fill", android: "flashlight" },
   "goals": { ios: "calendar", android: "calendar" },
   "popup-triangle": { ios: "chevron.down", android: "chevron-down" },
   "disclosure-right": { ios: "chevron.right", android: "chevron-right" },

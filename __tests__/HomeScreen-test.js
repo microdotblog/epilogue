@@ -6,6 +6,7 @@ import renderer from "react-test-renderer";
 import { cacheBookshelfDataForID } from "../src/BookshelfCache";
 import { keys } from "../src/Constants";
 import { HomeScreen } from "../src/screens/HomeScreen";
+import { BookSearchField } from "../src/BookSearchField";
 import { SidebarBookshelvesContext, SidebarVisibleContext } from "../src/navigation/SidebarContext";
 
 jest.mock("@react-navigation/native", () => ({
@@ -89,6 +90,23 @@ function createHomeScreen(navigation) {
 beforeEach(async () => {
 	jest.clearAllMocks();
 	await AsyncStorage.clear();
+});
+
+it("opens scanned books and pre-fills manual entry from Bookshelves", async () => {
+	const shelf = { id: "A", title: "Shelf A" };
+	await seedHomeStorage([shelf], shelf);
+	const { navigation } = navigationHarness();
+	let screen;
+	await renderer.act(async () => { screen = createHomeScreen(navigation); });
+	const scan = { id: "/books/OL7353617M", isbn: "9780140328721", title: "Matilda", image: "https://example.com/cover.jpg", is_search: true };
+	await renderer.act(async () => {
+		screen.root.findByType(BookSearchField).props.onBook(scan);
+		await flushAsyncWork();
+	});
+	expect(navigation.navigate).toHaveBeenCalledWith("Details", expect.objectContaining({ ...scan, current_bookshelf: shelf }));
+	await renderer.act(async () => screen.root.findByType(BookSearchField).props.onManualEntry(scan.isbn));
+	expect(navigation.navigate).toHaveBeenLastCalledWith("AddBookInfo", { bookshelf_id: shelf.id, bookshelf_title: shelf.title, isbn: scan.isbn });
+	await renderer.act(async () => screen.unmount());
 });
 
 it("highlights pending sidebar selections immediately, commits only on success, and restores the compact popup", async () => {

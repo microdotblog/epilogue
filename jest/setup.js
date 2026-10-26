@@ -1,5 +1,20 @@
 import "react-native-gesture-handler/jestSetup";
 
+jest.mock("expo-camera", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const requestPermission = jest.fn(() => Promise.resolve());
+  const getPermission = jest.fn(() => Promise.resolve());
+  return {
+    CameraView: props => React.createElement(View, props),
+    useCameraPermissions: jest.fn(() => [
+      { granted: true, canAskAgain: true },
+      requestPermission,
+      getPermission
+    ])
+  };
+});
+
 jest.mock("react-native-webview", () => {
   const React = require("react");
   const { View } = require("react-native");
