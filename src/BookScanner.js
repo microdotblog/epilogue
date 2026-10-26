@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, AppState, Linking, Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { isBookISBN, normalizedISBN } from "./ISBN";
 import { Book } from "./models/Book";
@@ -93,7 +93,8 @@ export function BookScanner({ onClose, onBook, onManualEntry }) {
 	return (
 		<Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onDismiss={didDismiss}
 			onRequestClose={() => finish()} supportedOrientations={["portrait", "landscape-left", "landscape-right"]}>
-			<SafeAreaView style={layout.page}>
+			{/* Native modals need their own provider for inset updates on each presentation. */}
+			<SafeAreaProvider style={layout.page}><SafeAreaView style={layout.page}>
 				<View style={layout.header}>
 					<Pressable accessibilityRole="button" onPress={() => finish()} style={layout.button}><Text style={layout.text}>Cancel</Text></Pressable>
 					<Text accessibilityRole="header" style={layout.title}>Scan Book</Text>
@@ -133,7 +134,7 @@ export function BookScanner({ onClose, onBook, onManualEntry }) {
 						</Pressable>
 					</>
 				)}
-			</SafeAreaView>
+			</SafeAreaView></SafeAreaProvider>
 		</Modal>
 	);
 }

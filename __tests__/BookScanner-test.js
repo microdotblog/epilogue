@@ -2,11 +2,19 @@ import React from "react";
 import { AppState, Linking, Modal, Platform, StyleSheet } from "react-native";
 import renderer from "react-test-renderer";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { BookScanner } from "../src/BookScanner";
 import { BookSearchField } from "../src/BookSearchField";
 import { Book } from "../src/models/Book";
 
-jest.mock("react-native-safe-area-context", () => ({ SafeAreaView: require("react-native").View }));
+jest.mock("react-native-safe-area-context", () => {
+	const React = require("react");
+	const { View } = require("react-native");
+	return {
+		SafeAreaProvider: props => React.createElement(View, props),
+		SafeAreaView: View
+	};
+});
 const isbn = "9780140328721";
 const book = new Book(isbn, "Matilda", "Roald Dahl", "https://example.com/cover.jpg");
 const originalOS = Platform.OS;
@@ -49,6 +57,24 @@ it("centers the guide within the preview's upper half and uses the shorter instr
 	});
 	expect(StyleSheet.flatten(guide.props.children.props.style)).toMatchObject({ height: 170, maxHeight: "80%" });
 	expect(screen.root.findAll(node => node.props.children === "Point the camera at the barcode on a book.").length).toBeGreaterThan(0);
+});
+
+it("gives every scanner presentation its own safe-area provider inside the modal", async () => {
+	Platform.OS = "ios";
+	const navigation = { addListener: () => jest.fn() };
+	await renderer.act(async () => { screen = renderer.create(<BookSearchField navigation={navigation} styles={{}} />); });
+	for (let presentation = 0; presentation < 3; presentation++) {
+		await renderer.act(async () => screen.root.findByProps({ testID: "scan-book" }).props.onPress());
+		const modal = screen.root.findByType(Modal);
+		expect(modal.props.children.type).toBe(SafeAreaProvider);
+		const provider = screen.root.findByType(SafeAreaProvider);
+		expect(provider.props.children.type).toBe(SafeAreaView);
+		expect(provider.props.initialMetrics).toBeUndefined(); // Measure the modal, not cached window insets.
+		await renderer.act(async () => button("Cancel").props.onPress());
+		expect(screen.root.findByType(Modal).props.visible).toBe(false);
+		await renderer.act(async () => screen.root.findByType(Modal).props.onDismiss());
+		expect(screen.root.findAllByType(BookScanner)).toHaveLength(0);
+	}
 });
 
 it("ignores non-book barcodes, scans once, and waits for iOS dismissal before navigating", async () => {
