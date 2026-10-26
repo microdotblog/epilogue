@@ -1,5 +1,5 @@
 import React from "react";
-import { AppState, Linking, Modal, Platform } from "react-native";
+import { AppState, Linking, Modal, Platform, StyleSheet } from "react-native";
 import renderer from "react-test-renderer";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { BookScanner } from "../src/BookScanner";
@@ -39,6 +39,17 @@ function button(title) {
 	return screen.root.findAll(node => typeof node.props.onPress === "function")
 		.find(node => node.findAll(child => child.props.children === title).length > 0);
 }
+
+it("centers the guide within the preview's upper half and uses the shorter instructions", async () => {
+	await open();
+	const guide = screen.root.findByProps({ testID: "book-scan-guide" });
+	expect(StyleSheet.flatten(guide.props.style)).toMatchObject({
+		position: "absolute", top: 0, left: 0, right: 0, height: "50%",
+		justifyContent: "center", alignItems: "center"
+	});
+	expect(StyleSheet.flatten(guide.props.children.props.style)).toMatchObject({ height: 170, maxHeight: "80%" });
+	expect(screen.root.findAll(node => node.props.children === "Point the camera at the barcode on a book.").length).toBeGreaterThan(0);
+});
 
 it("ignores non-book barcodes, scans once, and waits for iOS dismissal before navigating", async () => {
 	Platform.OS = "ios";

@@ -124,9 +124,9 @@ export function BookScanner({ onClose, onBook, onManualEntry }) {
 							{visible && appState === "active" && !cameraError && <CameraView style={StyleSheet.absoluteFill} facing="back" autofocus="on"
 								mute enableTorch={torch} barcodeScannerSettings={{ barcodeTypes: ["ean13"] }} onBarcodeScanned={onBarcodeScanned}
 								onMountError={() => { busy.current = true; setCameraError(true); setTorch(false); setMessage("Couldn't start the camera. Please try again on a device with a camera."); }} />}
-							<View pointerEvents="none" style={layout.guideContainer}><View style={layout.guide} /></View>
+							<View pointerEvents="none" testID="book-scan-guide" style={layout.guideContainer}><View style={layout.guide} /></View>
 						</View>
-						<Text style={layout.explanation}>Point the camera at the ISBN barcode on the back of a book.</Text>
+						<Text style={layout.explanation}>Point the camera at the barcode on a book.</Text>
 						<Pressable accessibilityRole="button" accessibilityLabel="Flashlight" accessibilityState={{ selected: torch }}
 							onPress={() => setTorch(!torch)} style={layout.torch}>
 							<Icon name="flashlight" color={torch ? "#FFB45A" : "white"} size={24} />
@@ -146,8 +146,8 @@ const layout = StyleSheet.create({
 	text: { color: "white", fontSize: 17 },
 	button: { minWidth: 80, minHeight: 44, padding: 12, alignItems: "center", justifyContent: "center" },
 	preview: { flex: 1, overflow: "hidden" },
-	guideContainer: { ...StyleSheet.absoluteFillObject, justifyContent: "center", alignItems: "center" },
-	guide: { width: "80%", maxWidth: 420, height: 170, borderWidth: 2, borderColor: "white", borderRadius: 16 },
+	guideContainer: { position: "absolute", top: 0, left: 0, right: 0, height: "50%", justifyContent: "center", alignItems: "center" },
+	guide: { width: "80%", maxWidth: 420, height: 170, maxHeight: "80%", borderWidth: 2, borderColor: "white", borderRadius: 16 },
 	center: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24 },
 	explanation: { color: "white", fontSize: 17, textAlign: "center", padding: 24 },
 	torch: { alignSelf: "center", padding: 16, marginBottom: 8, borderRadius: 28, backgroundColor: "#34343A" }
