@@ -5,10 +5,14 @@ import epilogueStorage from "./Storage";
 
 const bookshelvesCacheDirectory = RNFS.CachesDirectoryPath + "/Bookshelves";
 const latestBooksCachePath = RNFS.CachesDirectoryPath + "/LatestBooks.json";
+const bookshelfIndexPath = RNFS.CachesDirectoryPath + "/BookshelfIndex.json";
 const minimumLocalSearchLength = 3;
 
 var isWarmingBookshelfCaches = false;
 var hasWarmedBookshelfCaches = false;
+var bookshelfIndex = null;
+var bookshelfCacheQueue = Promise.resolve();
+var bookshelfCacheGeneration = 0;
 
 export function booksFromJSONFeed(data, bookshelf = null) {
 	var new_items = [];
@@ -76,19 +80,28 @@ export function deleteLatestBooksCache() {
 }
 
 export function clearBookCaches() {
-	deleteLatestBooksCache();
-	RNFS.unlink(bookshelvesCacheDirectory).catch(() => {
+	bookshelfCacheGeneration += 1;
+	hasWarmedBookshelfCaches = false;
+	isWarmingBookshelfCaches = false;
+	return queueBookshelfCacheTask(async () => {
+		bookshelfIndex = null;
+		await Promise.all([
+			deleteLatestBooksCache(),
+			RNFS.unlink(bookshelvesCacheDirectory).catch(() => {}),
+			RNFS.unlink(bookshelfIndexPath).catch(() => {})
+		]);
 	});
 }
 
 export function cacheBookshelfDataForID(bookshelf_id, data) {
+	const generation = bookshelfCacheGeneration;
 	return epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
 		const bookshelf = (bookshelves || []).find(item => item.id == bookshelf_id);
 		if (bookshelf == undefined) {
 			return;
 		}
 
-		return writeBookshelfCache(bookshelf, data);
+		return writeBookshelfCache(bookshelf, data, generation);
 	});
 }
 
@@ -98,15 +111,16 @@ export function warmAllBookshelfCachesInBackground(bookshelves) {
 	}
 
 	isWarmingBookshelfCaches = true;
+	const generation = bookshelfCacheGeneration;
 	refreshAllBookshelfCaches(bookshelves)
 		.then(() => {
-			hasWarmedBookshelfCaches = true;
+			if (generation === bookshelfCacheGeneration) hasWarmedBookshelfCaches = true;
 		})
 		.catch(error => {
 			console.log("Error warming bookshelf caches", error);
 		})
 		.finally(() => {
-			isWarmingBookshelfCaches = false;
+			if (generation === bookshelfCacheGeneration) isWarmingBookshelfCaches = false;
 		});
 }
 
@@ -157,37 +171,83 @@ export function readBookshelfIDsContainingBook(isbn, bookID = null) {
 		return Promise.resolve([]);
 	}
 
-	return RNFS.readDir(bookshelvesCacheDirectory).then(entries => {
-		const json_files = entries.filter(entry => entry.isFile() && entry.name.endsWith(".json"));
-		const reads = json_files.map(entry => {
-			return RNFS.readFile(entry.path, "utf8")
-				.then(contents => {
-					const cached = JSON.parse(contents);
-					const feed = cached.feed || cached;
-					const bookshelf = cached.bookshelf || {};
-					if (bookshelf.id == null) {
-						return null;
-					}
-
-					const contains_book = (feed.items || []).some(item => {
-						const metadata = item._microblog || {};
-						const item_isbn = normalizedBookKey(metadata.isbn).replace(/[-\s]/g, "");
-						const item_id = normalizedBookKey(item.id);
-						return ((target_isbn.length > 0) && (item_isbn == target_isbn)) ||
-							((target_id.length > 0) && (item_id == target_id));
-					});
-
-					return contains_book ? bookshelf.id : null;
-				})
-				.catch(() => {
-					return null;
-				});
-		});
-
-		return Promise.all(reads).then(results => results.filter(id => id != null));
+	const generation = bookshelfCacheGeneration;
+	return queueBookshelfCacheTask(async () => {
+		if (generation !== bookshelfCacheGeneration) return [];
+		const index = await loadBookshelfIndex();
+		if (generation !== bookshelfCacheGeneration) return [];
+		const ids = (index.byISBN[target_isbn] || []).concat(index.byBookID[target_id] || []);
+		return Array.from(new Map(ids.map(id => [String(id), id])).values());
 	}).catch(() => {
 		return [];
 	});
+}
+
+// Serialize cache writes and index initialization so concurrent shelf downloads
+// cannot overwrite one another's memberships or race cache clearing on sign-out.
+function queueBookshelfCacheTask(task) {
+	const result = bookshelfCacheQueue.then(task);
+	bookshelfCacheQueue = result.catch(() => {});
+	return result;
+}
+
+function validIndexMap(value) {
+	return value != null && typeof value === "object" && !Array.isArray(value) &&
+		Object.values(value).every(ids => Array.isArray(ids) && ids.every(id =>
+			typeof id === "string" || (typeof id === "number" && Number.isFinite(id))));
+}
+
+async function loadBookshelfIndex() {
+	if (bookshelfIndex != null) return bookshelfIndex;
+	try {
+		const saved = JSON.parse(await RNFS.readFile(bookshelfIndexPath, "utf8"));
+		if (saved.version === 1 && validIndexMap(saved.byISBN) && validIndexMap(saved.byBookID)) {
+			bookshelfIndex = {
+				version: 1,
+				byISBN: Object.assign(Object.create(null), saved.byISBN),
+				byBookID: Object.assign(Object.create(null), saved.byBookID)
+			};
+			return bookshelfIndex;
+		}
+	} catch (_) {}
+
+	// Missing, corrupt, or outdated: scan the full feeds once, then reuse the index.
+	const index = { version: 1, byISBN: Object.create(null), byBookID: Object.create(null) };
+	const entries = await RNFS.readDir(bookshelvesCacheDirectory).catch(() => []);
+	const cachedShelves = await Promise.all(entries.filter(entry => entry.isFile() && entry.name.endsWith(".json")).map(async entry => {
+		try { return JSON.parse(await RNFS.readFile(entry.path, "utf8")); }
+		catch (_) { return null; }
+	}));
+	for (const cached of cachedShelves) {
+		const feed = cached?.feed || cached;
+		if (cached?.bookshelf?.id != null && Array.isArray(feed?.items)) replaceIndexedBookshelf(index, cached.bookshelf.id, feed);
+	}
+	bookshelfIndex = index;
+	await saveBookshelfIndex();
+	return index;
+}
+
+function saveBookshelfIndex() {
+	return RNFS.writeFile(bookshelfIndexPath, JSON.stringify(bookshelfIndex), "utf8").catch(() => {});
+}
+
+function replaceIndexedBookshelf(index, shelfID, feed) {
+	// Replace, rather than append, so books removed from this shelf lose the checkmark.
+	for (const map of [index.byISBN, index.byBookID]) {
+		for (const key of Object.keys(map)) {
+			map[key] = map[key].filter(id => String(id) !== String(shelfID));
+			if (map[key].length === 0) delete map[key];
+		}
+	}
+	for (const item of Array.isArray(feed?.items) ? feed.items : []) {
+		const isbn = normalizedBookKey(item?._microblog?.isbn).replace(/[-\s]/g, "");
+		const id = normalizedBookKey(item?.id);
+		for (const [map, key] of [[index.byISBN, isbn], [index.byBookID, id]]) {
+			if (key.length === 0) continue;
+			if (!map[key]) map[key] = [];
+			if (!map[key].some(id => String(id) === String(shelfID))) map[key].push(shelfID);
+		}
+	}
 }
 
 export function resolveOwningBookshelf(bookshelves, currentBookshelf, bookshelfIDs) {
@@ -210,18 +270,25 @@ function ensureBookshelfCacheDirectory() {
 	});
 }
 
-function writeBookshelfCache(bookshelf, data) {
-	return ensureBookshelfCacheDirectory().then(() => {
+function writeBookshelfCache(bookshelf, data, generation) {
+	if (!Array.isArray(data?.items)) return Promise.resolve();
+	return queueBookshelfCacheTask(async () => {
+		if (generation !== bookshelfCacheGeneration) return;
+		const index = await loadBookshelfIndex();
+		await ensureBookshelfCacheDirectory();
 		const cache = {
 			bookshelf: bookshelf,
 			feed: data
 		};
-		return RNFS.writeFile(bookshelfCachePath(bookshelf), JSON.stringify(cache), "utf8");
+		await RNFS.writeFile(bookshelfCachePath(bookshelf), JSON.stringify(cache), "utf8");
+		replaceIndexedBookshelf(index, bookshelf.id, data);
+		await saveBookshelfIndex();
 	}).catch(() => {
 	});
 }
 
 function refreshAllBookshelfCaches(bookshelves = null) {
+	const generation = bookshelfCacheGeneration;
 	const bookshelf_promise = bookshelves != null ? Promise.resolve(bookshelves) : epilogueStorage.get(keys.allBookshelves);
 
 	return bookshelf_promise.then(saved_bookshelves => {
@@ -231,18 +298,18 @@ function refreshAllBookshelfCaches(bookshelves = null) {
 		}
 
 		return epilogueStorage.get(keys.authToken).then(auth_token => {
-			if ((auth_token == null) || (auth_token.length == 0)) {
+			if ((auth_token == null) || (auth_token.length == 0) || generation !== bookshelfCacheGeneration) {
 				return;
 			}
 
 			return Promise.all(shelves.map(bookshelf => {
-				return refreshBookshelfCache(bookshelf, auth_token);
+				return refreshBookshelfCache(bookshelf, auth_token, generation);
 			}));
 		});
 	});
 }
 
-function refreshBookshelfCache(bookshelf, auth_token) {
+function refreshBookshelfCache(bookshelf, auth_token, generation) {
 	var options = {
 		headers: {
 			"Authorization": "Bearer " + auth_token
@@ -250,9 +317,12 @@ function refreshBookshelfCache(bookshelf, auth_token) {
 	};
 
 	return fetch("https://micro.blog/books/bookshelves/" + bookshelf.id, options)
-		.then(response => response.json())
+		.then(response => {
+			if (response.ok === false) throw new Error("Could not refresh bookshelf cache");
+			return response.json();
+		})
 		.then(data => {
-			return writeBookshelfCache(bookshelf, data);
+			return writeBookshelfCache(bookshelf, data, generation);
 		})
 		.catch(() => {
 		});
