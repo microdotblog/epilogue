@@ -141,7 +141,7 @@ export function BookScanner({ onClose, onBook, onManualEntry }) {
 
 const layout = StyleSheet.create({
 	page: { flex: 1, backgroundColor: "black" },
-	header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 8 },
+	header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 8, paddingVertical: 6 },
 	headerSpacer: { width: 80 },
 	title: { color: "white", fontSize: 18, fontWeight: "600" },
 	text: { color: "white", fontSize: 17 },
