@@ -2,7 +2,7 @@
   "expo": {
     "name": "Epilogue",
     "slug": "epilogue",
-    "version": "2.4",
+    "version": "2.8",
     "plugins": [
       "@react-native-community/datetimepicker",
       ["expo-camera", { "cameraPermission": "Epilogue uses your camera to scan book ISBN barcodes.", "microphonePermission": false, "recordAudioAndroid": false }],
