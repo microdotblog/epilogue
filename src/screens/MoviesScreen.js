@@ -100,7 +100,10 @@ export function MoviesScreen({ navigation }) {
 						id: item.id?.toString() || item.url || (item.title + "-" + index),
 						title: item.title,
 						image: metadata.poster_url || item.image,
+						largeImage: metadata.large_poster_url || metadata.poster_url || item.image,
 						url: post_url,
+						postURL: metadata.link_url,
+						author: first_author.name,
 						username: metadata.username || author_metadata.username,
 						avatar: metadata.user_avatar_url || first_author.avatar,
 						hostname: hostnameForURL(post_url),
@@ -108,7 +111,8 @@ export function MoviesScreen({ navigation }) {
 						director: metadata.director,
 						seasonsCount: metadata.seasons_count,
 						tmdbId: metadata.tmdb_id,
-						overview: metadata.overview,
+						postText: metadata.post_text,
+						overview: metadata.overview || item.content_text,
 						isDiscover: true
 					};
 				});
@@ -171,6 +175,13 @@ export function MoviesScreen({ navigation }) {
 	}
 
 	function onSelectMovie(item) {
+		if (item.isDiscover && item.postURL) {
+			navigation.navigate("PostDetails", {
+				movie: item,
+				post: { url: item.postURL, avatar: item.avatar, author: item.author || item.username, username: item.username }
+			});
+			return;
+		}
 		if (item.isDiscover && item.url) {
 			InAppBrowser.open(item.url, {
 				animated: true

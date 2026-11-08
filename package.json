@@ -28,6 +28,7 @@
     "expo-build-properties": "~57.0.21",
     "expo-camera": "~57.0.6",
     "expo-font": "^57.0.4",
+    "parse5": "^7.3.0",
     "react": "19.2.3",
     "react-native": "0.86.2",
     "react-native-context-menu-view": "1.21.0",

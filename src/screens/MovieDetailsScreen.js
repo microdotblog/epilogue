@@ -7,7 +7,7 @@ import { Icon } from "../Icon";
 import epilogueStorage from "../Storage";
 import { keys } from "../Constants";
 
-export function MovieDetailsScreen({ navigation, route }) {
+export function MovieDetailsScreen({ navigation, route, postPreview }) {
 	const styles = useEpilogueStyle();
 	const is_dark = (useColorScheme() == "dark");
 	const movie = route.params?.movie;
@@ -16,7 +16,7 @@ export function MovieDetailsScreen({ navigation, route }) {
 		// const title = movie?.title || "Movie";
 		// navigation.setOptions({ title: title });
 		setupPostButton(movie?.postText);
-	}, [navigation, movie]);
+	}, [navigation, movie, styles, is_dark]);
 
 	function setupPostButton(text) {
 		navigation.setOptions({
@@ -38,6 +38,7 @@ export function MovieDetailsScreen({ navigation, route }) {
 
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
+			{postPreview}
 			<View style={[styles.movieDetails, styles.bookDetailsTop, styles.mediaDetailsTop]}>
 				{movie?.largeImage ? (
 					<FastImage style={styles.movieDetailsPoster} source={{ uri: movie.largeImage }} />

@@ -5,6 +5,7 @@ import { BookDetailsScreen } from "../screens/BookDetailsScreen";
 import { OpenEditionsScreen } from "../screens/OpenEditionsScreen";
 import { OpenDetailsScreen } from "../screens/OpenDetailsScreen";
 import { MovieDetailsScreen } from "../screens/MovieDetailsScreen";
+import { PostDetailsScreen } from "../screens/PostDetailsScreen";
 import { TVSeasonsScreen } from "../screens/TVSeasonsScreen";
 import { TVEpisodesScreen } from "../screens/TVEpisodesScreen";
 import { TVEpisodeDetailsScreen } from "../screens/TVEpisodeDetailsScreen";
@@ -19,48 +20,50 @@ import { DateScreen } from "../screens/DateScreen";
 // Shared by the phone's root stack and each iPad section stack. Keeping book
 // sheets here lets popTo("Details") return to the same book after editing.
 export function contentStackScreens(Stack, styles, is_dark) {
+  const mediaDetailsOptions = ({ navigation, route }) => ({
+    title: route.params?.post?.username ? `@${route.params.post.username.replace(/^@+/, "")}` : "",
+    headerLeft: () => (
+      <Pressable
+        onPress={() => navigation.goBack()}
+        hitSlop={10}
+        accessibilityRole="button"
+        accessibilityLabel="back"
+      >
+        <Icon
+          name="navbar-back"
+          color={is_dark ? "#FFFFFF" : "#000000"}
+          size={18}
+          style={styles.navbarBackIcon}
+        />
+      </Pressable>
+    ),
+    ...((route.name === "Details" || route.params?.book) && {
+      headerRight: () => (
+        <Pressable onPress={() => navigation.navigate("Post", { books: [] })} hitSlop={10}>
+          <Icon
+            name="publish"
+            color={is_dark ? "#FFFFFF" : "#000000"}
+            size={18}
+            style={styles.navbarNewIcon}
+            accessibilityLabel="new post"
+          />
+        </Pressable>
+      ),
+    }),
+  });
+
   return (
     <>
       <Stack.Group>
         <Stack.Screen
           name="Details"
           component={BookDetailsScreen}
-          options={({ navigation, route }) => ({
-            title: "",
-            headerLeft: () => (
-              <Pressable
-                onPress={() => {
-                  navigation.goBack();
-                }}
-                hitSlop={10}
-                accessibilityRole="button"
-                accessibilityLabel="back"
-              >
-                <Icon
-                  name="navbar-back"
-                  color={is_dark ? "#FFFFFF" : "#000000"}
-                  size={18}
-                  style={styles.navbarBackIcon}
-                />
-              </Pressable>
-            ),
-            headerRight: () => (
-              <Pressable
-                onPress={() => {
-                  navigation.navigate("Post", { books: [] });
-                }}
-                hitSlop={10}
-              >
-                <Icon
-                  name="publish"
-                  color={is_dark ? "#FFFFFF" : "#000000"}
-                  size={18}
-                  style={styles.navbarNewIcon}
-                  accessibilityLabel="new post"
-                />
-              </Pressable>
-            ),
-          })}
+          options={mediaDetailsOptions}
+        />
+        <Stack.Screen
+          name="PostDetails"
+          component={PostDetailsScreen}
+          options={mediaDetailsOptions}
         />
         <Stack.Screen
           name="Editions"
@@ -113,26 +116,7 @@ export function contentStackScreens(Stack, styles, is_dark) {
         <Stack.Screen
           name="MovieDetails"
           component={MovieDetailsScreen}
-          options={({ navigation, route }) => ({
-            title: "",
-            headerLeft: () => (
-              <Pressable
-                onPress={() => {
-                  navigation.goBack();
-                }}
-                hitSlop={10}
-                accessibilityRole="button"
-                accessibilityLabel="back"
-              >
-                <Icon
-                  name="navbar-back"
-                  color={is_dark ? "#FFFFFF" : "#000000"}
-                  size={18}
-                  style={styles.navbarBackIcon}
-                />
-              </Pressable>
-            ),
-          })}
+          options={mediaDetailsOptions}
         />
         <Stack.Screen
           name="TVSeasons"

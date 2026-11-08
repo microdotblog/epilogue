@@ -17,7 +17,7 @@ const BOOK_DETAILS_COVER_MAX_WIDTH = 200;
 const BOOK_DETAILS_COVER_MAX_HEIGHT = 200;
 const BOOK_DETAILS_BACKGROUND_OPACITY = 0.2;
 
-export function BookDetailsScreen({ route, navigation }) {
+export function BookDetailsScreen({ route, navigation, postPreview }) {
 	const styles = useEpilogueStyle()
 	const is_dark = (useColorScheme() == "dark");
 	const [ data, setData ] = useState();
@@ -482,6 +482,7 @@ export function BookDetailsScreen({ route, navigation }) {
 
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
+			{postPreview}
 			<View style={[styles.container, styles.bookDetailsContainer]}>
 				<ContextMenu
 						onPress={({nativeEvent}) => {

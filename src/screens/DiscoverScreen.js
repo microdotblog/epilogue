@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Pressable, FlatList, Image, View, TouchableOpacity, Text, RefreshControl, ActivityIndicator, Platform, Share, StyleSheet, useColorScheme } from 'react-native';
 import { useScrollToTop } from "@react-navigation/native";
 import Clipboard from '@react-native-clipboard/clipboard';
-import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import FastImage from "react-native-fast-image";
 
 import { ContextMenu } from "../ContextMenu";
@@ -87,7 +86,8 @@ export function DiscoverScreen({ navigation }) {
 	
 	const onFocus = (navigation) =>  {
 		loadBooks();
-		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {			
+		epilogueStorage.get(keys.allBookshelves).then(savedBookshelves => {
+			const bookshelves = savedBookshelves || [];
 			var root_items;
 			if (Platform.OS === "ios") {
 				var shelf_items = [];
@@ -229,12 +229,6 @@ export function DiscoverScreen({ navigation }) {
 		}
 	}
 	
-	const onOpen = async (url) => {
-		let result = await InAppBrowser.open(url, {
-			animated: true
-		});
-	}
-
 	const onCopyToBookshelfName = async (bookshelf_name, book_item) => {
 		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
 			var found_bookshelf;
@@ -251,7 +245,7 @@ export function DiscoverScreen({ navigation }) {
 		});
 	}
 
-	function onShowBookPressed(item) {
+	function onShowBookPressed(item, post = null) {
 		epilogueStorage.get(keys.allBookshelves).then(bookshelves => {
 			epilogueStorage.get(keys.currentBookshelf).then(current_bookshelf => {
 				bookshelfMembershipIDsForItem(item, current_bookshelf).then(bookshelf_ids_with_book => {
@@ -265,12 +259,13 @@ export function DiscoverScreen({ navigation }) {
 						description: item.description,
 						background_color: item.background_color,
 						background_url: item.background_url,
-						bookshelves: bookshelves,
+						bookshelves: bookshelves || [],
 						current_bookshelf: current_bookshelf,
 						is_search: item.is_search,
 						bookshelf_ids_with_book: bookshelf_ids_with_book
 					};
-					navigation.navigate("Details", params);
+					if (post) navigation.navigate("PostDetails", { book: params, post });
+					else navigation.navigate("Details", params);
 				});
 			});
 		});
@@ -410,7 +405,26 @@ export function DiscoverScreen({ navigation }) {
 	
 	function onDiscoverBookPressed(item) {
 		if (source !== "nyt") {
-			return onOpen(item.url);
+			const metadata = item._microblog;
+			const blogger = item.authors?.[0] || item.author;
+			// The Discover item's ID identifies the blog post, not the book.
+			onShowBookPressed({
+				isbn: metadata.isbn,
+				title: metadata.book_title,
+				author: metadata.book_author,
+				author_id: metadata.author_id,
+				image: metadata.cover_url || "",
+				description: metadata.description || "",
+				background_color: metadata.background_color,
+				background_url: metadata.background_url,
+				is_search: true
+			}, {
+				url: item.url,
+				avatar: blogger?.avatar,
+				author: blogger?.name,
+				username: blogger?._microblog?.username
+			});
+			return;
 		}
 		const book = booksFromJSONFeed({ items: [item] })[0];
 		onShowBookPressed({

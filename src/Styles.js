@@ -1243,6 +1243,9 @@ export const dark = StyleSheet.create({
 	signInText: {
 		color: "#FFFFFF"
 	},
+	signInLink: {
+		color: "#FFFFFF"
+	},
 	signInTextHeader: {
 		color: "#FFFFFF"
 	},

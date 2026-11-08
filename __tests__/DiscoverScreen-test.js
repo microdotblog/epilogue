@@ -1,7 +1,6 @@
 import React from "react";
 import { FlatList, Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import FastImage from "react-native-fast-image";
-import { InAppBrowser } from "react-native-inappbrowser-reborn";
 import renderer from "react-test-renderer";
 import { DiscoverScreen } from "../src/screens/DiscoverScreen";
 import { readBookshelfIDsContainingBook } from "../src/BookshelfCache";
@@ -21,9 +20,10 @@ jest.mock("../src/BookshelfCache", () => ({
 const originalIsPad = Object.getOwnPropertyDescriptor(Platform, "isPad");
 const originalOS = Platform.OS;
 const originalFetch = global.fetch;
-const book = { id: "1", url: "https://example.com/post", _microblog: {
-	book_title: "A book", book_author: "An author", cover_url: "https://example.com/cover.jpg"
-} };
+const book = {
+	id: "1", url: "https://example.com/post", authors: [{ name: "A blogger", avatar: "https://example.com/avatar.jpg", _microblog: { username: "reader" } }],
+	_microblog: { isbn: "9780140328721", book_title: "A book", book_author: "An author", cover_url: "https://example.com/cover.jpg" }
+};
 let screen;
 
 afterEach(async () => {
@@ -143,12 +143,17 @@ it("handles an unavailable feed and allows retrying it", async () => {
 	expect(screen.root.findByType(FlatList).props.data).toEqual([book]);
 });
 
-it("opens recently blogged books in the browser but NYT books in native details", async () => {
+it("opens a post preview only for recently blogged books", async () => {
+	epilogueStorage.get.mockResolvedValue(null);
 	const { navigation } = await openDiscover(true);
 	await renderer.act(async () => screen.root.findByType(TouchableOpacity).props.onPress());
-	expect(InAppBrowser.open).toHaveBeenCalledWith(book.url, { animated: true });
-	expect(navigation.navigate).not.toHaveBeenCalled();
-	InAppBrowser.open.mockClear();
+	expect(navigation.navigate).toHaveBeenCalledWith("PostDetails", {
+		post: { url: book.url, avatar: book.authors[0].avatar, author: book.authors[0].name, username: "reader" },
+		book: expect.objectContaining({ isbn: book._microblog.isbn, title: "A book", author: "An author", is_search: true, bookshelves: [] })
+	});
+	expect(readBookshelfIDsContainingBook).toHaveBeenCalledWith(book._microblog.isbn, undefined);
+	expect(global.fetch).toHaveBeenCalledTimes(1); // The post is fetched in the detail screen.
+	navigation.navigate.mockClear();
 	const bestseller = {
 		id: "9780593726259", title: "Hollow Bones", content_text: "A book description from the NYT feed.",
 		image: "https://example.com/nyt.jpg", authors: [{ name: "Jodi Picoult" }],
@@ -161,17 +166,11 @@ it("opens recently blogged books in the browser but NYT books in native details"
 	global.fetch = jest.fn(async () => ({ json: async () => ({ items: [bestseller] }) }));
 	await renderer.act(async () => sourceButton(navigation, "nyt").props.onPress());
 	await renderer.act(async () => screen.root.findByType(TouchableOpacity).props.onPress());
-	expect(InAppBrowser.open).not.toHaveBeenCalled();
 	expect(readBookshelfIDsContainingBook).toHaveBeenCalledWith(bestseller._microblog.isbn, bestseller.id);
 	expect(navigation.navigate).toHaveBeenCalledWith("Details", expect.objectContaining({
 		id: bestseller.id, isbn: bestseller._microblog.isbn, title: "Hollow Bones", author: "Jodi Picoult",
 		image: bestseller.image, description: bestseller.content_text, is_search: true,
 		bookshelves: [currentShelf, otherShelf], current_bookshelf: currentShelf, bookshelf_ids_with_book: ["B"]
 	}));
-	global.fetch = jest.fn(async () => ({ json: async () => ({ items: [book] }) }));
-	await renderer.act(async () => sourceButton(navigation, "microblog").props.onPress());
-	navigation.navigate.mockClear();
-	await renderer.act(async () => screen.root.findByType(TouchableOpacity).props.onPress());
-	expect(InAppBrowser.open).toHaveBeenCalledWith(book.url, { animated: true });
-	expect(navigation.navigate).not.toHaveBeenCalled();
+	expect(navigation.navigate).toHaveBeenCalledTimes(1);
 });
