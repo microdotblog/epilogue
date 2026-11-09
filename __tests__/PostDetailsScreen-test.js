@@ -1,5 +1,5 @@
 import React from "react";
-import { Linking, Text } from "react-native";
+import { ActivityIndicator, Linking, StyleSheet, Text } from "react-native";
 import renderer from "react-test-renderer";
 import { WebView } from "react-native-webview";
 import { PostDetailsScreen } from "../src/screens/PostDetailsScreen";
@@ -25,6 +25,9 @@ it("shows details before the post loads and renders only the post body with safe
 	expect(screen.root.findAllByType(Text).some(node => node.props.children === movie.title)).toBe(true);
 	expect(screen.root.findAllByType(WebView)).toHaveLength(0);
 	expect(global.fetch).toHaveBeenCalledWith(post.url, expect.objectContaining({ credentials: "omit" }));
+	expect(StyleSheet.flatten(screen.root.findByType(ActivityIndicator).props.style).alignSelf).toBe("center");
+	expect(screen.root.findAllByProps({ accessibilityElementsHidden: true }).length).toBeGreaterThan(0);
+	expect(screen.root.findAllByProps({ accessibilityRole: "link" })).toHaveLength(0);
 
 	await renderer.act(async () => respond({
 		ok: true,
@@ -38,8 +41,13 @@ it("shows details before the post loads and renders only the post body with safe
 	expect(webview.props.source.html).toContain('<p>Bad link');
 	expect(webview.props.source.html).not.toMatch(/Outside post|onclick|onerror|javascript:|untrustedScript|<iframe|<img\b|<a\b|href=/i);
 	expect(webview.props.onShouldStartLoadWithRequest({ url: "https://example.com/other" })).toBe(false);
+	expect(screen.root.findAllByType(ActivityIndicator)).toHaveLength(1);
+	expect(screen.root.findAllByProps({ accessibilityElementsHidden: true }).length).toBeGreaterThan(0);
 	await renderer.act(async () => webview.props.onMessage({ nativeEvent: { data: '{"height":216}' } }));
 	expect(webview.props.containerStyle.height).toBe(216);
+	expect(screen.root.findAllByType(ActivityIndicator)).toHaveLength(0);
+	expect(screen.root.findAllByProps({ accessibilityElementsHidden: true })).toHaveLength(0);
+	expect(screen.root.findAllByProps({ accessibilityRole: "link" }).length).toBeGreaterThan(0);
 });
 
 it("keeps the original link and book details when a page has no e-content", async () => {

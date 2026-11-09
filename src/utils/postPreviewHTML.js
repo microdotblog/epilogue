@@ -73,8 +73,9 @@ export function postPreviewDocument(content, { dark, fontSize }) {
 	const article = document.querySelector("article");
 	const send = message => window.ReactNativeWebView?.postMessage(JSON.stringify(message));
 	const measure = () => send({ height: Math.ceil(article.getBoundingClientRect().height) });
-	measure();
-	if (window.ResizeObserver) new ResizeObserver(measure).observe(article);
-	else window.addEventListener("load", measure);
+	window.addEventListener("load", () => {
+		measure();
+		if (window.ResizeObserver) new ResizeObserver(measure).observe(article);
+	});
 </script></body></html>`;
 }
