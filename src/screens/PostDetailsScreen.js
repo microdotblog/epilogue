@@ -5,10 +5,9 @@ import { MovieDetailsScreen } from "./MovieDetailsScreen";
 
 export function PostDetailsScreen({ navigation, route }) {
 	const { book, post } = route.params;
-	const postPreview = <PostPreview key={post.url} post={post} />;
 	return book ? (
-		<BookDetailsScreen navigation={navigation} route={{ ...route, params: book }} postPreview={postPreview} />
+		<BookDetailsScreen navigation={navigation} route={{ ...route, params: book }} post={post} />
 	) : (
-		<MovieDetailsScreen navigation={navigation} route={route} postPreview={postPreview} />
+		<MovieDetailsScreen navigation={navigation} route={route} postPreview={<PostPreview key={post.url} post={post} />} />
 	);
 }

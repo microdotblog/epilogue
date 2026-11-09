@@ -6,9 +6,11 @@ import { readBookshelfIDsContainingBook } from "../src/BookshelfCache";
 import epilogueStorage from "../src/Storage";
 import { keys } from "../src/Constants";
 
-jest.mock("../src/Storage", () => ({ get: jest.fn(async key => key === "auth_token" ? "test-token" : [
-	{ id: "7", title: "Finished reading", type: "finished" }
-]) }));
+jest.mock("../src/Storage", () => ({ get: jest.fn(async key => {
+	if (key === "auth_token") return "test-token";
+	if (key === "current_username") return "reader";
+	return [{ id: "7", title: "Finished reading", type: "finished" }];
+}) }));
 jest.mock("../src/BookshelfCache", () => ({ readBookshelfIDsContainingBook: jest.fn(async () => ["7"]) }));
 
 const originalFetch = global.fetch;
@@ -17,11 +19,20 @@ afterEach(() => {
 	jest.clearAllMocks();
 });
 
-it("loads the authenticated calendar and opens a book in details", async () => {
+it.each([
+	["without a permalink", undefined, undefined],
+	["with a permalink", "https://example.com/finished-reading", {
+		url: "https://example.com/finished-reading",
+		username: "reader",
+		avatar: "https://micro.blog/reader/avatar.jpg",
+		author: "@reader"
+	}],
+	["with an invalid permalink", "javascript:alert(1)", undefined]
+])("opens calendar book details %s", async (_scenario, linkURL, post) => {
 	global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ months: [
 		{ month_key: "2026-09", year: 2026, month: 9, book_count: 1, page_count: 640,
 			background_url: "https://example.com/background.jpg", books: [
-				{ id: 42, title: "A Book", author: "An Author", isbn: "1234567890123", cover_url: "https://example.com/cover.jpg", finished_date: "2026-09-13", day: 13, page_count: 640 }
+				{ id: 42, title: "A Book", author: "An Author", isbn: "1234567890123", cover_url: "https://example.com/cover.jpg", link_url: linkURL, finished_date: "2026-09-13", day: 13, page_count: 640 }
 			] }
 	] }) });
 	const navigation = { navigate: jest.fn() };
@@ -45,7 +56,10 @@ it("loads the authenticated calendar and opens a book in details", async () => {
 	expect(bookButton.props.children[2].props.children[2].props.children.join("")).toBe("Finished September 13 · 640 pages");
 	await renderer.act(async () => bookButton.props.onPress());
 	expect(readBookshelfIDsContainingBook).toHaveBeenCalledWith("1234567890123", 42);
-	expect(navigation.navigate).toHaveBeenCalledWith("Details", expect.objectContaining({ id: 42, title: "A Book", date: "2026-09-13T00:00:00", current_bookshelf: { id: "7", title: "Finished reading", type: "finished" } }));
+	expect(navigation.navigate).toHaveBeenCalledWith("Details", expect.objectContaining({
+		id: 42, title: "A Book", date: "2026-09-13T00:00:00",
+		current_bookshelf: { id: "7", title: "Finished reading", type: "finished" }, post
+	}));
 	await renderer.act(async () => screen.unmount());
 });
 

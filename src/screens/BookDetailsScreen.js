@@ -8,6 +8,7 @@ import { keys } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
+import { PostPreview } from "../PostPreview";
 import { Note } from "../models/Note";
 import CryptoUtils from '../utils/crypto';
 import { refreshAllBookshelfCachesInBackground } from "../BookshelfCache";
@@ -17,7 +18,7 @@ const BOOK_DETAILS_COVER_MAX_WIDTH = 200;
 const BOOK_DETAILS_COVER_MAX_HEIGHT = 200;
 const BOOK_DETAILS_BACKGROUND_OPACITY = 0.2;
 
-export function BookDetailsScreen({ route, navigation, postPreview }) {
+export function BookDetailsScreen({ route, navigation, post = route.params?.post }) {
 	const styles = useEpilogueStyle()
 	const is_dark = (useColorScheme() == "dark");
 	const [ data, setData ] = useState();
@@ -482,7 +483,7 @@ export function BookDetailsScreen({ route, navigation, postPreview }) {
 
 	return (
 		<ScrollView style={styles.bookDetailsScroll}>
-			{postPreview}
+			{post && <PostPreview key={post.url} post={post} />}
 			<View style={[styles.container, styles.bookDetailsContainer]}>
 				<ContextMenu
 						onPress={({nativeEvent}) => {

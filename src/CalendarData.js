@@ -16,6 +16,7 @@ export function calendarMonthsFromResponse(response) {
 			title: book.title || "Untitled book",
 			author: book.author || "",
 			coverURL: book.cover_url || "",
+			linkURL: book.link_url || "",
 			description: book.description || "",
 			day: book.day,
 			date: book.finished_date,

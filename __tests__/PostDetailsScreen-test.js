@@ -2,6 +2,7 @@ import React from "react";
 import { ActivityIndicator, Linking, StyleSheet, Text } from "react-native";
 import renderer from "react-test-renderer";
 import { WebView } from "react-native-webview";
+import { BookDetailsScreen } from "../src/screens/BookDetailsScreen";
 import { PostDetailsScreen } from "../src/screens/PostDetailsScreen";
 import { extractPostContent } from "../src/utils/postPreviewHTML";
 
@@ -77,14 +78,16 @@ it("shows the Letterboxd SVG rating as text when there is no recognized post bod
 	expect(extractPostContent(html)).toMatch(/^<div><span>\s*★★★\s*<\/span><\/div>$/);
 });
 
-it("keeps the original link and book details when a page has no recognized post content", async () => {
+it.each(["Details", "PostDetails"])("%s keeps the original link when a page has no recognized post content", async screenName => {
 	global.fetch = jest.fn(async () => ({ ok: true, text: async () => "<p>A theme without microformats.</p>" }));
 	const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue();
 	const book = { isbn: "9780140328721", title: "A Book", author: "An Author",
 		image: "https://example.com/book.jpg", description: "", is_search: true,
 		bookshelves: [{ id: 1, title: "Want to read" }] };
 	await renderer.act(async () => {
-		screen = renderer.create(<PostDetailsScreen navigation={navigation} route={{ params: { post, book } }} />);
+		screen = renderer.create(screenName === "Details"
+			? <BookDetailsScreen navigation={navigation} route={{ params: { ...book, post } }} />
+			: <PostDetailsScreen navigation={navigation} route={{ params: { post, book } }} />);
 	});
 	const labels = screen.root.findAllByType(Text).map(node => node.props.children);
 	expect(labels).toEqual(expect.arrayContaining(["Couldn’t preview this post.", "A Book", "Want to read"]));

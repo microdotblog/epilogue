@@ -6,6 +6,7 @@ import { readBookshelfIDsContainingBook } from "../BookshelfCache";
 import { calendarMonthsFromResponse } from "../CalendarData";
 import { keys } from "../Constants";
 import epilogueStorage from "../Storage";
+import { webURL } from "../utils/postPreviewHTML";
 
 export function CalendarScreen({ navigation, pageLoading = false, listRef }) {
 	const dark = useColorScheme() === "dark";
@@ -46,7 +47,18 @@ export function CalendarScreen({ navigation, pageLoading = false, listRef }) {
 	}
 
 	async function openBook(book) {
-		const bookshelfIDs = await readBookshelfIDsContainingBook(book.isbn, book.id);
+		const postURL = webURL(book.linkURL);
+		const [bookshelfIDs, savedUsername] = await Promise.all([
+			readBookshelfIDsContainingBook(book.isbn, book.id),
+			postURL ? epilogueStorage.get(keys.currentUsername) : null
+		]);
+		const username = String(savedUsername ?? "");
+		const post = postURL ? {
+			url: postURL,
+			username,
+			avatar: username ? `https://micro.blog/${encodeURIComponent(username)}/avatar.jpg` : undefined,
+			author: username ? `@${username}` : undefined
+		} : undefined;
 		const bookshelf = bookshelves.find(item => item.type === "finished" && bookshelfIDs.some(id => String(id) === String(item.id))) ||
 			bookshelves.find(item => bookshelfIDs.some(id => String(id) === String(item.id))) || null;
 		navigation.navigate("Details", {
@@ -63,7 +75,8 @@ export function CalendarScreen({ navigation, pageLoading = false, listRef }) {
 			bookshelves,
 			current_bookshelf: bookshelf,
 			is_search: false,
-			bookshelf_ids_with_book: bookshelfIDs
+			bookshelf_ids_with_book: bookshelfIDs,
+			post
 		});
 	}
 
