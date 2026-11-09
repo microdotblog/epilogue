@@ -6,6 +6,7 @@ const formattingTags = new Set("b blockquote br caption cite code dd del div dl 
 const omittedTags = new Set("button form iframe img input noscript object script select style template textarea".split(" "));
 const voidTags = new Set(["br", "hr"]);
 const escapedCharacters = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
+const postPhrase = /\b(?:(?:finished\s+reading|want\s+to\s+read|did\s+not\s+finish)\b|(?:watched|finished\s+watching)\s*:)/i;
 
 export function webURL(value) {
 	if (typeof value !== "string") return null;
@@ -46,8 +47,30 @@ function renderContents(node, options) {
 	return node?.childNodes.map(child => renderNode(child, options)).join("").trim() ?? "";
 }
 
+function findBodyByText(document, reactions) {
+	let match;
+
+	function collectText(node) {
+		if (match || node === reactions) return "";
+		if (node.nodeName === "#text") return node.value;
+		if (node !== document && (node.namespaceURI !== htmlNamespace || omittedTags.has(node.tagName))) return "";
+		if (node.tagName === "br") return " ";
+
+		// Check descendants first so a matching paragraph wins over its wrappers.
+		const text = node.childNodes.map(collectText).join("");
+		if (!match && (node.tagName === "p" || node.tagName === "div") && postPhrase.test(text)) {
+			match = node;
+		}
+		return text;
+	}
+
+	collectText(document);
+	return match;
+}
+
 export function extractPostContent(html) {
-	const pending = [parse(html)];
+	const document = parse(html);
+	const pending = [document];
 	let content;
 	let review;
 	let entry;
@@ -74,9 +97,14 @@ export function extractPostContent(html) {
 			pending.push(node.childNodes[index]);
 		}
 	}
-	const body = content || review || entry;
+	const classBody = content || review || entry;
+	const body = classBody || findBodyByText(document, reactions);
 	const reactionsHTML = renderContents(reactions, { excludedNode: body, includeRating: true });
-	const bodyHTML = body === reactions ? "" : renderContents(body, { excludedNode: reactions });
+	let bodyHTML = "";
+	if (body && body !== reactions) {
+		const options = { excludedNode: reactions };
+		bodyHTML = classBody ? renderContents(body, options) : renderNode(body, options);
+	}
 	return reactionsHTML ? `<div>${reactionsHTML}</div>${bodyHTML}` : bodyHTML;
 }
 

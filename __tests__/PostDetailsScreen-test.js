@@ -62,11 +62,23 @@ it("moves a nested reactions strip above h-entry content without duplicating it"
 });
 
 it("prefers the sanitized review body over h-entry when e-content is missing", () => {
-	const html = `<article class="h-entry">
+	const html = `<p>Watched: A different movie</p><article class="h-entry">
 		<header>Outside review</header>
 		<div class="review js-review-body"><p>A <a href="/review">review</a><img src="/poster.jpg"></p></div>
 	</article>`;
 	expect(extractPostContent(html)).toBe("<p>A review</p>");
+});
+
+it.each([
+	["p", "FINISHED <strong>reading</strong>"],
+	["div", "Want to read"],
+	["p", "Did not finish"],
+	["div", "watched:"],
+	["p", "Finished watching:"]
+])("finds a %s containing %s when there is no post class", (tag, phrase) => {
+	const body = `<${tag}>Today I ${phrase} A Title</${tag}>`;
+	const html = `<div><p title="Finished reading">Unrelated text</p><script>Watched:</script>${body}<p>Footer</p></div>`;
+	expect(extractPostContent(html)).toBe(body);
 });
 
 it("shows the Letterboxd SVG rating as text when there is no recognized post body", () => {
