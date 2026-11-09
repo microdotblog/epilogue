@@ -3,6 +3,7 @@ import { ActivityIndicator, Linking, StyleSheet, Text } from "react-native";
 import renderer from "react-test-renderer";
 import { WebView } from "react-native-webview";
 import { PostDetailsScreen } from "../src/screens/PostDetailsScreen";
+import { extractPostContent } from "../src/utils/postPreviewHTML";
 
 const originalFetch = global.fetch;
 const post = { url: "https://example.com/post", author: "Blogger" };
@@ -31,13 +32,14 @@ it("shows details before the post loads and renders only the post body with safe
 
 	await renderer.act(async () => respond({
 		ok: true,
-		text: async () => `<!doctype html><header>Outside post</header><div class="e-content post-body">
+		text: async () => `<!doctype html><article class="h-entry"><div class="js-review-body">Outside post</div><div class="e-content post-body">
 			<p>Movie &amp; more<br><a href="../review" onclick="bad()"><strong>Good link</strong></a>
 			<p><a href="java&#x73;cript:alert(1)">Bad link</a><img src="/poster.jpg" onerror="bad()">
-			<script>untrustedScript()</script><iframe src="https://example.com/embed"></iframe></div>`
+			<script>untrustedScript()</script><iframe src="https://example.com/embed"></iframe></div>
+			<div class="content-reactions-strip"><span>★★★★</span></div></article>`
 	}));
 	const webview = screen.root.findByType(WebView);
-	expect(webview.props.source.html).toContain('Movie &amp; more<br><strong>Good link</strong>');
+	expect(webview.props.source.html).toContain('<div><span>★★★★</span></div><p>Movie &amp; more<br><strong>Good link</strong>');
 	expect(webview.props.source.html).toContain('<p>Bad link');
 	expect(webview.props.source.html).not.toMatch(/Outside post|onclick|onerror|javascript:|untrustedScript|<iframe|<img\b|<a\b|href=/i);
 	expect(webview.props.onShouldStartLoadWithRequest({ url: "https://example.com/other" })).toBe(false);
@@ -50,7 +52,32 @@ it("shows details before the post loads and renders only the post body with safe
 	expect(screen.root.findAllByProps({ accessibilityRole: "link" }).length).toBeGreaterThan(0);
 });
 
-it("keeps the original link and book details when a page has no e-content", async () => {
+it("moves a nested reactions strip above h-entry content without duplicating it", () => {
+	const html = `<header>Outside post</header><article class="post h-entry">
+		<p>A <a href="/review">review</a><img src="/poster.jpg"></p>
+		<div class="content-reactions-strip"><a href="/rating">★★★★</a></div>
+	</article>`;
+	expect(extractPostContent(html)).toBe("<div>★★★★</div><p>A review</p>");
+});
+
+it("prefers the sanitized review body over h-entry when e-content is missing", () => {
+	const html = `<article class="h-entry">
+		<header>Outside review</header>
+		<div class="review js-review-body"><p>A <a href="/review">review</a><img src="/poster.jpg"></p></div>
+	</article>`;
+	expect(extractPostContent(html)).toBe("<p>A review</p>");
+});
+
+it("shows the Letterboxd SVG rating as text when there is no recognized post body", () => {
+	const html = `<header>Outside review</header><div class="content-reactions-strip">
+		<span class="inline-symbol inline-rating">
+			<svg xmlns="http://www.w3.org/2000/svg" class="glyph -rating" aria-label="★★★" onload="bad()"><title>★★★</title><path d="M0 0"></path></svg>
+		</span><img src="/poster.jpg">
+	</div>`;
+	expect(extractPostContent(html)).toMatch(/^<div><span>\s*★★★\s*<\/span><\/div>$/);
+});
+
+it("keeps the original link and book details when a page has no recognized post content", async () => {
 	global.fetch = jest.fn(async () => ({ ok: true, text: async () => "<p>A theme without microformats.</p>" }));
 	const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue();
 	const book = { isbn: "9780140328721", title: "A Book", author: "An Author",

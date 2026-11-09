@@ -1,6 +1,7 @@
 import { parse } from "parse5";
 
 const htmlNamespace = "http://www.w3.org/1999/xhtml";
+const svgNamespace = "http://www.w3.org/2000/svg";
 const formattingTags = new Set("b blockquote br caption cite code dd del div dl dt em figcaption figure h1 h2 h3 h4 h5 h6 hr i li ol p pre s small span strong sub sup table tbody td th thead tr u ul".split(" "));
 const omittedTags = new Set("button form iframe img input noscript object script select style template textarea".split(" "));
 const voidTags = new Set(["br", "hr"]);
@@ -25,28 +26,58 @@ function attribute(node, name) {
 	return node.attrs?.find(attr => attr.name === name && !attr.namespace)?.value;
 }
 
-function renderNode(node) {
+function renderNode(node, options) {
+	if (node === options.excludedNode) return "";
 	if (node.nodeName === "#text") return escapeHTML(node.value);
 	const tag = node.tagName;
+	if (options.includeRating && node.namespaceURI === svgNamespace && tag === "svg" &&
+		attribute(node, "class")?.split(/\s+/).includes("-rating")) {
+		// Letterboxd draws the stars with paths and supplies their text as a label.
+		return escapeHTML(attribute(node, "aria-label") || "");
+	}
 	if (node.namespaceURI !== htmlNamespace || omittedTags.has(tag)) return "";
 
-	const children = () => node.childNodes.map(renderNode).join("");
+	const children = () => node.childNodes.map(child => renderNode(child, options)).join("");
 	if (!formattingTags.has(tag)) return children();
 	return voidTags.has(tag) ? `<${tag}>` : `<${tag}>${children()}</${tag}>`;
 }
 
+function renderContents(node, options) {
+	return node?.childNodes.map(child => renderNode(child, options)).join("").trim() ?? "";
+}
+
 export function extractPostContent(html) {
 	const pending = [parse(html)];
+	let content;
+	let review;
+	let entry;
+	let reactions;
 	while (pending.length > 0) {
 		const node = pending.pop();
-		if (node.namespaceURI === htmlNamespace && attribute(node, "class")?.split(/\s+/).includes("e-content")) {
-			return node.childNodes.map(renderNode).join("").trim();
+		if (node.namespaceURI === htmlNamespace) {
+			const classes = attribute(node, "class")?.split(/\s+/);
+			if (!content && classes?.includes("e-content")) {
+				content = node;
+			}
+			// Letterboxd uses js-review-body and content-reactions-strip.
+			if (!review && classes?.includes("js-review-body")) {
+				review = node;
+			}
+			if (!reactions && classes?.includes("content-reactions-strip")) {
+				reactions = node;
+			}
+			if (!entry && classes?.includes("h-entry")) {
+				entry = node;
+			}
 		}
 		for (let index = (node.childNodes?.length || 0) - 1; index >= 0; index--) {
 			pending.push(node.childNodes[index]);
 		}
 	}
-	return "";
+	const body = content || review || entry;
+	const reactionsHTML = renderContents(reactions, { excludedNode: body, includeRating: true });
+	const bodyHTML = body === reactions ? "" : renderContents(body, { excludedNode: reactions });
+	return reactionsHTML ? `<div>${reactionsHTML}</div>${bodyHTML}` : bodyHTML;
 }
 
 // The downloaded page never runs in the WebView. This script reports the
