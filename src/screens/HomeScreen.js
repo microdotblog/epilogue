@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import type { Node } from "react";
-import { Alert, Linking, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, Platform } from "react-native";
+import { Alert, Linking, ActivityIndicator, useColorScheme, Pressable, Button, Image, FlatList, StyleSheet, Text, SafeAreaView, View, ScrollView, AppState, DeviceEventEmitter, Platform } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Animated } from 'react-native';
@@ -8,7 +8,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import FastImage from "react-native-fast-image";
 
 import { BookshelfPopupMenu, BookshelfPopupMenuTrigger } from "../BookshelfPopupMenu";
-import { keys, errors } from "../Constants";
+import { keys, errors, libbyConnectedEvent } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { Icon } from "../Icon";
@@ -83,6 +83,8 @@ function resolveBookshelfFromItems(items, preferred_bookshelf) {
 	return items[0];
 }
 
+const isLibraryBookshelf = shelf => shelf.type === "loans" || shelf.type === "holds";
+
 export function HomeScreen({ navigation }) {
 	const styles = useEpilogueStyle()
 	useProfileHeader(navigation, styles);
@@ -103,6 +105,7 @@ export function HomeScreen({ navigation }) {
 	const bookshelfPopupMenuRef = useRef(null);
 	const booksRequestRef = useRef(0);
 	const bookshelvesRequestRef = useRef(0);
+	const refreshLibbyShelvesRef = useRef(false);
 	const currentBookshelfRef = useRef(null);
 	const pendingBookshelfRef = useRef(null);
 
@@ -134,6 +137,10 @@ export function HomeScreen({ navigation }) {
 		const unsubscribe_blur = navigation.addListener("blur", () => {
 			bookshelfPopupMenuRef.current?.setEnabled(false);
 		});
+		const libbySubscription = DeviceEventEmitter.addListener(libbyConnectedEvent, () => {
+			refreshLibbyShelvesRef.current = true;
+			loadBookshelves(navigation);
+		});
 
 		const unsubscribe_change = AppState.addEventListener("change", nextAppState => {
 			if (nextAppState == "active") {
@@ -149,6 +156,7 @@ export function HomeScreen({ navigation }) {
 			unsubscribe_focus();
 			unsubscribe_blur();
 			unsubscribe_change.remove();
+			libbySubscription.remove();
 		};
 	}, [navigation]);
 
@@ -199,6 +207,7 @@ export function HomeScreen({ navigation }) {
 		epilogueStorage.get(keys.authToken).then(auth_token => {
 			if ((auth_token == null) || (auth_token.length == 0)) {
 				currentBookshelfRef.current = null;
+				refreshLibbyShelvesRef.current = false;
 				setPendingBookshelf(null);
 				booksRequestRef.current += 1;
 				bookshelvesRequestRef.current += 1;
@@ -472,7 +481,7 @@ export function HomeScreen({ navigation }) {
 		bookshelvesRequestRef.current = request_id;
 
 		epilogueStorage.get(keys.authToken).then(auth_token => {
-			if (bookshelvesRequestRef.current != request_id) {
+			if (bookshelvesRequestRef.current != request_id || !auth_token) {
 				return;
 			}
 
@@ -482,7 +491,7 @@ export function HomeScreen({ navigation }) {
 				}
 			};
 
-			fetch("https://micro.blog/books/bookshelves", options).then(response => response.json()).then(data => {
+			return fetch("https://micro.blog/books/bookshelves", options).then(response => response.json()).then(data => {
 				if (bookshelvesRequestRef.current != request_id) {
 					return;
 				}
@@ -511,9 +520,19 @@ export function HomeScreen({ navigation }) {
 						return;
 					}
 
-					warmAllBookshelfCachesInBackground(new_items);
+					const refreshLibbyShelves = refreshLibbyShelvesRef.current;
+					if (refreshLibbyShelves) {
+						refreshLibbyShelvesRef.current = false;
+						refreshAllBookshelfCachesInBackground(new_items.filter(isLibraryBookshelf));
+					}
+					else {
+						warmAllBookshelfCachesInBackground(new_items);
+					}
 
-					epilogueStorage.get(keys.currentBookshelf).then(stored_bookshelf => {
+					Promise.all([
+						epilogueStorage.get(keys.currentBookshelf),
+						refreshLibbyShelves ? epilogueStorage.get(keys.currentSearch) : null
+					]).then(([stored_bookshelf, current_search]) => {
 						if (bookshelvesRequestRef.current != request_id) {
 							return;
 						}
@@ -524,6 +543,7 @@ export function HomeScreen({ navigation }) {
 							setPendingBookshelf(null);
 							return;
 						}
+						if (refreshLibbyShelves && (current_search || !isLibraryBookshelf(current_bookshelf))) return;
 
 						loadBooks(current_bookshelf, function() {
 							commitBookshelf(current_bookshelf);
@@ -531,7 +551,7 @@ export function HomeScreen({ navigation }) {
 					});
 				});
 			});		
-		});
+		}).catch(() => {});
 	}
 
 	function selectBookshelf(bookshelf) {

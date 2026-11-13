@@ -40,6 +40,24 @@ const post = (id, content) => ({
 	}
 });
 
+it("opens Libby setup from the profile while posts are downloading", async () => {
+	const navigation = { setOptions: jest.fn(), navigate: jest.fn() };
+	const previousFetch = global.fetch;
+	global.fetch = jest.fn(() => new Promise(() => {}));
+	let screen;
+	try {
+		await renderer.act(async () => { screen = renderer.create(<ProfileScreen navigation={navigation} />); });
+		const button = screen.root.findAllByProps({ accessibilityRole: "button" }).find(node =>
+			node.findAllByProps({ children: "Connect to Libby" }).length > 0
+		);
+		await renderer.act(async () => button.props.onPress());
+		expect(navigation.navigate).toHaveBeenCalledWith("ConnectLibby");
+	} finally {
+		await renderer.act(async () => screen?.unmount());
+		global.fetch = previousFetch;
+	}
+});
+
 it("clears credentials before resetting all section stacks on sign-out", async () => {
 	await AsyncStorage.clear();
 	await AsyncStorage.setItem(keys.authToken, "test-token");

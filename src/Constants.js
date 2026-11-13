@@ -31,3 +31,5 @@ export const errors = {
 	noMicropubEndpoint: "Could not find Micropub endpoint.",
 	stateDoesNotMatch: "IndieAuth state did not match."
 };
+
+export const libbyConnectedEvent = "epilogueLibbyConnected";

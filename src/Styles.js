@@ -578,6 +578,9 @@ export const light = StyleSheet.create({
 	profileMicropubButton: {
 		backgroundColor: "#d1d1d1"
 	},
+	profileLibbyButton: {
+		backgroundColor: "#e7e7e7"
+	},
 	micropubIntro: {
 		marginLeft: 12,
 		marginTop: 10
@@ -1281,6 +1284,9 @@ export const dark = StyleSheet.create({
 	},
 	profileMicropubButton: {
 		backgroundColor: "#141723"
+	},
+	profileLibbyButton: {
+		backgroundColor: "#333c4d"
 	},
 	micropubButtonTitle: {
 		color: "#E5E7EB",

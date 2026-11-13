@@ -458,6 +458,17 @@ export function ProfileScreen({ navigation }) {
 					</Pressable>
 				</View>
 			)}
+			<View style={[styles.profilePane, profileLibbyStyles.row]}>
+				<Pressable
+					style={({ pressed }) => [styles.plainButton, styles.profileLibbyButton, profileLibbyStyles.button, pressed && profileLibbyStyles.pressed]}
+					accessibilityRole="button"
+					hitSlop={6}
+					onPress={() => navigation.navigate("ConnectLibby")}
+				>
+					<Image source={require("../../images/libby.png")} style={profileLibbyStyles.icon} accessible={false} />
+					<Text style={styles.micropubButtonTitle}>Connect to Libby</Text>
+				</Pressable>
+			</View>
 			<AnimatedFlatList
 				style={styles.profilePosts}
 				contentContainerStyle={styles.profilePostsContent}
@@ -504,6 +515,21 @@ export function ProfileScreen({ navigation }) {
 		</View>
 	);
 }
+
+const profileLibbyStyles = StyleSheet.create({
+	row: { paddingHorizontal: 15, paddingTop: 6, paddingBottom: 6 },
+	button: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 8,
+		minHeight: 32,
+		marginLeft: 0,
+		paddingLeft: 10,
+		paddingRight: 10
+	},
+	icon: { width: 22, height: 22 },
+	pressed: { opacity: 0.7 }
+});
 
 const profileSearchStyles = StyleSheet.create({
 	controlsPane: {

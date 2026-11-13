@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
-import { View } from "react-native";
+import { DeviceEventEmitter, View } from "react-native";
 import renderer from "react-test-renderer";
 
-import { cacheBookshelfDataForID } from "../src/BookshelfCache";
-import { keys } from "../src/Constants";
+import { cacheBookshelfDataForID, refreshAllBookshelfCachesInBackground } from "../src/BookshelfCache";
+import { keys, libbyConnectedEvent } from "../src/Constants";
 import { HomeScreen } from "../src/screens/HomeScreen";
 import { BookSearchField } from "../src/BookSearchField";
 import { SidebarBookshelvesContext, SidebarVisibleContext } from "../src/navigation/SidebarContext";
@@ -90,6 +90,35 @@ function createHomeScreen(navigation) {
 beforeEach(async () => {
 	jest.clearAllMocks();
 	await AsyncStorage.clear();
+});
+
+it("updates the bookshelf menu and refreshes the new Libby shelves after setup", async () => {
+	const reading = { id: "1", title: "Currently reading", type: "reading", books_count: "1 book" };
+	const loans = { id: "2", title: "Library loans", type: "loans", books_count: "1 book" };
+	const holds = { id: "3", title: "Library holds", type: "holds", books_count: "1 book" };
+	await seedHomeStorage([reading, loans], loans);
+	const previousFetch = global.fetch;
+	global.fetch = jest.fn().mockResolvedValue({ json: async () => ({
+		items: [reading, loans, holds].map(({ id, title, type }) => ({
+			id, title, _microblog: { type, books_count: 1 }
+		}))
+	}) });
+	let screen;
+	try {
+		await renderer.act(async () => { screen = createHomeScreen(navigationHarness().navigation); });
+		await renderer.act(async () => {
+			DeviceEventEmitter.emit(libbyConnectedEvent);
+			await flushAsyncWork();
+		});
+		expect(screen.root.findByProps({ testID: "bookshelf-popup" }).props.bookshelves).toEqual([reading, loans, holds]);
+		expect(JSON.parse(await AsyncStorage.getItem(keys.allBookshelves))).toEqual([reading, loans, holds]);
+		expect(refreshAllBookshelfCachesInBackground).toHaveBeenCalledWith([loans, holds]);
+		// The user can connect from Profile without discarding a bookshelf search.
+		expect(global.fetch).toHaveBeenCalledTimes(1);
+	} finally {
+		await renderer.act(async () => screen?.unmount());
+		global.fetch = previousFetch;
+	}
 });
 
 it("opens scanned books and pre-fills manual entry from Bookshelves", async () => {
