@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
-import { DeviceEventEmitter, View } from "react-native";
+import { DeviceEventEmitter, Linking, View } from "react-native";
 import renderer from "react-test-renderer";
 
 import { cacheBookshelfDataForID, refreshAllBookshelfCachesInBackground } from "../src/BookshelfCache";
@@ -529,4 +529,95 @@ it("falls back to the first refreshed shelf when the retained shelf is absent", 
 			screen?.unmount();
 		});
 	}
+});
+
+describe("authorization return links", () => {
+	const callback = "epilogue://indieauth?code=fixture-code&state=fixture-state";
+	let initial_url;
+	let add_listener;
+	let url_handler;
+	let remove_listener;
+	let previous_fetch;
+
+	beforeEach(async () => {
+		const shelf = { id: "A", title: "Shelf A" };
+		await seedHomeStorage([shelf], shelf);
+		await AsyncStorage.setItem(keys.authState, "fixture-state");
+		await AsyncStorage.setItem(keys.tokenURL, "https://example.com/auth/token");
+		previous_fetch = global.fetch;
+		global.fetch = jest.fn().mockResolvedValue({ json: async () => ({ access_token: "fixture-access-token" }) });
+		initial_url = jest.spyOn(Linking, "getInitialURL").mockResolvedValue(null);
+		remove_listener = jest.fn();
+		url_handler = undefined;
+		add_listener = jest.spyOn(Linking, "addEventListener").mockImplementation((event, handler) => {
+			if (event == "url") url_handler = handler;
+			return { remove: remove_listener };
+		});
+	});
+
+	afterEach(() => {
+		initial_url.mockRestore();
+		add_listener.mockRestore();
+		global.fetch = previous_fetch;
+	});
+
+	it("exchanges a return code before Bookshelves receives a focus event", async () => {
+		const harness = navigationHarness();
+		let screen;
+		try {
+			await renderer.act(async () => {
+				screen = createHomeScreen(harness.navigation);
+				await flushAsyncWork();
+			});
+			expect(url_handler).toEqual(expect.any(Function));
+			await renderer.act(async () => {
+				url_handler({ url: callback });
+				await flushAsyncWork();
+			});
+			expect(global.fetch).toHaveBeenCalledTimes(1);
+			expect(global.fetch).toHaveBeenCalledWith("https://example.com/auth/token", {
+				method: "POST", body: expect.any(FormData)
+			});
+			expect(await AsyncStorage.getItem(keys.micropubToken)).toBe("fixture-access-token");
+		} finally {
+			await renderer.act(async () => screen?.unmount());
+		}
+	});
+
+	it("handles an initial return URL without a subsequent focus event", async () => {
+		initial_url.mockResolvedValue(callback);
+		let screen;
+		try {
+			await renderer.act(async () => {
+				screen = createHomeScreen(navigationHarness().navigation);
+				await flushAsyncWork();
+			});
+			expect(global.fetch).toHaveBeenCalledTimes(1);
+			expect(await AsyncStorage.getItem(keys.micropubToken)).toBe("fixture-access-token");
+		} finally {
+			await renderer.act(async () => screen?.unmount());
+		}
+	});
+
+	it("keeps one URL listener across focus events and removes it on unmount", async () => {
+		const harness = navigationHarness();
+		let screen;
+		try {
+			await renderer.act(async () => {
+				screen = createHomeScreen(harness.navigation);
+				await flushAsyncWork();
+			});
+			await renderer.act(async () => {
+				harness.focus();
+				harness.focus();
+				await flushAsyncWork();
+			});
+			expect(initial_url).toHaveBeenCalledTimes(1);
+			expect(add_listener).toHaveBeenCalledTimes(1);
+			expect(remove_listener).not.toHaveBeenCalled();
+		} finally {
+			await renderer.act(async () => screen?.unmount());
+		}
+		expect(remove_listener).toHaveBeenCalledTimes(1);
+	});
 });

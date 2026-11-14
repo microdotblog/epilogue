@@ -130,6 +130,8 @@ export function HomeScreen({ navigation }) {
 	React.useEffect(() => () => publishSidebarBookshelves?.(null), [publishSidebarBookshelves]);
     
 	React.useEffect(() => {
+		// Keep return URLs active while another screen or modal is focused.
+		const linking_sub = setupLinking();
 		const unsubscribe_focus = navigation.addListener("focus", () => {
 			bookshelfPopupMenuRef.current?.setEnabled(true);
 			onFocus(navigation);
@@ -156,6 +158,7 @@ export function HomeScreen({ navigation }) {
 			unsubscribe_focus();
 			unsubscribe_blur();
 			unsubscribe_change.remove();
+			linking_sub.remove();
 			libbySubscription.remove();
 		};
 	}, [navigation]);
@@ -238,17 +241,6 @@ export function HomeScreen({ navigation }) {
 				});
 			}
 		});
-		
-		const linking_sub = setupLinking();
-		
-		// cleanup
-		return () => {
-			unsubscribe_focus();
-			unsubscribe_change.remove();
-			if (linking_sub && (typeof linking_sub.remove == "function")) {
-				linking_sub.remove();
-			}
-		};
 	}
 	
 	function onBecomeActive() {
