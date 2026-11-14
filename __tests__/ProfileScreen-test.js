@@ -40,21 +40,34 @@ const post = (id, content) => ({
 	}
 });
 
-it("opens Libby setup from the profile while posts are downloading", async () => {
+it("shows the connected library on profile focus while posts are downloading", async () => {
+	await AsyncStorage.setItem(keys.authToken, "libby-profile-token");
 	const navigation = { setOptions: jest.fn(), navigate: jest.fn() };
 	const previousFetch = global.fetch;
-	global.fetch = jest.fn(() => new Promise(() => {}));
+	const statusURL = "https://micro.blog/books/libby/status";
+	let status = { status: "connected", library_name: "Austin Public Library" };
+	global.fetch = jest.fn(url => {
+		if (url === statusURL) return Promise.resolve({ ok: true, json: async () => status });
+		return new Promise(() => {});
+	});
 	let screen;
+	const buttonWithTitle = title => screen.root.findAllByProps({ accessibilityRole: "button" }).find(node =>
+		node.findAllByProps({ children: title }).length > 0
+	);
 	try {
 		await renderer.act(async () => { screen = renderer.create(<ProfileScreen navigation={navigation} />); });
-		const button = screen.root.findAllByProps({ accessibilityRole: "button" }).find(node =>
-			node.findAllByProps({ children: "Connect to Libby" }).length > 0
-		);
-		await renderer.act(async () => button.props.onPress());
+		expect(global.fetch).toHaveBeenCalledWith(statusURL, expect.objectContaining({
+			headers: { Authorization: "Bearer libby-profile-token" }
+		}));
+		await renderer.act(async () => buttonWithTitle("Austin Public Library").props.onPress());
 		expect(navigation.navigate).toHaveBeenCalledWith("ConnectLibby");
+		status = { status: "not_connected", library_name: "" };
+		await renderer.act(async () => { mockBlur(); mockFocus(); });
+		expect(buttonWithTitle("Connect to Libby")).toBeDefined();
 	} finally {
 		await renderer.act(async () => screen?.unmount());
 		global.fetch = previousFetch;
+		await AsyncStorage.removeItem(keys.authToken);
 	}
 });
 

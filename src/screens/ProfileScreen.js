@@ -7,7 +7,7 @@ import * as Application from "expo-application";
 import FastImage from "react-native-fast-image";
 var showdown  = require("showdown");
 
-import { keys } from "../Constants";
+import { keys, libbyAPIURL } from "../Constants";
 import { useEpilogueStyle } from '../hooks/useEpilogueStyle';
 import epilogueStorage from "../Storage";
 import { clearBookCaches } from "../BookshelfCache";
@@ -37,6 +37,7 @@ export function ProfileScreen({ navigation }) {
 	const [ isSearching, setSearching ] = useState(false);
 	const [ searchText, setSearchText ] = useState("");
 	const [ blogName, setBlogName ] = useState();
+	const [ libraryName, setLibraryName ] = useState("");
 	const filteredPosts = React.useMemo(() => {
 		const query = searchText.trim().toLowerCase();
 		return query ? posts.filter(post => post.display_text.toLowerCase().includes(query)) : posts;
@@ -48,9 +49,12 @@ export function ProfileScreen({ navigation }) {
 
     useFocusEffect(
 		React.useCallback(() => {
+			const libbyStatus = new AbortController();
 			onFocus(navigation);
+			loadLibbyStatus(libbyStatus.signal);
 			
 			return () => {
+				libbyStatus.abort();
 				onBlur(navigation);
 			};
 		}, [])
@@ -92,6 +96,24 @@ export function ProfileScreen({ navigation }) {
 
 	function onBlur(navigation) {
 		activePostsLoad.current += 1;
+	}
+
+	async function loadLibbyStatus(signal) {
+		try {
+			const token = await epilogueStorage.get(keys.authToken);
+			if (signal.aborted || !token) return;
+			const response = await fetch(`${libbyAPIURL}/status`, {
+				headers: { Authorization: `Bearer ${token}` },
+				signal
+			});
+			if (!response.ok) return;
+			const data = await response.json();
+			if (signal.aborted) return;
+			setLibraryName(data?.status === "connected" && typeof data.library_name === "string" ? data.library_name.trim() : "");
+		}
+		catch {
+			// Libby status is optional on the profile screen.
+		}
 	}
 
 	function clearDraft() {
@@ -466,7 +488,7 @@ export function ProfileScreen({ navigation }) {
 					onPress={() => navigation.navigate("ConnectLibby")}
 				>
 					<Image source={require("../../images/libby.png")} style={profileLibbyStyles.icon} accessible={false} />
-					<Text style={styles.micropubButtonTitle}>Connect to Libby</Text>
+					<Text style={[styles.micropubButtonTitle, profileLibbyStyles.title]}>{libraryName || "Connect to Libby"}</Text>
 				</Pressable>
 			</View>
 			<AnimatedFlatList
@@ -517,17 +539,19 @@ export function ProfileScreen({ navigation }) {
 }
 
 const profileLibbyStyles = StyleSheet.create({
-	row: { paddingHorizontal: 15, paddingTop: 6, paddingBottom: 6 },
+	row: { paddingLeft: 14, paddingRight: 14, paddingTop: 6, paddingBottom: 6 },
 	button: {
 		flexDirection: "row",
+		flexShrink: 1,
 		alignItems: "center",
 		gap: 8,
-		minHeight: 32,
+		minHeight: 30,
 		marginLeft: 0,
-		paddingLeft: 10,
-		paddingRight: 10
+		paddingLeft: 6,
+		paddingRight: 6
 	},
 	icon: { width: 22, height: 22 },
+	title: { flexShrink: 1 },
 	pressed: { opacity: 0.7 }
 });
 

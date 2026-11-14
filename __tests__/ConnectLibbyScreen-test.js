@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator, DeviceEventEmitter, TextInput } from "react-native";
+import { ActivityIndicator, DeviceEventEmitter, Image, TextInput } from "react-native";
 import renderer from "react-test-renderer";
 
 import { keys, libbyConnectedEvent } from "../src/Constants";
@@ -15,6 +15,7 @@ jest.mock("@react-navigation/native", () => ({
 }));
 
 const baseURL = "https://micro.blog/books/libby";
+const bookshelvesURL = "https://micro.blog/books/bookshelves";
 const response = (status, data) => ({ status, ok: status >= 200 && status < 300, json: async () => data });
 const advance = ms => renderer.act(async () => { jest.advanceTimersByTime(ms); });
 let screen;
@@ -25,7 +26,8 @@ beforeEach(async () => {
 	jest.useFakeTimers();
 	await storage.set(keys.authToken, "microblog-token");
 	previousFetch = global.fetch;
-	global.fetch = jest.fn().mockResolvedValueOnce(response(200, { status: "not_connected" }));
+	global.fetch = jest.fn().mockResolvedValue(response(200, { items: [] }))
+		.mockResolvedValueOnce(response(200, { status: "not_connected" }));
 	connected = jest.fn();
 	connected.subscription = DeviceEventEmitter.addListener(libbyConnectedEvent, connected);
 });
@@ -43,9 +45,15 @@ async function open() {
 	await renderer.act(async () => { screen = renderer.create(<ConnectLibbyScreen />); });
 }
 
+function pressButton(title) {
+	const button = screen.root.findAll(node => node.props.accessibilityRole === "button" &&
+		typeof node.props.onPress === "function" && node.findAllByProps({ children: title }).length > 0)[0];
+	return renderer.act(async () => button.props.onPress());
+}
+
 async function submitCode(code = "01234567") {
 	await renderer.act(async () => screen.root.findByType(TextInput).props.onChangeText(code));
-	await renderer.act(async () => screen.root.findByType(TextInput).props.onSubmitEditing());
+	await pressButton("Connect");
 }
 
 it("sends the code as a string and keeps polling until the imported shelves are ready", async () => {
@@ -72,7 +80,46 @@ it("sends the code as a string and keeps polling until the imported shelves are 
 	expect(screen.root.findByProps({ accessibilityRole: "header" }).props.children).toBe("Connected to Austin Public Library");
 	expect(connected).toHaveBeenCalledTimes(1);
 	await advance(10000);
-	expect(global.fetch).toHaveBeenCalledTimes(4);
+	expect(global.fetch.mock.calls.filter(([url]) => url === `${baseURL}/status`)).toHaveLength(3);
+});
+
+it("lets a connected user enter a new code and reconnect", async () => {
+	global.fetch.mockReset()
+		.mockResolvedValueOnce(response(200, { status: "connected", library_name: "Austin Public Library" }))
+		.mockResolvedValueOnce(response(202, { status: "syncing" }))
+		.mockResolvedValueOnce(response(200, { status: "connected", library_name: "Seattle Public Library" }));
+	await open();
+	expect(screen.root.findByProps({ accessibilityRole: "header" }).props.children).toBe("Connected to Austin Public Library");
+	const requestCount = global.fetch.mock.calls.length;
+	await pressButton("Reconnect");
+	expect(screen.root.findByType(TextInput).props.value).toBe("");
+	expect(global.fetch).toHaveBeenCalledTimes(requestCount);
+	await submitCode("09876543");
+	expect(global.fetch).toHaveBeenCalledWith(`${baseURL}/connect`, expect.objectContaining({
+		method: "POST",
+		body: '{"code":"09876543"}'
+	}));
+	await advance(2000);
+	expect(screen.root.findByProps({ accessibilityRole: "header" }).props.children).toBe("Connected to Seattle Public Library");
+});
+
+it("combines loans and holds into one cover grid and ignores other shelves", async () => {
+	const loan = { id: 11, title: "A loan", image: "https://example.com/loan.jpg", _microblog: { isbn: "9780140328721" } };
+	const hold = { id: 22, title: "A hold", image: "https://example.com/hold.jpg" };
+	const feeds = {
+		[`${baseURL}/status`]: { status: "connected", library_name: "Austin Public Library" },
+		[bookshelvesURL]: { items: [
+			{ id: 1, _microblog: { type: "loans" } },
+			{ id: 2, _microblog: { type: "holds" } },
+			{ id: 3, _microblog: { type: "reading" } }
+		] },
+		[`${bookshelvesURL}/1`]: { items: [loan] },
+		[`${bookshelvesURL}/2`]: { items: [hold, { ...loan, id: 33 }] }
+	};
+	global.fetch.mockReset().mockImplementation(async url => response(200, feeds[url]));
+	await open();
+	expect(screen.root.findAllByType(Image).map(cover => cover.props.source.uri)).toEqual([loan.image, hold.image]);
+	expect(global.fetch.mock.calls.map(([url]) => url)).toEqual(Object.keys(feeds));
 });
 
 it.each([

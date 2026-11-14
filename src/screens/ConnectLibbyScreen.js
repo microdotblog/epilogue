@@ -2,11 +2,11 @@ import React, { useCallback, useRef, useState } from "react";
 import { ActivityIndicator, DeviceEventEmitter, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useColorScheme } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
-import { keys, libbyConnectedEvent } from "../Constants";
+import { keys, libbyAPIURL, libbyConnectedEvent } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
+import { LibbyBooksGrid } from "../LibbyBooksGrid";
 import storage from "../Storage";
 
-const apiURL = "https://micro.blog/books/libby";
 const pollInterval = 2000;
 const pollTimeout = 5 * 60 * 1000;
 const statusError = "Could not check your Libby connection. Please try again.";
@@ -75,7 +75,7 @@ export function ConnectLibbyScreen() {
 
 			async function checkStatus() {
 				try {
-					const response = await fetch(`${apiURL}/status`, { headers, signal });
+				const response = await fetch(`${libbyAPIURL}/status`, { headers, signal });
 					const data = await response.json().catch(() => null);
 					if (signal.aborted) return;
 					if (response.ok) handleStatus(data, statusError);
@@ -99,7 +99,7 @@ export function ConnectLibbyScreen() {
 				await checkStatus();
 			}
 			else {
-				const response = await fetch(`${apiURL}/connect`, {
+			const response = await fetch(`${libbyAPIURL}/connect`, {
 					method: "POST",
 					headers: { ...headers, "Content-Type": "application/json" },
 					body: JSON.stringify({ code: setupCode }),
@@ -152,7 +152,15 @@ export function ConnectLibbyScreen() {
 					<Text style={[styles.signInText, libbyStyles.statusTitle]} accessibilityRole="header">
 						{state.libraryName ? `Connected to ${state.libraryName}` : "Connected to Libby"}
 					</Text>
-					<Text style={styles.signInText}>Your library loans and holds appear in Bookshelves.</Text>
+					<Text style={[styles.signInText, libbyStyles.connectedDescription]}>Your library loans and holds appear in Bookshelves.</Text>
+					<Pressable
+						style={({ pressed }) => [styles.plainButton, libbyStyles.button, pressed && libbyStyles.dimmed]}
+						accessibilityRole="button"
+						onPress={() => setState({ status: "entering_code" })}
+					>
+						<Text style={[styles.plainButtonTitle, libbyStyles.buttonTitle]}>Reconnect</Text>
+					</Pressable>
+					<LibbyBooksGrid />
 				</>
 			) : (
 				<>
@@ -162,7 +170,6 @@ export function ConnectLibbyScreen() {
 						style={[styles.signInInput, libbyStyles.input]}
 						accessibilityLabel="Libby setup code"
 						keyboardType="number-pad"
-						returnKeyType="go"
 						value={code}
 						onChangeText={setCode}
 						onSubmitEditing={submit}
@@ -190,6 +197,7 @@ const libbyStyles = StyleSheet.create({
 	progress: { alignItems: "center", gap: 12, paddingTop: 12 },
 	message: { textAlign: "center" },
 	statusTitle: { fontSize: 18, fontWeight: "600", marginBottom: 12 },
+	connectedDescription: { marginBottom: 0 },
 	label: { fontWeight: "600", marginBottom: 6 },
 	input: { minHeight: 44, fontSize: 17 },
 	error: { fontSize: 15, marginTop: 12 },

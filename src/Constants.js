@@ -32,4 +32,5 @@ export const errors = {
 	stateDoesNotMatch: "IndieAuth state did not match."
 };
 
+export const libbyAPIURL = "https://micro.blog/books/libby";
 export const libbyConnectedEvent = "epilogueLibbyConnected";
