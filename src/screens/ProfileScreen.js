@@ -485,7 +485,7 @@ export function ProfileScreen({ navigation }) {
 					style={({ pressed }) => [styles.plainButton, styles.profileLibbyButton, profileLibbyStyles.button, pressed && profileLibbyStyles.pressed]}
 					accessibilityRole="button"
 					hitSlop={6}
-					onPress={() => navigation.navigate("ConnectLibby")}
+					onPress={() => navigation.navigate("Libby")}
 				>
 					<Image source={require("../../images/libby.png")} style={profileLibbyStyles.icon} accessible={false} />
 					<Text style={[styles.micropubButtonTitle, profileLibbyStyles.title]}>{libraryName || "Connect to Libby"}</Text>
@@ -539,7 +539,7 @@ export function ProfileScreen({ navigation }) {
 }
 
 const profileLibbyStyles = StyleSheet.create({
-	row: { paddingLeft: 14, paddingRight: 14, paddingTop: 6, paddingBottom: 6 },
+	row: { paddingLeft: 14, paddingRight: 14, paddingTop: 10, paddingBottom: 10 },
 	button: {
 		flexDirection: "row",
 		flexShrink: 1,

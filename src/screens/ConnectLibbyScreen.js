@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 
 import { keys, libbyAPIURL, libbyConnectedEvent } from "../Constants";
 import { useEpilogueStyle } from "../hooks/useEpilogueStyle";
-import { LibbyBooksGrid } from "../LibbyBooksGrid";
+import { LibbyBooksGrid, useLibbyBooks } from "../LibbyBooksGrid";
 import storage from "../Storage";
 
 const pollInterval = 2000;
@@ -12,17 +12,13 @@ const pollTimeout = 5 * 60 * 1000;
 const statusError = "Could not check your Libby connection. Please try again.";
 const connectError = "Could not connect to Libby. Please try again.";
 const progressLabels = {
-	checking: "Checking your Libby connection…",
 	submitting: "Connecting to Libby…",
 	syncing: "Syncing your library loans and holds…"
 };
 
-export function ConnectLibbyScreen() {
-	const styles = useEpilogueStyle();
-	const dark = useColorScheme() === "dark";
-	const [code, setCode] = useState("");
-	const [state, setState] = useState({ status: "checking" });
+function useLibbyConnection(onStateChange) {
 	const cancelRef = useRef(null);
+	const cancel = useCallback(() => cancelRef.current?.(), []);
 
 	const run = useCallback(async (setupCode) => {
 		if (cancelRef.current) return;
@@ -40,12 +36,11 @@ export function ConnectLibbyScreen() {
 		const finish = nextState => {
 			if (signal.aborted) return;
 			cancel();
-			setState(nextState);
-			if (nextState.status === "connected") DeviceEventEmitter.emit(libbyConnectedEvent);
+			onStateChange(nextState);
 		};
 		const fail = message => finish({ status: "error", message });
 		cancelRef.current = cancel;
-		setState({ status: setupCode === undefined ? "checking" : "submitting" });
+		onStateChange({ status: setupCode === undefined ? "checking" : "submitting" });
 
 		try {
 			const token = await storage.get(keys.authToken);
@@ -62,7 +57,6 @@ export function ConnectLibbyScreen() {
 						beginPolling();
 						break;
 					case "connected":
-						setCode("");
 						finish({ status: "connected", libraryName: data.library_name });
 						break;
 					case "not_connected":
@@ -88,8 +82,7 @@ export function ConnectLibbyScreen() {
 
 			function beginPolling() {
 				if (deadline == null) {
-					setCode("");
-					setState({ status: "syncing" });
+					onStateChange({ status: "syncing" });
 					deadline = setTimeout(() => fail("Libby is taking longer than expected. Reopen this screen to check your connection."), pollTimeout);
 				}
 				nextPoll = setTimeout(checkStatus, pollInterval);
@@ -119,15 +112,96 @@ export function ConnectLibbyScreen() {
 		catch {
 			fail(setupCode === undefined ? statusError : connectError);
 		}
-	}, []);
+	}, [onStateChange]);
+
+	return { run, cancel };
+}
+
+function LibbyProgress({ status }) {
+	const styles = useEpilogueStyle();
+	const dark = useColorScheme() === "dark";
+	return (
+		<View style={libbyStyles.progress}>
+			<ActivityIndicator color={dark ? "#FFFFFF" : "#000000"} />
+			<Text style={[styles.signInText, libbyStyles.message]} accessibilityLiveRegion="polite">{progressLabels[status]}</Text>
+		</View>
+	);
+}
+
+function LibbyLibraryLoading() {
+	const dark = useColorScheme() === "dark";
+	return (
+		<View style={libbyStyles.centeredLoading}>
+			<ActivityIndicator color={dark ? "#FFFFFF" : "#000000"} accessibilityLabel="Loading Libby library" />
+		</View>
+	);
+}
+
+export function LibbyLibraryScreen({ navigation, route }) {
+	const styles = useEpilogueStyle();
+	const [state, setState] = useState({ status: "checking" });
+	const refreshKey = route.params?.refreshKey ?? route.key;
+	const statusLoaded = state.status === "connected" && state.refreshKey === refreshKey;
+	const libraryBooks = useLibbyBooks(statusLoaded ? refreshKey : null);
+	const onStateChange = useCallback(nextState => {
+		if (nextState.status === "not_connected" || nextState.status === "error") {
+			navigation.replace("ConnectLibby", { message: nextState.message });
+			return;
+		}
+		setState({ ...nextState, refreshKey });
+		if (nextState.status === "connected") DeviceEventEmitter.emit(libbyConnectedEvent);
+	}, [navigation, refreshKey]);
+	const { run, cancel } = useLibbyConnection(onStateChange);
 
 	useFocusEffect(useCallback(() => {
-		setCode("");
+		if (statusLoaded) return;
 		run();
-		return () => cancelRef.current?.();
-	}, [run]));
+		return cancel;
+	}, [run, cancel, statusLoaded]));
 
-	const progress = progressLabels[state.status];
+	if (state.status === "syncing") {
+		return (
+			<ScrollView contentContainerStyle={libbyStyles.content} contentInsetAdjustmentBehavior="automatic">
+				<LibbyProgress status={state.status} />
+			</ScrollView>
+		);
+	}
+	if (!libraryBooks) return <LibbyLibraryLoading />;
+
+	return (
+		<ScrollView contentContainerStyle={libbyStyles.content} contentInsetAdjustmentBehavior="automatic">
+			<Text style={[styles.signInText, libbyStyles.statusTitle]} accessibilityRole="header">
+				{state.libraryName ? `Connected to ${state.libraryName}` : "Connected to Libby"}
+			</Text>
+			<Text style={[styles.signInText, libbyStyles.connectedDescription]}>Your library loans and holds appear in Bookshelves.</Text>
+			<Pressable
+				style={({ pressed }) => [styles.plainButton, libbyStyles.button, pressed && libbyStyles.dimmed]}
+				accessibilityRole="button"
+				onPress={() => navigation.push("ConnectLibby", { reconnect: true })}
+			>
+				<Text style={[styles.plainButtonTitle, libbyStyles.buttonTitle]}>Reconnect</Text>
+			</Pressable>
+			<LibbyBooksGrid books={libraryBooks.books} loadFailed={libraryBooks.loadFailed} />
+		</ScrollView>
+	);
+}
+
+export function ConnectLibbyScreen({ navigation, route }) {
+	const styles = useEpilogueStyle();
+	const dark = useColorScheme() === "dark";
+	const [code, setCode] = useState("");
+	const [state, setState] = useState({ status: "entering_code", message: route.params?.message });
+	const onStateChange = useCallback(nextState => {
+		if (nextState.status === "connected") {
+			navigation.popTo("LibbyLibrary", { refreshKey: route.key });
+			return;
+		}
+		if (nextState.status === "syncing") setCode("");
+		setState(nextState);
+	}, [navigation, route.key]);
+	const { run, cancel } = useLibbyConnection(onStateChange);
+	useFocusEffect(useCallback(() => cancel, [cancel]));
+
 	const setupCode = code.trim();
 	const submit = () => {
 		if (!setupCode) return;
@@ -142,26 +216,8 @@ export function ConnectLibbyScreen() {
 			automaticallyAdjustKeyboardInsets
 			keyboardShouldPersistTaps="handled"
 		>
-			{progress ? (
-				<View style={libbyStyles.progress}>
-					<ActivityIndicator color={dark ? "#FFFFFF" : "#000000"} />
-					<Text style={[styles.signInText, libbyStyles.message]} accessibilityLiveRegion="polite">{progress}</Text>
-				</View>
-			) : state.status === "connected" ? (
-				<>
-					<Text style={[styles.signInText, libbyStyles.statusTitle]} accessibilityRole="header">
-						{state.libraryName ? `Connected to ${state.libraryName}` : "Connected to Libby"}
-					</Text>
-					<Text style={[styles.signInText, libbyStyles.connectedDescription]}>Your library loans and holds appear in Bookshelves.</Text>
-					<Pressable
-						style={({ pressed }) => [styles.plainButton, libbyStyles.button, pressed && libbyStyles.dimmed]}
-						accessibilityRole="button"
-						onPress={() => setState({ status: "entering_code" })}
-					>
-						<Text style={[styles.plainButtonTitle, libbyStyles.buttonTitle]}>Reconnect</Text>
-					</Pressable>
-					<LibbyBooksGrid />
-				</>
+			{progressLabels[state.status] ? (
+				<LibbyProgress status={state.status} />
 			) : (
 				<>
 					<Text style={styles.signInText}>In Libby, open Copy To Another Device → Other Options → Sonos to generate a setup code.</Text>
@@ -194,6 +250,7 @@ export function ConnectLibbyScreen() {
 
 const libbyStyles = StyleSheet.create({
 	content: { width: "100%", maxWidth: 520, alignSelf: "center", padding: 20 },
+	centeredLoading: { flex: 1, alignItems: "center", justifyContent: "center" },
 	progress: { alignItems: "center", gap: 12, paddingTop: 12 },
 	message: { textAlign: "center" },
 	statusTitle: { fontSize: 18, fontWeight: "600", marginBottom: 12 },

@@ -1,24 +1,19 @@
 import React from "react";
 import { ActivityIndicator, DeviceEventEmitter, Image, TextInput } from "react-native";
+import { createNavigationContainerRef, NavigationContainer } from "@react-navigation/native";
 import renderer from "react-test-renderer";
 
 import { keys, libbyConnectedEvent } from "../src/Constants";
-import { ConnectLibbyScreen } from "../src/screens/ConnectLibbyScreen";
+import { LibbyStack } from "../src/navigation/LibbyStack";
+import { ConnectLibbyScreen, LibbyLibraryScreen } from "../src/screens/ConnectLibbyScreen";
 import storage from "../src/Storage";
-
-let mockBlur;
-jest.mock("@react-navigation/native", () => ({
-	useFocusEffect: effect => require("react").useEffect(() => {
-		mockBlur = effect();
-		return () => mockBlur();
-	}, [effect])
-}));
 
 const baseURL = "https://micro.blog/books/libby";
 const bookshelvesURL = "https://micro.blog/books/bookshelves";
 const response = (status, data) => ({ status, ok: status >= 200 && status < 300, json: async () => data });
 const advance = ms => renderer.act(async () => { jest.advanceTimersByTime(ms); });
 let screen;
+let navigation;
 let previousFetch;
 let connected;
 
@@ -42,11 +37,14 @@ afterEach(async () => {
 });
 
 async function open() {
-	await renderer.act(async () => { screen = renderer.create(<ConnectLibbyScreen />); });
+	navigation = createNavigationContainerRef();
+	await renderer.act(async () => {
+		screen = renderer.create(<NavigationContainer ref={navigation}><LibbyStack /></NavigationContainer>);
+	});
 }
 
-function pressButton(title) {
-	const button = screen.root.findAll(node => node.props.accessibilityRole === "button" &&
+function pressButton(title, screenType = ConnectLibbyScreen) {
+	const button = screen.root.findByType(screenType).findAll(node => node.props.accessibilityRole === "button" &&
 		typeof node.props.onPress === "function" && node.findAllByProps({ children: title }).length > 0)[0];
 	return renderer.act(async () => button.props.onPress());
 }
@@ -60,8 +58,11 @@ it("sends the code as a string and keeps polling until the imported shelves are 
 	global.fetch
 		.mockResolvedValueOnce(response(202, { status: "syncing" }))
 		.mockResolvedValueOnce(response(200, { status: "syncing" }))
+		.mockResolvedValueOnce(response(200, { status: "connected", library_name: "Austin Public Library" }))
 		.mockResolvedValueOnce(response(200, { status: "connected", library_name: "Austin Public Library" }));
 	await open();
+	expect(navigation.getCurrentRoute().name).toBe("ConnectLibby");
+	expect(navigation.canGoBack()).toBe(false);
 	await submitCode();
 	expect(global.fetch).toHaveBeenNthCalledWith(2, `${baseURL}/connect`, expect.objectContaining({
 		method: "POST",
@@ -77,30 +78,50 @@ it("sends the code as a string and keeps polling until the imported shelves are 
 	}));
 	expect(connected).not.toHaveBeenCalled();
 	await advance(2000);
+	expect(navigation.getCurrentRoute().name).toBe("LibbyLibrary");
+	expect(navigation.canGoBack()).toBe(false);
 	expect(screen.root.findByProps({ accessibilityRole: "header" }).props.children).toBe("Connected to Austin Public Library");
 	expect(connected).toHaveBeenCalledTimes(1);
 	await advance(10000);
-	expect(global.fetch.mock.calls.filter(([url]) => url === `${baseURL}/status`)).toHaveLength(3);
+	expect(global.fetch.mock.calls.filter(([url]) => url === `${baseURL}/status`)).toHaveLength(4);
 });
 
-it("lets a connected user enter a new code and reconnect", async () => {
-	global.fetch.mockReset()
-		.mockResolvedValueOnce(response(200, { status: "connected", library_name: "Austin Public Library" }))
-		.mockResolvedValueOnce(response(202, { status: "syncing" }))
-		.mockResolvedValueOnce(response(200, { status: "connected", library_name: "Seattle Public Library" }));
+it("pushes reconnect, then returns to the same library route and reloads its covers", async () => {
+	let library = { status: "connected", library_name: "Austin Public Library" };
+	global.fetch.mockReset().mockImplementation(async (url) => {
+		if (url === `${baseURL}/connect`) {
+			library = { status: "connected", library_name: "Seattle Public Library" };
+			return response(202, { status: "syncing" });
+		}
+		return response(200, url === `${baseURL}/status` ? library : { items: [] });
+	});
 	await open();
+	const libraryRoute = navigation.getCurrentRoute();
 	expect(screen.root.findByProps({ accessibilityRole: "header" }).props.children).toBe("Connected to Austin Public Library");
 	const requestCount = global.fetch.mock.calls.length;
-	await pressButton("Reconnect");
+	await pressButton("Reconnect", LibbyLibraryScreen);
+	expect(navigation.getCurrentRoute().name).toBe("ConnectLibby");
+	expect(navigation.canGoBack()).toBe(true);
 	expect(screen.root.findByType(TextInput).props.value).toBe("");
 	expect(global.fetch).toHaveBeenCalledTimes(requestCount);
+	await renderer.act(async () => navigation.goBack());
+	expect(navigation.getCurrentRoute().key).toBe(libraryRoute.key);
+	expect(screen.root.findByProps({ accessibilityRole: "header" }).props.children).toBe("Connected to Austin Public Library");
+	expect(global.fetch).toHaveBeenCalledTimes(requestCount);
+	await pressButton("Reconnect", LibbyLibraryScreen);
 	await submitCode("09876543");
 	expect(global.fetch).toHaveBeenCalledWith(`${baseURL}/connect`, expect.objectContaining({
 		method: "POST",
 		body: '{"code":"09876543"}'
 	}));
 	await advance(2000);
+	expect(navigation.getCurrentRoute().key).toBe(libraryRoute.key);
 	expect(screen.root.findByProps({ accessibilityRole: "header" }).props.children).toBe("Connected to Seattle Public Library");
+	expect(global.fetch.mock.calls.filter(([url]) => url === bookshelvesURL)).toHaveLength(2);
+	const refreshedRequestCount = global.fetch.mock.calls.length;
+	await pressButton("Reconnect", LibbyLibraryScreen);
+	await renderer.act(async () => navigation.goBack());
+	expect(global.fetch).toHaveBeenCalledTimes(refreshedRequestCount);
 });
 
 it("combines loans and holds into one cover grid and ignores other shelves", async () => {
@@ -122,6 +143,28 @@ it("combines loans and holds into one cover grid and ignores other shelves", asy
 	expect(global.fetch.mock.calls.map(([url]) => url)).toEqual(Object.keys(feeds));
 });
 
+it("keeps a spinner visible through the status check and bookshelf load", async () => {
+	let finishStatus;
+	let finishBooks;
+	global.fetch.mockReset()
+		.mockImplementationOnce(() => new Promise(resolve => { finishStatus = resolve; }))
+		.mockResolvedValueOnce(response(200, { items: [{ id: 1, _microblog: { type: "loans" } }] }))
+		.mockImplementationOnce(() => new Promise(resolve => { finishBooks = resolve; }));
+	await open();
+	expect(screen.root.findByType(ActivityIndicator).props.accessibilityLabel).toBe("Loading Libby library");
+	expect(screen.root.findAllByProps({ children: "Checking your Libby connection…" })).toHaveLength(0);
+
+	await renderer.act(async () => finishStatus(response(200, { status: "connected", library_name: "Austin Public Library" })));
+	expect(screen.root.findByType(ActivityIndicator)).toBeDefined();
+	expect(screen.root.findAllByProps({ accessibilityRole: "header" })).toHaveLength(0);
+
+	const loan = { id: 1, title: "A loan", image: "https://example.com/loan.jpg" };
+	await renderer.act(async () => finishBooks(response(200, { items: [loan] })));
+	expect(screen.root.findAllByType(ActivityIndicator)).toHaveLength(0);
+	expect(screen.root.findByProps({ accessibilityRole: "header" }).props.children).toBe("Connected to Austin Public Library");
+	expect(screen.root.findByType(Image).props.source.uri).toBe(loan.image);
+});
+
 it.each([
 	[422, { status: "error", message: "Get a new code in Libby." }, null, "Get a new code in Libby."],
 	[202, { status: "syncing" }, { status: "error", message: "The library could not sync." }, "The library could not sync."],
@@ -139,7 +182,7 @@ it.each([
 	expect(connected).not.toHaveBeenCalled();
 });
 
-it.each(["blur", "timeout"])("cancels an in-flight status request on %s", async stop => {
+it.each(["unmount", "timeout"])("cancels an in-flight status request on %s", async stop => {
 	let resolveStatus;
 	global.fetch
 		.mockResolvedValueOnce(response(202, { status: "syncing" }))
@@ -148,8 +191,9 @@ it.each(["blur", "timeout"])("cancels an in-flight status request on %s", async 
 	await submitCode();
 	await advance(2000);
 	const signal = global.fetch.mock.calls[2][1].signal;
-	if (stop === "blur") {
-		await renderer.act(async () => mockBlur());
+	if (stop === "unmount") {
+		await renderer.act(async () => screen.unmount());
+		screen = null;
 	} else {
 		await advance(297999);
 		expect(signal.aborted).toBe(false);

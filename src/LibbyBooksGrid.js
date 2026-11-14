@@ -14,18 +14,18 @@ async function fetchFeed(url, options) {
 	return response.json();
 }
 
-export function LibbyBooksGrid() {
-	const theme = useEpilogueStyle();
-	const [books, setBooks] = useState([]);
-	const [loadFailed, setLoadFailed] = useState(false);
+export function useLibbyBooks(refreshKey) {
+	const [result, setResult] = useState(null);
 
 	useEffect(() => {
+		if (refreshKey == null) return;
 		const controller = new AbortController();
 		const { signal } = controller;
 
 		async function loadBooks() {
 			const token = await storage.get(keys.authToken);
-			if (signal.aborted || !token) return;
+			if (signal.aborted) return;
+			if (!token) throw new Error("Missing Micro.blog token");
 			const options = { headers: { Authorization: `Bearer ${token}` }, signal };
 			const shelves = await fetchFeed(bookshelvesURL, options);
 			if (signal.aborted) return;
@@ -48,16 +48,23 @@ export function LibbyBooksGrid() {
 					if (!existing || (!existing.image && book.image)) uniqueBooks.set(key, book);
 				}
 			}
-			setBooks(Array.from(uniqueBooks));
-			setLoadFailed(results.some(result => result.status === "rejected"));
+			setResult({
+				refreshKey,
+				books: Array.from(uniqueBooks),
+				loadFailed: results.some(result => result.status === "rejected")
+			});
 		}
 
 		loadBooks().catch(() => {
-			if (!signal.aborted) setLoadFailed(true);
+			if (!signal.aborted) setResult({ refreshKey, books: [], loadFailed: true });
 		});
 		return () => controller.abort();
-	}, []);
+	}, [refreshKey]);
+	return result?.refreshKey === refreshKey ? result : null;
+}
 
+export function LibbyBooksGrid({ books, loadFailed }) {
+	const theme = useEpilogueStyle();
 	return (
 		<>
 			{books.length > 0 && (

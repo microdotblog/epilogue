@@ -15,6 +15,7 @@ import { Icon } from "./src/Icon";
 import { HomeScreen } from "./src/screens/HomeScreen";
 import { TabsScreen } from "./src/screens/TabsScreen";
 import { contentStackScreens } from "./src/navigation/ContentStackScreens";
+import { LibbyStack } from "./src/navigation/LibbyStack";
 import { PostScreen } from "./src/screens/PostScreen";
 import { SignInScreen } from "./src/screens/SignInScreen";
 import { BlogsScreen } from "./src/screens/BlogsScreen";
@@ -22,7 +23,6 @@ import { ProfileScreen } from "./src/screens/ProfileScreen";
 import { ExternalScreen } from "./src/screens/ExternalScreen";
 import { CreateAccountScreen } from "./src/screens/CreateAccountScreen";
 import { NotesKeyScreen } from "./src/screens/NotesKeyScreen";
-import { ConnectLibbyScreen } from "./src/screens/ConnectLibbyScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -113,14 +113,7 @@ const App: () => Node = () => {
                 </Pressable>
               )
             })} />
-            <Stack.Screen name="ConnectLibby" component={ConnectLibbyScreen} options={({ navigation }) => ({
-              title: "Libby",
-              headerLeft: () => (
-                <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="close">
-                  <Icon name="close" color={is_dark ? "#FFFFFF" : "#000000"} size={18} style={styles.navbarCloseIcon} />
-                </Pressable>
-              )
-            })} />
+            <Stack.Screen name="Libby" component={LibbyStack} options={{ headerShown: false }} />
             <Stack.Screen name="Profile" component={ProfileScreen} options={({ navigation, route }) => ({
               title: "",
               headerLeft: () => (

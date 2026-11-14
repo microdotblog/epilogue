@@ -60,7 +60,7 @@ it("shows the connected library on profile focus while posts are downloading", a
 			headers: { Authorization: "Bearer libby-profile-token" }
 		}));
 		await renderer.act(async () => buttonWithTitle("Austin Public Library").props.onPress());
-		expect(navigation.navigate).toHaveBeenCalledWith("ConnectLibby");
+		expect(navigation.navigate).toHaveBeenCalledWith("Libby");
 		status = { status: "not_connected", library_name: "" };
 		await renderer.act(async () => { mockBlur(); mockFocus(); });
 		expect(buttonWithTitle("Connect to Libby")).toBeDefined();
