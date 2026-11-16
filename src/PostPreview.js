@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { AccessibilityInfo, ActivityIndicator, Alert, Animated, Image, Linking, Pressable, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from "react-native";
+import { AccessibilityInfo, ActivityIndicator, Alert, Animated, Image, Linking, Platform, Pressable, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from "react-native";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
 import { WebView } from "react-native-webview";
 import { useEpilogueStyle } from "./hooks/useEpilogueStyle";
@@ -134,7 +134,7 @@ export function PostPreview({ post }) {
 								thirdPartyCookiesEnabled={false}
 								setSupportMultipleWindows={false}
 								allowsLinkPreview={false}
-								dataDetectorTypes="none"
+								dataDetectorTypes={Platform.OS === "ios" ? "none" : undefined}
 								scrollEnabled={false}
 								automaticallyAdjustContentInsets={false}
 								textZoom={100}

@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator, Linking, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, Linking, Platform, StyleSheet, Text } from "react-native";
 import renderer from "react-test-renderer";
 import { WebView } from "react-native-webview";
 import { BookDetailsScreen } from "../src/screens/BookDetailsScreen";
@@ -18,7 +18,8 @@ afterEach(async () => {
 	jest.restoreAllMocks();
 });
 
-it("shows details before the post loads and renders only the post body with safe markup", async () => {
+it.each([["ios", "none"], ["android", undefined]])("loads and sanitizes the post preview on %s", async (platform, dataDetectorTypes) => {
+	jest.replaceProperty(Platform, "OS", platform);
 	let respond;
 	global.fetch = jest.fn(() => new Promise(resolve => { respond = resolve; }));
 	await renderer.act(async () => {
@@ -40,6 +41,7 @@ it("shows details before the post loads and renders only the post body with safe
 			<div class="content-reactions-strip"><span>★★★★</span></div></article>`
 	}));
 	const webview = screen.root.findByType(WebView);
+	expect(webview.props.dataDetectorTypes).toBe(dataDetectorTypes);
 	expect(webview.props.source.html).toContain('<div><span>★★★★</span></div><p>Movie &amp; more<br><strong>Good link</strong>');
 	expect(webview.props.source.html).toContain('<p>Bad link');
 	expect(webview.props.source.html).not.toMatch(/Outside post|onclick|onerror|javascript:|untrustedScript|<iframe|<img\b|<a\b|href=/i);
